@@ -1,4 +1,4 @@
-# Privacy｜隱私說明（v0.1.0）
+# Privacy｜隱私說明（v0.2.0）
 
 此工具的 JavaScript 在使用者的瀏覽器分頁內處理被主動選入的 ZIP/JSON。程式碼沒有 `fetch`、XHR、WebSocket、登入、分析 SDK、廣告或本專案控制的聊天內容傳輸端點。
 
@@ -9,3 +9,5 @@
 - **存取限制：** 此版本不讀取你的 AI 帳戶，無法得知平台端是否尚有其他內容。
 
 如果將來加入雲端 AI 或代管，必須先更新本文件，提出明確同意、資料傳送範圍與可撤銷方式；不得默默改變現在的隱私承諾。
+
+R2: the optional older snapshot is kept temporarily in browser memory for comparison; no localStorage/IndexedDB or network upload. The downloaded diff report contains counts, schema and fixed warnings only, but single-conversation HTML does contain conversation text. Clearing the page releases references; it does not securely erase browser RAM or previously downloaded files.

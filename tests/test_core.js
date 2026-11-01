@@ -90,3 +90,9 @@ test('metadata options record ZIP count without inferring presence',()=>{
   assert.equal(a.zip_entry_count,12);
   assert.equal(a.zip_entry_bytes_not_extracted,true);
 });
+
+test('prototype property cannot act as real path node',()=>{
+  const x=core.parseChatGPTExport([{id:'x',current_node:'__proto__',mapping:{}}]);
+  assert.equal(x.audit.missing_current_paths,1);
+  assert.equal(x.conversations[0].messages.length,0);
+});

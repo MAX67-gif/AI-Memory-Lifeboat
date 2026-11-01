@@ -1,12 +1,24 @@
-/* AI Memory Lifeboat v0.1.0 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.2.0 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
     warnings:$('warningList'),warningCount:$('warningCount'),list:$('conversationList'),detail:$('conversationDetail'),
-    search:$('searchBox'),resultCount:$('resultCount'),audit:$('downloadAudit'),html:$('downloadHtml')};
+    search:$('searchBox'),resultCount:$('resultCount'),audit:$('downloadAudit'),html:$('downloadHtml'),
+    olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
+    compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
+    archiveAssessment:$('archiveAssessment')};
   const core=window.AMLCore, zip=window.AMLZip;
-  let current=null, selected=null;
+  let current=null, older=null, compared=null, selected=null, generation=0;
   const MAX_JSON=64*1024*1024;
+  const comparisonLabels={
+    ONLY_IN_NEW_EXPORT:'只在新版匯出中出現',
+    NOT_IN_NEW_EXPORT:'新版匯出沒有此紀錄（不代表帳戶已刪除）',
+    CURRENT_VIEW_CHANGED:'目前分支或計數有差異',
+    METADATA_ONLY_CHANGED:'僅已檢查的標題／時間欄位不同',
+    NO_DETECTED_CURRENT_VIEW_CHANGE:'目前檢查範圍沒有發現差異',
+    INCONCLUSIVE_PATH:'目前分支不可比較',
+    INCONCLUSIVE_ID:'缺少可靠或唯一的對話 ID'
+  };
   const explanations={
     INVALID_RECORDS_SKIPPED:'部分紀錄不是支援的對話資料結構，已排除。',
     SOME_CURRENT_PATHS_UNAVAILABLE:'部分對話缺少可核對的目前分支，無法閱讀其訊息。',
@@ -22,7 +34,7 @@
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
   function reset(){
-    current=null;selected=null;e.file.value='';e.search.value='';e.list.replaceChildren();
+    generation++;current=null;older=null;compared=null;selected=null;e.file.value='';e.olderFile.value='';e.olderFile.disabled=true;e.olderStatus.textContent='請先載入最新版匯出檔。';e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;e.search.value='';e.list.replaceChildren();
     e.detail.textContent='';e.results.hidden=true;e.clear.disabled=true;e.html.disabled=true;
     status('已清除本頁載入的資料。');
   }
@@ -43,6 +55,11 @@
     if (!items.length) items.push('指定範圍內沒有發現警告。這不是帳戶備份完整性認證。');
     for(const text of items){const li=document.createElement('li');li.textContent=text;e.warnings.append(li);}
     e.warningCount.textContent=`(${a.warnings.length} 類)`;
+    const z=a.archive_path_assessment;
+    e.archiveAssessment.hidden=!z;
+    if(z){
+      e.archiveAssessment.textContent=`ZIP 內非主對話 JSON 的檔案項目 ${z.non_conversations_file_entries} 個；附件參照 ${z.attachment_references_observed} 項，其中 ${z.matched_unique_paths} 項可精確對應到唯一 ZIP 路徑、${z.missing_explicit_paths} 項明確路徑不存在、${z.unverifiable_references} 項缺少可比對路徑、${z.unsafe_path_references} 項路徑不安全、${z.ambiguous_paths} 項路徑重複。僅比對 ZIP 目錄中宣告的檔名，未驗證其他檔案位元組、內容或可還原性。`;
+    }
   }
   function renderMessages(c){
     e.detail.replaceChildren();
@@ -80,36 +97,94 @@
       button.addEventListener('click',()=>selectConversation(i));e.list.append(button);
     }
   }
+  async function parseSource(file){
+    if(file.name.toLowerCase().endsWith('.json')){
+      if(file.size>MAX_JSON)throw Error('JSON_TOO_LARGE');
+      let raw;
+      try{raw=JSON.parse((await file.text()).replace(/^\uFEFF/,''));}
+      catch(_){throw Error('INVALID_JSON');}
+      return core.parseChatGPTExport(raw);
+    }
+    if(file.name.toLowerCase().endsWith('.zip')){
+      if(file.size>zip.MAX_ARCHIVE)throw Error('ZIP_ARCHIVE_TOO_LARGE');
+      const opened=await zip.getConversationsJson(new Uint8Array(await file.arrayBuffer()));
+      const parsed=core.parseChatGPTExport(opened.parsed,{zipEntryCount:opened.entryCount});
+      parsed.audit.archive_path_assessment=core.assessArchiveReferences(opened.parsed,opened.entries);
+      if(parsed.audit.archive_path_assessment.missing_explicit_paths)
+        parsed.audit.warnings.push('ARCHIVE_REFERENCES_WITHOUT_MATCHING_PATH');
+      return parsed;
+    }
+    throw Error('UNSUPPORTED_FILE_TYPE');
+  }
+  function renderComparison(){
+    e.comparePanel.hidden=!compared;
+    if(!compared)return;
+    const c=compared.summary.counts;
+    e.compareCounts.replaceChildren(
+      metric('只在新版匯出出現',c.ONLY_IN_NEW_EXPORT),
+      metric('新版匯出未見',c.NOT_IN_NEW_EXPORT),
+      metric('目前分支有差異',c.CURRENT_VIEW_CHANGED),
+      metric('無法確定',c.INCONCLUSIVE_PATH+c.INCONCLUSIVE_ID));
+    e.compareList.replaceChildren();
+    const relevant=compared.items.filter(x=>x.status!=='NO_DETECTED_CURRENT_VIEW_CHANGE');
+    const fragment=document.createDocumentFragment();
+    for(const item of relevant.slice(0,120)){
+      const li=document.createElement('li');
+      const label=document.createElement('strong');label.textContent=comparisonLabels[item.status]||item.status;
+      const title=document.createElement('span');title.textContent=' · '+item.title;
+      li.append(label,title);fragment.append(li);
+    }
+    if(relevant.length>120){const li=document.createElement('li');li.textContent=`僅顯示前 120 項，另有 ${relevant.length-120} 項未顯示。摘要報告不包含對話名稱。`;fragment.append(li);}
+    if(!relevant.length){const li=document.createElement('li');li.textContent='目前檢查範圍沒有發現差異，並非兩份備份完全相同。';fragment.append(li);}
+    e.compareList.append(fragment);
+  }
   async function importFile(file){
-    current=null;selected=null;e.results.hidden=true;e.html.disabled=true;e.clear.disabled=false;
     if(!file)return;
-    status('正在本機解析檔案…');
-    try {
-      let raw,zipEntryCount;
-      if(file.name.toLowerCase().endsWith('.json')){
-        if(file.size>MAX_JSON) throw Error('JSON_TOO_LARGE');
-        raw=JSON.parse((await file.text()).replace(/^\uFEFF/,''));
-      }else if(file.name.toLowerCase().endsWith('.zip')){
-        if(file.size>zip.MAX_ARCHIVE) throw Error('ZIP_ARCHIVE_TOO_LARGE');
-        const opened=await zip.getConversationsJson(new Uint8Array(await file.arrayBuffer()));
-        raw=opened.parsed;zipEntryCount=opened.entryCount;
-      }else throw Error('UNSUPPORTED_FILE_TYPE');
-      const parsed=core.parseChatGPTExport(raw,{zipEntryCount});
-      current=parsed;
-      e.results.hidden=false;e.search.value='';renderAudit();renderList();
+    const rev=++generation;
+    current=null;older=null;compared=null;selected=null;e.results.hidden=true;
+    e.html.disabled=true;e.clear.disabled=false;e.olderFile.disabled=true;e.olderFile.value='';
+    e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;
+    e.olderStatus.textContent='請先載入最新版匯出檔。';
+    status('正在本機解析最新版匯出檔…');
+    try{
+      const parsed=await parseSource(file);
+      if(rev!==generation)return;
+      current=parsed;e.results.hidden=false;e.search.value='';
+      e.olderFile.disabled=false;e.olderStatus.textContent='可選擇較早匯出的檔案進行比較。';
+      renderAudit();renderList();
       status(`完成：已檢查 ${parsed.audit.input_records} 筆輸入紀錄；僅驗證本次匯出內容的支援範圍。`,'ok');
-    } catch(err){
-      e.results.hidden=true;current=null;
+    }catch(err){
+      if(rev!==generation)return;
+      current=null;e.results.hidden=true;
       const code=String(err?.message||'UNKNOWN_ERROR').replace(/[^\w\s-]/g,'').slice(0,150);
       status(`無法解析：${code}。請確認是官方匯出檔；原始檔未被修改。`,'error');
+    }
+  }
+  async function importOlder(file){
+    if(!file||!current)return;
+    const rev=++generation;
+    e.olderStatus.textContent='正在本機比較兩份匯出…';
+    older=null;compared=null;e.comparePanel.hidden=true;
+    try{
+      const parsed=await parseSource(file);
+      if(rev!==generation)return;
+      older=parsed;compared=window.AMLCompare.compareSnapshots(parsed,current);
+      renderComparison();e.olderStatus.textContent='比對完成：匯出日期與帳戶是否相同，均由使用者自行確認。';
+    }catch(err){
+      if(rev!==generation)return;
+      e.comparePanel.hidden=true;compared=null;older=null;
+      const code=String(err?.message||'UNKNOWN_ERROR').replace(/[^\w\s-]/g,'').slice(0,150);
+      e.olderStatus.textContent=`舊版匯出無法解析：${code}。最新版閱讀不受影響。`;
     }
   }
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
+  e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.2.0.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.1.0.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.2.0.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',()=>{if(current&&selected!==null){
     const c=current.conversations[selected];download(core.exportConversationHtml(c),'aml-conversation.html','text/html;charset=utf-8');
   }});

@@ -1,6 +1,6 @@
 {
   "name": "ai-memory-lifeboat",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Local-first ChatGPT export inspection and reading preview",
   "license": "MIT",
