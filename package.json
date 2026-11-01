@@ -1,0 +1,12 @@
+{
+  "name": "ai-memory-lifeboat",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first ChatGPT export inspection and reading preview",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/*.js",
+    "check": "node --check src/core.js && node --check src/zip.js && node --check src/app.js && npm test"
+  },
+  "engines": {"node": ">=20"}
+}

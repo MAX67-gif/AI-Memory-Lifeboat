@@ -1,0 +1,13 @@
+[
+  {
+    "id": "synthetic-demo-001",
+    "title": "Weather and a weekend plan (synthetic)",
+    "create_time": 1730000000,
+    "update_time": 1730000120,
+    "current_node": "reply",
+    "mapping": {
+      "prompt": {"id": "prompt", "parent": null, "children": ["reply"], "message": {"author": {"role": "user"}, "content": {"content_type": "text", "parts": ["What should I do if the weather is rainy?"]}, "create_time": 1730000000}},
+      "reply": {"id": "reply", "parent": "prompt", "children": [], "message": {"author": {"role": "assistant"}, "content": {"content_type": "text", "parts": ["Bring an umbrella and choose an indoor activity."]}, "create_time": 1730000120}}
+    }
+  }
+]
