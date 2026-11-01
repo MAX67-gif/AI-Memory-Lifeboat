@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.1.0 ZIP reader. Minimal central-directory reader.
+/* AI Memory Lifeboat v0.2.0 ZIP reader. Minimal central-directory reader.
  * No file extraction; bounded decompression; CRC check for target JSON.
  * Copyright (c) 2026 MAX67-gif. MIT.
  */
@@ -105,7 +105,10 @@
     if (p+30>bytes.byteLength || uint32(view,p)!==0x04034b50) fail('LOCAL_HEADER_INVALID');
     const nameLen=view.getUint16(p+26,true),extraLen=view.getUint16(p+28,true);
     const method=view.getUint16(p+8,true);
-    if (method!==e.method) fail('HEADER_MISMATCH');
+    const localFlags=view.getUint16(p+6,true);
+    if (method!==e.method || localFlags!==e.flags) fail('HEADER_MISMATCH');
+    const localName=decodeName(bytes.subarray(p+30,p+30+nameLen),localFlags);
+    if (localName!==e.name) fail('LOCAL_CENTRAL_NAME_MISMATCH');
     const dataStart=p+30+nameLen+extraLen;
     if (dataStart>bytes.length||dataStart+e.compressed>bytes.length) fail('DATA_OUT_OF_BOUNDS');
     const compressed=bytes.subarray(dataStart,dataStart+e.compressed);
@@ -116,7 +119,7 @@
     try {text=decoder.decode(unpacked);} catch (_) {fail('INVALID_UTF8_JSON');}
     let parsed;
     try {parsed=JSON.parse(text.replace(/^\uFEFF/,''));} catch (_) {fail('INVALID_JSON');}
-    return {parsed, entryCount:entries.length, targetPath:e.name};
+    return {parsed, entryCount:entries.length, targetPath:e.name, entries};
   }
   return Object.freeze({readEntries,getConversationsJson,crc32,MAX_ARCHIVE,MAX_UNPACKED_JSON});
 });

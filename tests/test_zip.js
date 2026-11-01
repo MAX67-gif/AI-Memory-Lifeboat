@@ -28,3 +28,8 @@ test('reject invalid central directory',()=>{const buf=fixture();const start=30+
 test('reject invalid JSON',async()=>{await assert.rejects(zip.getConversationsJson(fixture({payload:Buffer.from('not json')})),/ZIP_INVALID_JSON/);});
 test('bound archive size',()=>{assert.throws(()=>zip.readEntries(new Uint8Array(zip.MAX_ARCHIVE+1)),/ZIP_ARCHIVE_TOO_LARGE/);});
 test('target must be one supported filename',async()=>{const r=await zip.getConversationsJson(fixture({fileName:'export/conversations.json'}));assert.equal(r.targetPath,'export/conversations.json');});
+
+test('reject mismatch between local header path and central directory name',async()=>{
+  const data=fixture();data[30]='X'.charCodeAt(0);
+  await assert.rejects(zip.getConversationsJson(data),/ZIP_LOCAL_CENTRAL_NAME_MISMATCH/);
+});

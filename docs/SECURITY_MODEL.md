@@ -9,3 +9,5 @@
 **Availability:** huge JSON and many branches are intentionally bounded; inaccessible or malformed exports fail closed. Future work may use Web Workers and streaming processing after independent benchmarks.
 
 **Proof boundary:** synthetic fixtures and CI prove only tested behavior, not compatibility with all current vendor exports or safe restoration. Real export smoke tests require the user's explicit consent and remain local; never upload private exports to public CI.
+
+R2: no backend or model processing; diff summaries exclude user text/IDs/titles and file names. ZIP matching is strict relative-path metadata, NOT byte integrity. Two large exports may exceed device memory; fail closed rather than silently dropping records.

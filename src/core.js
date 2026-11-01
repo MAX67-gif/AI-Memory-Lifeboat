@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.1.0 — pure, offline, dependency-free parser.
+/* AI Memory Lifeboat v0.2.0 — pure, offline, dependency-free parser.
  * Copyright (c) 2026 MAX67-gif. MIT.
  * Never equate an export with a complete account backup.
  */
@@ -9,7 +9,7 @@
 })(typeof globalThis === 'object' ? globalThis : null, function () {
   'use strict';
   const SCHEMA = 'aml.audit.v1';
-  const VERSION = '0.1.0';
+  const VERSION = '0.2.0';
   const MAX_CONVERSATIONS = 30000;
   const MAX_NODES = 350000;
   const MAX_TEXT = 2_000_000;
@@ -77,7 +77,8 @@
       const ids = Object.keys(mapping);
       totalNodes += ids.length;
       if (totalNodes > MAX_NODES) throw new Error('TOO_MANY_MESSAGE_NODES');
-      const id = safeString(row.id, `index-${i}`);
+      const validSourceId = typeof row.id === 'string' && row.id.trim().length > 0;
+      const id = validSourceId ? row.id : `index-${i}`;
       if (seenConversationIds.has(id)) issues.add('DUPLICATE_CONVERSATION_ID', `index=${i}`);
       seenConversationIds.add(id);
       let messageCount = 0, refs = 0, opaque = 0;
@@ -102,7 +103,7 @@
           break;
         }
         visited.add(cursor);
-        const node = mapping[cursor];
+        const node = Object.prototype.hasOwnProperty.call(mapping,cursor) ? mapping[cursor] : null;
         if (!object(node)) {
           pathValid = false;
           missingParent++;
@@ -134,7 +135,7 @@
       const title = textLimit(safeString(row.title, 'Untitled conversation')).slice(0, 500);
       const createTime = nonNegNumber(row.create_time);
       const updateTime = nonNegNumber(row.update_time);
-      conversations.push({id, title, created:createTime, updated:updateTime,
+      conversations.push({id, identityStatus:validSourceId?'STABLE_ID_PROVIDED':'SYNTHETIC_INDEX_ONLY', title, created:createTime, updated:updateTime,
         messageNodes:messageCount, visibleMessages:active.length, excludedNodes:excluded,
         pathStatus:pathValid?'CURRENT_PATH_PRESENT':'CURRENT_PATH_UNAVAILABLE',
         referenceCount:refs, nonTextCount:opaque, messages:active});
@@ -161,6 +162,57 @@
     };
     return {audit, conversations};
   }
+
+  function assessArchiveReferences(raw, entries) {
+    // Conservative metadata-only relationship. A matching archive path does NOT prove bytes are valid.
+    if (!Array.isArray(raw) || !Array.isArray(entries)) throw new TypeError('INVALID_ARCHIVE_ASSESSMENT');
+    const counts=new Map();
+    let files=0,duplicates=0,declaredNonJson=0;
+    for(const e of entries){
+      if(!e||typeof e.name!=='string') continue;
+      if(e.name.endsWith('/'))continue;
+      files++;
+      counts.set(e.name,(counts.get(e.name)||0)+1);
+      if(!/(^|\/)conversations\.json$/.test(e.name))declaredNonJson++;
+    }
+    for(const v of counts.values())if(v>1)duplicates+=v-1;
+    const result={schema:'aml.archive-path-assessment.v1',verification:'ARCHIVE_METADATA_ONLY',
+      entries_total:entries.length,files_total:files,non_conversations_file_entries:declaredNonJson,
+      duplicate_entry_paths:duplicates,attachment_references_observed:0,
+      exact_path_candidates:0,matched_unique_paths:0,missing_explicit_paths:0,
+      ambiguous_paths:0,unverifiable_references:0,unsafe_path_references:0,
+      file_bytes_verified:false,attachment_bytes_extracted:false};
+    const safePath=s=>typeof s==='string'&&s.length>0&&s.length<=4096&&
+      !s.startsWith('/')&&!s.includes('\\')&&!s.includes('\0')&&!/^[a-zA-Z]:/.test(s)&&
+      !s.split('/').some(x=>x==='..'||x==='.'||x==='');
+    const observe=v=>{
+      result.attachment_references_observed++;
+      const p=object(v)?(typeof v.relative_path==='string'?v.relative_path:
+        typeof v.path==='string'?v.path:null):null;
+      if(p===null){result.unverifiable_references++;return;}
+      if(!safePath(p)){result.unsafe_path_references++;return;}
+      result.exact_path_candidates++;
+      const match=counts.get(p)||0;
+      if(match===1)result.matched_unique_paths++;
+      else if(match===0)result.missing_explicit_paths++;
+      else result.ambiguous_paths++;
+    };
+    for(const row of raw){
+      if(!object(row)||!object(row.mapping))continue;
+      for(const node of Object.values(row.mapping)){
+        const msg=node?.message;
+        if(!object(msg))continue;
+        const attachments=msg.metadata?.attachments;
+        if(Array.isArray(attachments))for(const a of attachments)observe(a);
+        const parts=msg.content?.parts;
+        if(Array.isArray(parts))for(const part of parts){
+          if(!object(part))continue;
+          if(['asset_pointer','image_asset_pointer','audio_asset_pointer','file_id'].some(k=>typeof part[k]==='string'))observe(part);
+        }
+      }
+    }
+    return result;
+  }
   function searchConversations(items, query) {
     const q = String(query||'').trim().toLocaleLowerCase();
     if (!q) return items;
@@ -181,5 +233,5 @@
       `<p><small>AI Memory Lifeboat ${VERSION} · ${escapeHtml(c.pathStatus)} · ${escapeHtml(formatTime(c.updated))}</small></p>`+
       '<p><strong>Partial reading view:</strong> only the exported current path is shown. Off-path branches, non-text data and unexported account content are NOT certified as preserved.</p>'+messages+'</body></html>';
   }
-  return Object.freeze({VERSION,SCHEMA,parseChatGPTExport,searchConversations,exportConversationHtml,formatTime,escapeHtml});
+  return Object.freeze({VERSION,SCHEMA,parseChatGPTExport,assessArchiveReferences,searchConversations,exportConversationHtml,formatTime,escapeHtml});
 });
