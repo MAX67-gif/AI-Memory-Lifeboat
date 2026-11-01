@@ -1,0 +1,30 @@
+'use strict';
+const test=require('node:test');const assert=require('node:assert/strict');
+const zlib=require('node:zlib');const fs=require('node:fs');const path=require('node:path');
+const zip=require('../src/zip.js');const core=require('../src/core.js');
+const sample=fs.readFileSync(path.join(__dirname,'../examples/sample-conversations.json'));
+function fixture({fileName='conversations.json',payload=sample,deflate=false, corrupt=false}={}){
+  const name=Buffer.from(fileName);const original=Buffer.from(payload);
+  const compressed=deflate?zlib.deflateRawSync(original):original;
+  const crc=zip.crc32(original);
+  const local=Buffer.alloc(30);local.writeUInt32LE(0x04034b50,0);local.writeUInt16LE(20,4);local.writeUInt16LE(deflate?8:0,8);
+  local.writeUInt32LE(crc,14);local.writeUInt32LE(compressed.length,18);local.writeUInt32LE(original.length,22);local.writeUInt16LE(name.length,26);
+  const central=Buffer.alloc(46);central.writeUInt32LE(0x02014b50,0);central.writeUInt16LE(20,4);central.writeUInt16LE(20,6);
+  central.writeUInt16LE(deflate?8:0,10);central.writeUInt32LE(corrupt?0:crc,16);central.writeUInt32LE(compressed.length,20);
+  central.writeUInt32LE(original.length,24);central.writeUInt16LE(name.length,28);
+  const offset=local.length+name.length+compressed.length;const end=Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50,0);end.writeUInt16LE(1,8);end.writeUInt16LE(1,10);
+  end.writeUInt32LE(central.length+name.length,12);end.writeUInt32LE(offset,16);
+  return new Uint8Array(Buffer.concat([local,name,compressed,central,name,end]));
+}
+test('CRC32 known vector',()=>assert.equal(zip.crc32(Buffer.from('123456789')),0xcbf43926));
+test('STORE ZIP exports parse',async()=>{const r=await zip.getConversationsJson(fixture());assert.equal(r.entryCount,1);assert.equal(core.parseChatGPTExport(r.parsed).audit.parsed_records,1);});
+test('DEFLATE ZIP exports parse',async()=>{const r=await zip.getConversationsJson(fixture({deflate:true}));assert.equal(r.entryCount,1);});
+test('reject corrupted CRC',async()=>{await assert.rejects(zip.getConversationsJson(fixture({corrupt:true})),/ZIP_CRC_MISMATCH/);});
+test('reject zip-slip path',async()=>{await assert.rejects(zip.getConversationsJson(fixture({fileName:'../conversations.json'})),/ZIP_UNSAFE_ENTRY_PATH/);});
+test('reject absolute path',()=>assert.throws(()=>zip.readEntries(fixture({fileName:'/conversations.json'})),/ZIP_UNSAFE_ENTRY_PATH/));
+test('reject missing target',async()=>{await assert.rejects(zip.getConversationsJson(fixture({fileName:'other.json'})),/ZIP_CONVERSATIONS_JSON_MISSING/);});
+test('reject invalid central directory',()=>{const buf=fixture();const start=30+Buffer.byteLength('conversations.json')+sample.length;buf[start]=0;assert.throws(()=>zip.readEntries(buf),/ZIP_INVALID_ENTRY_HEADER/);});
+test('reject invalid JSON',async()=>{await assert.rejects(zip.getConversationsJson(fixture({payload:Buffer.from('not json')})),/ZIP_INVALID_JSON/);});
+test('bound archive size',()=>{assert.throws(()=>zip.readEntries(new Uint8Array(zip.MAX_ARCHIVE+1)),/ZIP_ARCHIVE_TOO_LARGE/);});
+test('target must be one supported filename',async()=>{const r=await zip.getConversationsJson(fixture({fileName:'export/conversations.json'}));assert.equal(r.targetPath,'export/conversations.json');});

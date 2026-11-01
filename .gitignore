@@ -1,0 +1,17 @@
+node_modules/
+coverage/
+*.log
+*.zip
+*.bak
+.env
+.env.*
+!/.env.example
+private/
+PRIVATE_FULL/
+user_exports/
+chatgpt-export-*/
+conversations.json
+chat.html
+*.sqlite
+*.db
+.DS_Store
