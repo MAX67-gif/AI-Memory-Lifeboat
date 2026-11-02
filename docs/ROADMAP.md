@@ -6,7 +6,9 @@
 
 **R2 completed scope:** two user-selected export comparison and conservative ZIP path metadata review; synthetic tests only.
 
-**Possible V0.3:** improve ZIP streaming/large archive handling, richer attachment reference categories, CSV/JSON sidecar for other readers, accessibility testing, vendor format expansion only after reliable legal fixtures and independent review.
+**V0.3 completed scope (synthetic engineering validation):** deterministic, content-free priority/action health cards and an optional capped ZIP attachment byte CRC32 check. Not a recovery guarantee or source authentication.
+
+**Possible V0.4:** prove real-user completion and comprehension, independently test accessibility and improve unsupported export format diagnostics. Consider larger ZIP streaming and additional vendor formats only after owned fixtures and clear technical evidence. No default cloud upload.
 
 **Stop/pivot:** if users prefer existing readers, critical errors remain, or maintainers do not adopt checks, contribute improvements upstream rather than keep a redundant project.
 

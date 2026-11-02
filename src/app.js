@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.2.0 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.3.0 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -6,9 +6,11 @@
     search:$('searchBox'),resultCount:$('resultCount'),audit:$('downloadAudit'),html:$('downloadHtml'),
     olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
     compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
-    archiveAssessment:$('archiveAssessment')};
+    archiveAssessment:$('archiveAssessment'),healthSummary:$('healthSummary'),healthCards:$('healthCards'),
+    downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus')};
   const core=window.AMLCore, zip=window.AMLZip;
-  let current=null, older=null, compared=null, selected=null, generation=0;
+  let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
+  let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
   const MAX_JSON=64*1024*1024;
   const comparisonLabels={
     ONLY_IN_NEW_EXPORT:'只在新版匯出中出現',
@@ -34,7 +36,10 @@
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
   function reset(){
-    generation++;current=null;older=null;compared=null;selected=null;e.file.value='';e.olderFile.value='';e.olderFile.disabled=true;e.olderStatus.textContent='請先載入最新版匯出檔。';e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;e.search.value='';e.list.replaceChildren();
+    generation++;comparisonGeneration++;current=null;older=null;compared=null;selected=null;
+    currentFile=null;matchedAttachmentPaths=[];byteReport=null;healthReport=null;
+    e.verifyAttachments.disabled=true;e.attachmentVerifyStatus.textContent='請先載入 ZIP，才能進行選用檢查。';
+    e.file.value='';e.olderFile.value='';e.olderFile.disabled=true;e.olderStatus.textContent='請先載入最新版匯出檔。';e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;e.search.value='';e.list.replaceChildren();
     e.detail.textContent='';e.results.hidden=true;e.clear.disabled=true;e.html.disabled=true;
     status('已清除本頁載入的資料。');
   }
@@ -43,6 +48,22 @@
     const strong=document.createElement('strong');strong.textContent=Number(value).toLocaleString();
     const caption=document.createElement('span');caption.textContent=label;
     b.append(strong,caption);return b;
+  }
+  function renderHealth(){
+    if(!current)return;
+    healthReport=window.AMLHealth.evaluate(current.audit,{diff:compared?.summary||null,bytes:byteReport});
+    const labels={ATTENTION:'已發現需要處理的問題',REVIEW:'需要人工核對的範圍',LIMITED_CHECK_OK:'已支援範圍未發現明顯問題'};
+    e.healthSummary.textContent=labels[healthReport.overall]+'。僅限本工具已支援的檢查，不能證明完整備份。';
+    e.healthSummary.dataset.state=healthReport.overall;
+    e.healthCards.replaceChildren();
+    for(const check of healthReport.checks){
+      const box=document.createElement('article');box.className='health-card';box.dataset.priority=check.priority;
+      const h=document.createElement('h4');h.textContent=check.title;
+      const p=document.createElement('p');p.textContent=check.action;
+      box.append(h,p);
+      if(check.count!==undefined){const c=document.createElement('small');c.textContent=`本次觀察：${check.count} 項`;box.append(c);}
+      e.healthCards.append(box);
+    }
   }
   function renderAudit(){
     const a=current.audit;e.metrics.replaceChildren(
@@ -55,6 +76,7 @@
     if (!items.length) items.push('指定範圍內沒有發現警告。這不是帳戶備份完整性認證。');
     for(const text of items){const li=document.createElement('li');li.textContent=text;e.warnings.append(li);}
     e.warningCount.textContent=`(${a.warnings.length} 類)`;
+    renderHealth();
     const z=a.archive_path_assessment;
     e.archiveAssessment.hidden=!z;
     if(z){
@@ -110,6 +132,7 @@
       const opened=await zip.getConversationsJson(new Uint8Array(await file.arrayBuffer()));
       const parsed=core.parseChatGPTExport(opened.parsed,{zipEntryCount:opened.entryCount});
       parsed.audit.archive_path_assessment=core.assessArchiveReferences(opened.parsed,opened.entries);
+      parsed._exactAttachmentPaths=core.listUniqueExactAttachmentPaths(opened.parsed,opened.entries);
       if(parsed.audit.archive_path_assessment.missing_explicit_paths)
         parsed.audit.warnings.push('ARCHIVE_REFERENCES_WITHOUT_MATCHING_PATH');
       return parsed;
@@ -136,12 +159,14 @@
     }
     if(relevant.length>120){const li=document.createElement('li');li.textContent=`僅顯示前 120 項，另有 ${relevant.length-120} 項未顯示。摘要報告不包含對話名稱。`;fragment.append(li);}
     if(!relevant.length){const li=document.createElement('li');li.textContent='目前檢查範圍沒有發現差異，並非兩份備份完全相同。';fragment.append(li);}
-    e.compareList.append(fragment);
+    e.compareList.append(fragment);renderHealth();
   }
   async function importFile(file){
     if(!file)return;
-    const rev=++generation;
-    current=null;older=null;compared=null;selected=null;e.results.hidden=true;
+    const rev=++generation;comparisonGeneration++;
+    current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;
+    currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;
+    e.attachmentVerifyStatus.textContent='尚未進行位元組檢查。';e.results.hidden=true;
     e.html.disabled=true;e.clear.disabled=false;e.olderFile.disabled=true;e.olderFile.value='';
     e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;
     e.olderStatus.textContent='請先載入最新版匯出檔。';
@@ -150,41 +175,66 @@
       const parsed=await parseSource(file);
       if(rev!==generation)return;
       current=parsed;e.results.hidden=false;e.search.value='';
+      currentFile=file.name.toLowerCase().endsWith('.zip')?file:null;
+      matchedAttachmentPaths=parsed._exactAttachmentPaths||[];delete parsed._exactAttachmentPaths;
+      e.verifyAttachments.disabled=!currentFile||matchedAttachmentPaths.length===0;
+      e.attachmentVerifyStatus.textContent=!currentFile?'JSON 單檔無法檢查 ZIP 附件。':!matchedAttachmentPaths.length?'沒有可安全且唯一比對的附件路徑；沒有自動猜測。':`找到 ${matchedAttachmentPaths.length} 個不同的明確附件路徑，可選擇執行限額 CRC32 檢查。`; 
       e.olderFile.disabled=false;e.olderStatus.textContent='可選擇較早匯出的檔案進行比較。';
       renderAudit();renderList();
       status(`完成：已檢查 ${parsed.audit.input_records} 筆輸入紀錄；僅驗證本次匯出內容的支援範圍。`,'ok');
     }catch(err){
       if(rev!==generation)return;
-      current=null;e.results.hidden=true;
+      current=null;currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;e.results.hidden=true;
       const code=String(err?.message||'UNKNOWN_ERROR').replace(/[^\w\s-]/g,'').slice(0,150);
       status(`無法解析：${code}。請確認是官方匯出檔；原始檔未被修改。`,'error');
     }
   }
   async function importOlder(file){
     if(!file||!current)return;
-    const rev=++generation;
+    const rev=++comparisonGeneration, sourceRev=generation;
     e.olderStatus.textContent='正在本機比較兩份匯出…';
     older=null;compared=null;e.comparePanel.hidden=true;
     try{
       const parsed=await parseSource(file);
-      if(rev!==generation)return;
+      if(rev!==comparisonGeneration||sourceRev!==generation)return;
       older=parsed;compared=window.AMLCompare.compareSnapshots(parsed,current);
       renderComparison();e.olderStatus.textContent='比對完成：匯出日期與帳戶是否相同，均由使用者自行確認。';
     }catch(err){
-      if(rev!==generation)return;
-      e.comparePanel.hidden=true;compared=null;older=null;
+      if(rev!==comparisonGeneration||sourceRev!==generation)return;
+      e.comparePanel.hidden=true;compared=null;older=null;if(current)renderHealth();
       const code=String(err?.message||'UNKNOWN_ERROR').replace(/[^\w\s-]/g,'').slice(0,150);
       e.olderStatus.textContent=`舊版匯出無法解析：${code}。最新版閱讀不受影響。`;
     }
   }
+  async function verifyAttachments(){
+    if(!current||!currentFile||!matchedAttachmentPaths.length)return;
+    const rev=generation;
+    e.verifyAttachments.disabled=true;e.attachmentVerifyStatus.textContent='正在本機檢查有限的 ZIP 附件位元組…';
+    try{
+      const bytes=new Uint8Array(await currentFile.arrayBuffer());
+      if(rev!==generation)return;
+      const report=await zip.verifyMatchedAttachments(bytes,matchedAttachmentPaths);
+      if(rev!==generation)return;
+      byteReport=report;current.audit.attachment_byte_assessment=report;
+      e.attachmentVerifyStatus.textContent=`檢查 ${report.checked_entries} 項，其中 CRC32 符合 ${report.bytes_crc32_verified} 項、失敗 ${report.failed_integrity} 項；因大小／格式／總量等限制跳過 ${report.skipped_size+report.skipped_budget+report.skipped_method+report.skipped_unsafe} 項。CRC 正確不代表原始附件完整或可信。`;
+      renderHealth();
+    }catch(err){
+      if(rev!==generation)return;
+      byteReport=null;
+      const code=String(err?.message||'CHECK_UNAVAILABLE').replace(/[^A-Za-z0-9_-]/g,'').slice(0,90);
+      e.attachmentVerifyStatus.textContent=`附件位元組檢查無法完成（${code}）；不能視為已驗證。`;
+    }finally{if(rev===generation)e.verifyAttachments.disabled=false;}
+  }
+  e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify(healthReport,null,2),'aml-health-v0.3.0.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.2.0.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.3.0.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.2.0.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.3.0.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',()=>{if(current&&selected!==null){
     const c=current.conversations[selected];download(core.exportConversationHtml(c),'aml-conversation.html','text/html;charset=utf-8');
   }});

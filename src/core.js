@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.2.0 — pure, offline, dependency-free parser.
+/* AI Memory Lifeboat v0.3.0 — pure, offline, dependency-free parser.
  * Copyright (c) 2026 MAX67-gif. MIT.
  * Never equate an export with a complete account backup.
  */
@@ -9,7 +9,7 @@
 })(typeof globalThis === 'object' ? globalThis : null, function () {
   'use strict';
   const SCHEMA = 'aml.audit.v1';
-  const VERSION = '0.2.0';
+  const VERSION = '0.3.0';
   const MAX_CONVERSATIONS = 30000;
   const MAX_NODES = 350000;
   const MAX_TEXT = 2_000_000;
@@ -163,6 +163,39 @@
     return {audit, conversations};
   }
 
+  function visitAttachmentReferences(raw, visit) {
+    if(!Array.isArray(raw))throw new TypeError('INVALID_ARCHIVE_REFERENCE_SOURCE');
+    for(const row of raw){
+      if(!object(row)||!object(row.mapping))continue;
+      for(const node of Object.values(row.mapping)){
+        const msg=node?.message;
+        if(!object(msg))continue;
+        const attachments=msg.metadata?.attachments;
+        if(Array.isArray(attachments))for(const a of attachments)visit(a);
+        const parts=msg.content?.parts;
+        if(Array.isArray(parts))for(const part of parts){
+          if(!object(part))continue;
+          if(['asset_pointer','image_asset_pointer','audio_asset_pointer','file_id'].some(k=>typeof part[k]==='string'))visit(part);
+        }
+      }
+    }
+  }
+  const safeArchivePath=s=>typeof s==='string'&&s.length>0&&s.length<=4096&&
+      !s.startsWith('/')&&!s.includes('\\')&&!s.includes('\0')&&!/^[a-zA-Z]:/.test(s)&&
+      !/^[a-z][a-z0-9+.-]*:/i.test(s)&&!s.split('/').some(x=>x==='..'||x==='.'||x==='');
+  const relativePath=v=>object(v)?(typeof v.relative_path==='string'?v.relative_path:
+    typeof v.path==='string'?v.path:null):null;
+  function listUniqueExactAttachmentPaths(raw, entries) {
+    if(!Array.isArray(entries))throw new TypeError('INVALID_ARCHIVE_REFERENCE_ENTRIES');
+    const counts=new Map();
+    for(const e of entries)if(e&&typeof e.name==='string'&&!e.name.endsWith('/'))counts.set(e.name,(counts.get(e.name)||0)+1);
+    const paths=new Set();
+    visitAttachmentReferences(raw,v=>{
+      const p=relativePath(v);
+      if(safeArchivePath(p)&&counts.get(p)===1)paths.add(p);
+    });
+    return [...paths];  // Source paths remain private in-memory; never include in downloaded reports.
+  }
   function assessArchiveReferences(raw, entries) {
     // Conservative metadata-only relationship. A matching archive path does NOT prove bytes are valid.
     if (!Array.isArray(raw) || !Array.isArray(entries)) throw new TypeError('INVALID_ARCHIVE_ASSESSMENT');
@@ -182,35 +215,18 @@
       exact_path_candidates:0,matched_unique_paths:0,missing_explicit_paths:0,
       ambiguous_paths:0,unverifiable_references:0,unsafe_path_references:0,
       file_bytes_verified:false,attachment_bytes_extracted:false};
-    const safePath=s=>typeof s==='string'&&s.length>0&&s.length<=4096&&
-      !s.startsWith('/')&&!s.includes('\\')&&!s.includes('\0')&&!/^[a-zA-Z]:/.test(s)&&
-      !s.split('/').some(x=>x==='..'||x==='.'||x==='');
     const observe=v=>{
       result.attachment_references_observed++;
-      const p=object(v)?(typeof v.relative_path==='string'?v.relative_path:
-        typeof v.path==='string'?v.path:null):null;
+      const p=relativePath(v);
       if(p===null){result.unverifiable_references++;return;}
-      if(!safePath(p)){result.unsafe_path_references++;return;}
+      if(!safeArchivePath(p)){result.unsafe_path_references++;return;}
       result.exact_path_candidates++;
       const match=counts.get(p)||0;
       if(match===1)result.matched_unique_paths++;
       else if(match===0)result.missing_explicit_paths++;
       else result.ambiguous_paths++;
     };
-    for(const row of raw){
-      if(!object(row)||!object(row.mapping))continue;
-      for(const node of Object.values(row.mapping)){
-        const msg=node?.message;
-        if(!object(msg))continue;
-        const attachments=msg.metadata?.attachments;
-        if(Array.isArray(attachments))for(const a of attachments)observe(a);
-        const parts=msg.content?.parts;
-        if(Array.isArray(parts))for(const part of parts){
-          if(!object(part))continue;
-          if(['asset_pointer','image_asset_pointer','audio_asset_pointer','file_id'].some(k=>typeof part[k]==='string'))observe(part);
-        }
-      }
-    }
+    visitAttachmentReferences(raw,observe);
     return result;
   }
   function searchConversations(items, query) {
@@ -233,5 +249,5 @@
       `<p><small>AI Memory Lifeboat ${VERSION} · ${escapeHtml(c.pathStatus)} · ${escapeHtml(formatTime(c.updated))}</small></p>`+
       '<p><strong>Partial reading view:</strong> only the exported current path is shown. Off-path branches, non-text data and unexported account content are NOT certified as preserved.</p>'+messages+'</body></html>';
   }
-  return Object.freeze({VERSION,SCHEMA,parseChatGPTExport,assessArchiveReferences,searchConversations,exportConversationHtml,formatTime,escapeHtml});
+  return Object.freeze({VERSION,SCHEMA,parseChatGPTExport,assessArchiveReferences,listUniqueExactAttachmentPaths,searchConversations,exportConversationHtml,formatTime,escapeHtml});
 });

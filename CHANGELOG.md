@@ -1,4 +1,11 @@
-# CHANGELOG
+# Changelog
+
+## v0.3.0 Preview — 2026-11-02
+
+- Add deterministic, content-free `aml.health.v1` user guidance with attention/review/limited-scope statuses and clear next actions.
+- Add optional on-demand, bounded CRC32/size checks for exact, unique ZIP attachment paths (`aml.attachment-bytes.v1`). Never treat CRC32 as authenticity or complete backup evidence.
+- Keep R2 snapshot comparison, metadata-only path assessment, offline search, individual HTML export, privacy and legacy audit schemas.
+- Add negative, privacy and ZIP-adversarial tests; no account restoration or cloud features.
 
 ## v0.2.0 Preview — 2026-11-01
 
@@ -6,8 +13,6 @@
 - Added conservative ZIP central-directory vs explicit relative attachment-path assessment, without extracting attachment bytes or guessing by filenames.
 - Added synthetic two-export fixtures, schema docs, privacy guards and browser-level checks.
 - Retained existing v0.1.0 reading/searching/HTML export; no cloud AI, telemetry or account restoration.
-
-# Changelog
 
 ## 0.1.0-preview — 2026-11-01
 

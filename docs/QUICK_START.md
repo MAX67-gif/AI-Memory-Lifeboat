@@ -7,3 +7,6 @@
 ## What it cannot do
 
 It does **not** restore an AI account, import into a different provider, certify all attachments, or prove complete export coverage. Files containing real conversations are sensitive and must not be submitted to public GitHub Issues or PRs.
+
+
+R3：載入備份後先讀「下一步怎麼做？」卡片。若是 ZIP 且有明確附件相對路徑，可自行選擇「檢查可比對的 ZIP 附件」，結果只代表少量 ZIP 項目的 CRC32 是否符合。下載健康指引 JSON 不含對話原文；下載單篇 HTML 仍包含原文，請勿上傳公開網站。

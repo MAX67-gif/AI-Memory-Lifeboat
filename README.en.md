@@ -4,7 +4,7 @@
 
 **Read and inspect a supported ChatGPT data export locally.** Import your own `conversations.json` or an official ZIP containing exactly one such file. Search visible messages along the current conversation path, download a metadata-only audit, or export one conversation path as standalone HTML.
 
-**v0.2.0 Preview (2026-11-01).** This tool cannot establish that all account data was exported, that linked attachments actually exist, that non-text content is preserved, or that the resulting files can be imported into another AI platform. **Keep the original official export.**
+**v0.3.0 Preview (2026-11-02).** This tool cannot establish that all account data was exported, that linked attachments actually exist, that non-text content is preserved, or that the resulting files can be imported into another AI platform. **Keep the original official export.**
 
 ## Start without installation
 
@@ -30,3 +30,11 @@ MIT © 2026 MAX67-gif. Independent project, not affiliated with OpenAI or other 
 Load the **newer** official ChatGPT ZIP/JSON first, then optionally select the **older** export. View added-in-export, missing-from-export, changed current reading path and inconclusive statuses. Missing in the newer export does **not** prove deletion from the account. Comparison does not verify that both files belong to the same account or their chronology.
 
 ZIP attachment checking is **directory-path metadata only**, not proof of file byte integrity. Only a unique explicit relative path counts as a possible match. No guessed basename associations. Downloaded comparison JSON includes counts and fixed warning codes only, not titles, conversation IDs, attachment paths or chat text. Use [synthetic newer](examples/sample-newer.json) and [synthetic older](examples/sample-older.json) to practice. See [comparison limitations](docs/SNAPSHOT_COMPARISON.md) and [archive limits](docs/ARCHIVE_PATH_ASSESSMENT.md).
+
+## R3: Next-step health guidance and optional ZIP byte check
+
+After importing an export, the local browser now displays priority-based, fixed-text guidance derived from supported structural checks. Downloadable `aml.health.v1` JSON contains only fixed messages, counters and status codes—not titles, conversation IDs, message text or file paths. `LIMITED_CHECK_OK` never means the account is fully backed up.
+
+For ZIP exports with unique, explicit relative attachment paths, an **optional** button checks CRC32 on at most 24 entries (4 MiB per entry, 16 MiB total) without writing attachment content to disk. This only checks internal ZIP byte consistency. It **cannot** establish that the original uploaded files or every account attachment exists. Failed, skipped, missing, ambiguous and unsupported cases are kept distinct. See [R3 scope](docs/HEALTH_AND_BYTE_VERIFICATION.md).
+
+No server, sign-in, cloud AI or network upload is introduced. Browser memory limits remain relevant. Preserve the original export.
