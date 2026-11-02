@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.3.0 — pure, offline, dependency-free parser.
+/* AI Memory Lifeboat v0.4.0 — pure, offline, dependency-free parser.
  * Copyright (c) 2026 MAX67-gif. MIT.
  * Never equate an export with a complete account backup.
  */
@@ -9,7 +9,7 @@
 })(typeof globalThis === 'object' ? globalThis : null, function () {
   'use strict';
   const SCHEMA = 'aml.audit.v1';
-  const VERSION = '0.3.0';
+  const VERSION = '0.4.0';
   const MAX_CONVERSATIONS = 30000;
   const MAX_NODES = 350000;
   const MAX_TEXT = 2_000_000;

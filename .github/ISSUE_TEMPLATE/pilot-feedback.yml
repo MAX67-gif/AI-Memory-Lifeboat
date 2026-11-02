@@ -1,0 +1,58 @@
+name: First-use feedback / 首次使用回饋
+description: Voluntary, fixed-choice feedback with no chat exports, content or personal details.
+title: "[First-use feedback] R4 preview"
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying AI Memory Lifeboat. **Do not submit real export ZIP/JSON, conversation text, titles, account IDs, screenshots, file paths or secrets.** GitHub issues reveal your GitHub account. Submitting is optional.
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Source mode / 試用來源
+      options:
+        - SYNTHETIC_DEMO
+        - PERSONAL_EXPORT
+    validations:
+      required: true
+  - type: dropdown
+    id: ease
+    attributes:
+      label: Task ease / 操作難度
+      options:
+        - EASY
+        - NEEDED_HELP
+        - COULD_NOT_FINISH
+        - NOT_TESTED
+    validations:
+      required: true
+  - type: dropdown
+    id: clarity
+    attributes:
+      label: Result clarity / 結果清楚程度
+      options:
+        - CLEAR
+        - NEEDS_EXPLANATION
+        - CONFUSING
+        - NOT_TESTED
+    validations:
+      required: true
+  - type: dropdown
+    id: reuse
+    attributes:
+      label: Likely reuse / 再次使用意願
+      options:
+        - YES
+        - MAYBE
+        - NO
+        - NOT_TESTED
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirm / 提交前確認
+      options:
+        - label: I understand this public issue must not include private content, exports or identifying metadata.
+          required: true

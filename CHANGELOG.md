@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.0 Preview — 2026-11-02
+
+- Add a **one-click, entirely synthetic** first-use walkthrough for health guidance, local searching and two-export comparison; clearly label that it does not inspect any personal account.
+- Add an optional 3-question **local-only feedback receipt** (`aml.pilot-feedback.v1`): strict enumerated values, no free text, filenames, IDs, device info or timestamps, and **no automatic submission**.
+- Add bilingual onboarding, the first-user pilot protocol, privacy contract, GitHub voluntary issue form and synthetic negative/adversarial tests.
+- Preserve R3 attachment byte checks, health guidance and R2 comparisons; no new provider credentials, network calls or hidden telemetry.
+- **No verified human participation/adoption yet.** Synthetic and browser tests do not count as real-user evidence.
+
 ## v0.3.0 Preview — 2026-11-02
 
 - Add deterministic, content-free `aml.health.v1` user guidance with attention/review/limited-scope statuses and clear next actions.

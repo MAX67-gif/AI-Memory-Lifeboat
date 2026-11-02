@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.3.0 — bounded, title-free snapshot comparison summary.
+/* AI Memory Lifeboat v0.4.0 — bounded, title-free snapshot comparison summary.
  * Difference of visible exported current paths only. NOT account deletion detection.
  * MIT (c) 2026 MAX67-gif.
  */
@@ -53,7 +53,7 @@
       const metadataChanged=olderRow.title!==newerRow.title||olderRow.created!==newerRow.created||olderRow.updated!==newerRow.updated;
       add(metadataChanged?'METADATA_ONLY_CHANGED':'NO_DETECTED_CURRENT_VIEW_CHANGE',newerRow);
     }
-    const summary={schema:SCHEMA,tool_version:'0.3.0',
+    const summary={schema:SCHEMA,tool_version:'0.4.0',
       inputs:'USER_SELECTED_ORDER_NOT_VERIFIED',
       identity_scope:'ONLY_RECORDS_WITH_UNIQUE_EXPLICIT_CONVERSATION_ID',
       comparison_scope:'EXPORTED_CURRENT_PATH_TEXT_AND_COUNTS_PLUS_SELECTED_METADATA',

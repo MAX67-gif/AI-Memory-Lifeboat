@@ -4,9 +4,11 @@
 
 **匯入自己的 ChatGPT 官方資料匯出 ZIP 或 `conversations.json`，在瀏覽器本機檢查可讀的對話、搜尋目前分支、比較兩次匯出、檢查 ZIP 中明確附件路徑、選擇性檢查小型附件 CRC32、查看下一步健康指引，下載檢查報告及單篇 HTML。** 免費、MIT 開源、無帳號、無第三方模型與分析 SDK。
 
-> **v0.3.0 Preview（2026-11-02）。** 這不是完整備份認證：無法證明帳戶所有資料或附件均已匯出、不能還原原平台的對話、記憶、檔案或工具狀態。保留原始官方 ZIP；不要只保留本工具輸出的 HTML。
+> **v0.4.0 Preview（2026-11-02）。** 這不是完整備份認證：無法證明帳戶所有資料或附件均已匯出、不能還原原平台的對話、記憶、檔案或工具狀態。保留原始官方 ZIP；不要只保留本工具輸出的 HTML。
 
 ## 三步開始
+
+**首次體驗：**解壓、開啟 `index.html`，先按「試用合成示範」。不必提供自己的聊天資料；合成示範不算真人採用或帳戶驗證。詳細見 [R4 首次任務與自願回饋](docs/FIRST_RESULT_PILOT.md)。
 
 1. 從 [GitHub 專案頁](https://github.com/MAX67-gif/AI-Memory-Lifeboat) 選 **Code → Download ZIP**，解壓後開啟根目錄 `index.html`。（專案尚未宣稱 GitHub Pages 已啟用。）
 2. 透過 [ChatGPT 官方資料匯出教學](https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data) 取得自己的 ZIP，或準備其中的 `conversations.json`。將檔案選入工具。
@@ -14,7 +16,7 @@
 
 [用合成範例練習](examples/sample-conversations.json) · [新版合成資料](examples/sample-newer.json) · [舊版合成資料](examples/sample-older.json)：此檔全為專案原創假資料，無真實使用者對話。
 
-## V0.3.0 已實作
+## V0.4.0 已實作
 
 | 內容 | 目前支持 | 未支持或限制 |
 | --- | --- | --- |
@@ -25,6 +27,8 @@
 | ZIP 路徑 | 明確的相對路徑與 ZIP 中唯一檔案項目比對 | 不猜檔名；路徑存在不等於內容完整 |
 | 選用 CRC32 | 明確且唯一的 ZIP 附件路徑中，最多 24 個項目／每項 4 MiB／合計 16 MiB，檢查 ZIP 內部 CRC32 與尺寸 | 不證明來源附件相同；不核對全部檔案；CRC32 非加密安全驗證 |
 | 健康指引 | 從結構警告、路徑、選用位元組檢查和快照差異產生固定指引；下載不含原文的 JSON | 不是完整性、安全或可還原性證書 |
+| 合成試用 | 首頁一鍵載入兩份原創合成對話，展示健康指引、差異與搜尋 | 絕非個人帳戶體檢或真人使用紀錄 |
+| 自願回饋 | 本機下載 3 道固定選項的 JSON；沒有自動傳送、未收集原文 | 實際提交須由使用者自行決定，且先檢查檔案 |
 | 搜尋 | 目前分支的標題與可讀文字，本機執行 | 不搜尋其他分支或非文字內容 |
 | 匯出 | 不含聊天原文的 Audit JSON、單篇目前分支 HTML | 不能用這些檔案還原 ChatGPT 帳戶 |
 | 大小 | ZIP 最多 128 MiB、其中目標 JSON 最多 64 MiB；JSON 單檔 64 MiB | 大量大型附件的匯出包可能不適用 |
@@ -34,9 +38,9 @@
 ## 工程與維護
 
 - Node 20+，不需要 `npm install`：`npm test`、`npm run check`。
-- 純函式解析器：`src/core.js`；限額 ZIP 檢查：`src/zip.js`；健康指引：`src/health.js`；介面：`src/app.js`。
+- 純函式解析器：`src/core.js`；限額 ZIP 檢查：`src/zip.js`；健康指引：`src/health.js`；合成示範：`src/demo.js`；回饋白名單：`src/pilot.js`；介面：`src/app.js`。
 - GitHub Actions：每個 PR 的 `verify` 項目。測試資料**只含合成資料**。
-- 參閱 [R3 健康指引與限額 CRC32 檢查](docs/HEALTH_AND_BYTE_VERIFICATION.md)、[兩次匯出比對說明](docs/SNAPSHOT_COMPARISON.md)、[附件路徑覆蓋限制](docs/ARCHIVE_PATH_ASSESSMENT.md) 與 [安全模型](docs/SECURITY_MODEL.md)、[範圍與驗收](docs/PRODUCT_SCOPE.md)、[路線圖](docs/ROADMAP.md) 與 [貢獻指南](CONTRIBUTING.md)。
+- 參閱 [R3 健康指引與限額 CRC32 檢查](docs/HEALTH_AND_BYTE_VERIFICATION.md)、[兩次匯出比對說明](docs/SNAPSHOT_COMPARISON.md)、[附件路徑覆蓋限制](docs/ARCHIVE_PATH_ASSESSMENT.md) 與 [安全模型](docs/SECURITY_MODEL.md)、[範圍與驗收](docs/PRODUCT_SCOPE.md)、[路線圖](docs/ROADMAP.md) 與 [貢獻指南](CONTRIBUTING.md)、[無個資回饋契約](docs/PILOT_PRIVACY_CONTRACT.md)。
 
 ## 協作與誠實標示
 

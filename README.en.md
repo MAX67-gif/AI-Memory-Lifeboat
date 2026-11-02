@@ -1,40 +1,23 @@
 # AI Memory Lifeboat
 
-[繁體中文](README.md) · [Quick start](docs/QUICK_START.md) · [Privacy](PRIVACY.md) · [Security](SECURITY.md)
+[繁體中文](README.md) · [Getting started](docs/QUICK_START.md) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Pilot protocol](docs/FIRST_RESULT_PILOT.md)
 
-**Read and inspect a supported ChatGPT data export locally.** Import your own `conversations.json` or an official ZIP containing exactly one such file. Search visible messages along the current conversation path, download a metadata-only audit, or export one conversation path as standalone HTML.
+**Open a supported ChatGPT export locally, examine readable conversation structures, search current branches, compare two snapshots, inspect limited ZIP attachment references, and download a content-free health guide.** No sign-in, uploads, tracking SDKs or third-party model API is required.
 
-**v0.3.0 Preview (2026-11-02).** This tool cannot establish that all account data was exported, that linked attachments actually exist, that non-text content is preserved, or that the resulting files can be imported into another AI platform. **Keep the original official export.**
+**v0.4.0 Preview (2026-11-02).** This is **not** a complete-account backup checker, cross-provider account migration service, or guarantee that original attachments have been exported. Keep the source ZIP or JSON.
 
-## Start without installation
+## First use — no personal data required
 
-1. Download this repository as a ZIP via **Code → Download ZIP**, unpack it, and open `index.html`. We do not claim that a hosted GitHub Pages site is enabled.
-2. Follow the [official ChatGPT export instructions](https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data), or try the wholly synthetic [example](examples/sample-conversations.json).
-3. Choose a file, inspect the reported limitations, search the current paths, and export an audit or single-conversation HTML if needed.
+1. Download this repo via **Code → Download ZIP** and unzip. Open the included `index.html` in your browser. A hosted site is not promised.
+2. Press **試用合成示範** (Try synthetic demo). The tool loads two fictional export examples locally. Explore the health guidance, comparison and conversation search. This is not a test of any real account.
+3. To inspect your **own** export, obtain the official [ChatGPT export](https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data), choose the ZIP or `conversations.json` file, and read the reported limitations. Do not upload your export to GitHub issues.
 
-No registration, external models, analytics SDKs, or application-side upload endpoints. The implementation uses local browser APIs. The web host and any browser extensions have their own privacy properties; read [PRIVACY.md](PRIVACY.md).
+## R4 first-user pilot
 
-## Scope
+The browser offers an **optional three-question local feedback receipt** (ease, clarity, likely reuse). Exporting that receipt only downloads JSON to the user's own device. No feedback is automatically submitted, no conversation or filename enters the receipt, and the user decides whether to share it. A [GitHub issue form](https://github.com/MAX67-gif/AI-Memory-Lifeboat/issues/new?template=pilot-feedback.yml) is available for voluntary feedback; a GitHub account may be required and posting publicly exposes the reviewer's GitHub identity. Read the [pilot instructions](docs/FIRST_RESULT_PILOT.md) and [privacy contract](docs/PILOT_PRIVACY_CONTRACT.md).
 
-- Supports the documented-in-this-project ChatGPT `mapping` / `parent` / `current_node` structure, STORE/DEFLATE ZIP, CRC checks and input limits.
-- Explicitly counts off-path nodes and opaque parts instead of fabricating a flat history.
-- Does not support all export formats, ZIP64, encrypted ZIP, restored account history, attachment restoration, or authenticated live integrations.
-- Audit JSON contains counts and structural issue codes, not message texts. Exported conversation HTML **does** contain selected message texts and must be stored carefully.
+The main functionality from v0.3.0 is retained: ChatGPT `mapping`/`parent`/`current_node` parsing, bounded STORE/DEFLATE ZIP support, current-path searching and HTML export, two-export comparisons, metadata-only attachment path assessment, and opt-in size-capped CRC32 checks. Unknown formats, off-branch text, original attachment completeness and account reconstruction remain unsupported.
 
-Developers: Node.js 20+, `npm test` (no dependencies). See [format contract](docs/FORMAT_SUPPORT.md), [security model](docs/SECURITY_MODEL.md), [roadmap](docs/ROADMAP.md), [contributing](CONTRIBUTING.md).
+All tests use **fictional synthetic fixtures**. Node.js 20+ is needed only for development (`npm test`, no dependencies). See [format limitations](docs/FORMAT_SUPPORT.md), [security model](docs/SECURITY_MODEL.md), [roadmap](docs/ROADMAP.md), and [contributing guide](CONTRIBUTING.md).
 
-MIT © 2026 MAX67-gif. Independent project, not affiliated with OpenAI or other platform providers. No real user data is committed.
-
-## v0.2.0 — optional two-export comparison
-
-Load the **newer** official ChatGPT ZIP/JSON first, then optionally select the **older** export. View added-in-export, missing-from-export, changed current reading path and inconclusive statuses. Missing in the newer export does **not** prove deletion from the account. Comparison does not verify that both files belong to the same account or their chronology.
-
-ZIP attachment checking is **directory-path metadata only**, not proof of file byte integrity. Only a unique explicit relative path counts as a possible match. No guessed basename associations. Downloaded comparison JSON includes counts and fixed warning codes only, not titles, conversation IDs, attachment paths or chat text. Use [synthetic newer](examples/sample-newer.json) and [synthetic older](examples/sample-older.json) to practice. See [comparison limitations](docs/SNAPSHOT_COMPARISON.md) and [archive limits](docs/ARCHIVE_PATH_ASSESSMENT.md).
-
-## R3: Next-step health guidance and optional ZIP byte check
-
-After importing an export, the local browser now displays priority-based, fixed-text guidance derived from supported structural checks. Downloadable `aml.health.v1` JSON contains only fixed messages, counters and status codes—not titles, conversation IDs, message text or file paths. `LIMITED_CHECK_OK` never means the account is fully backed up.
-
-For ZIP exports with unique, explicit relative attachment paths, an **optional** button checks CRC32 on at most 24 entries (4 MiB per entry, 16 MiB total) without writing attachment content to disk. This only checks internal ZIP byte consistency. It **cannot** establish that the original uploaded files or every account attachment exists. Failed, skipped, missing, ambiguous and unsupported cases are kept distinct. See [R3 scope](docs/HEALTH_AND_BYTE_VERIFICATION.md).
-
-No server, sign-in, cloud AI or network upload is introduced. Browser memory limits remain relevant. Preserve the original export.
+MIT © 2026 MAX67-gif. Independent, unaffiliated open-source prototype. No real-user pilot/adoption results have been verified yet; passing CI is not adoption evidence.
