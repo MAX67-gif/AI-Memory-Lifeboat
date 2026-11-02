@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.2.0 ZIP reader. Minimal central-directory reader.
+/* AI Memory Lifeboat v0.3.0 ZIP reader. Minimal central-directory reader.
  * No file extraction; bounded decompression; CRC check for target JSON.
  * Copyright (c) 2026 MAX67-gif. MIT.
  */
@@ -70,7 +70,7 @@
     if (p!==offset+size) fail('CENTRAL_DIRECTORY_TRAILING_BYTES');
     return entries;
   }
-  async function inflateRawLimited(data, claimedSize) {
+  async function inflateRawLimited(data, claimedSize, limit = MAX_UNPACKED_JSON) {
     if (typeof DecompressionStream !== 'function') fail('BROWSER_DEFLATE_UNAVAILABLE');
     let stream;
     try { stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw')); }
@@ -83,7 +83,7 @@
         const {done,value}=await reader.read();
         if (done) break;
         total+=value.byteLength;
-        if (total>MAX_UNPACKED_JSON||total>claimedSize) { await reader.cancel().catch(()=>{}); fail('EXPANSION_LIMIT'); }
+        if (total>limit||total>claimedSize) { await reader.cancel().catch(()=>{}); fail('EXPANSION_LIMIT'); }
         chunks.push(value);
       }
     } catch(e) { if (String(e.message).startsWith('ZIP_')) throw e; fail('DEFLATE_FAILED'); }
@@ -121,5 +121,67 @@
     try {parsed=JSON.parse(text.replace(/^\uFEFF/,''));} catch (_) {fail('INVALID_JSON');}
     return {parsed, entryCount:entries.length, targetPath:e.name, entries};
   }
-  return Object.freeze({readEntries,getConversationsJson,crc32,MAX_ARCHIVE,MAX_UNPACKED_JSON});
+  const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024;
+  const MAX_ATTACHMENT_TOTAL = 16 * 1024 * 1024;
+  const MAX_ATTACHMENT_ENTRIES = 24;
+  async function verifyMatchedAttachments(bytes, paths) {
+    if (!(bytes instanceof Uint8Array) || !Array.isArray(paths)) throw new TypeError('INVALID_ATTACHMENT_VERIFY_INPUT');
+    const entries = readEntries(bytes);
+    const result={schema:'aml.attachment-bytes.v1',tool_version:'0.3.0',
+      verification:'LIMITED_ZIP_ENTRY_CRC32_ONLY',account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
+      requested_unique_paths:0,unique_matching_entries:0,bytes_crc32_verified:0,
+      failed_integrity:0,skipped_size:0,skipped_budget:0,skipped_method:0,skipped_unsafe:0,
+      checked_uncompressed_bytes:0,checked_entries:0,
+      content_matches_original_source:'NOT_PROVEN',file_paths_in_report:false,
+      notes:['CRC32_CHECKS_ARCHIVE_INTERNAL_CONSISTENCY_NOT_AUTHENTICITY',
+        'NO_PROOF_OF_ORIGINAL_UPLOADS_OR_ALL_ACCOUNT_ATTACHMENTS',
+        'OVERSIZE_UNSUPPORTED_AND_UNMATCHED_FILES_NOT_VERIFIED']};
+    // No paths are returned or logged. Only distinct, explicit safe paths may enter the bounded scanner.
+    const unique=new Set(paths);
+    result.requested_unique_paths=unique.size;
+    const matched=new Map();
+    for(const entry of entries){
+      if(unique.has(entry.name)){
+        if(!matched.has(entry.name))matched.set(entry.name,[]);
+        matched.get(entry.name).push(entry);
+      }
+    }
+    const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+    let budget=0,seen=0;
+    for(const name of unique){
+      if(typeof name!=='string'||!safeName(name)||name.endsWith('/')){result.skipped_unsafe++;continue;}
+      const group=matched.get(name)||[];
+      if(group.length!==1){result.skipped_unsafe++;continue;}
+      const entry=group[0];result.unique_matching_entries++;
+      if(seen++>=MAX_ATTACHMENT_ENTRIES){result.skipped_budget++;continue;}
+      if(entry.flags&1 || ![0,8].includes(entry.method)){result.skipped_method++;continue;}
+      if(entry.unpacked>MAX_ATTACHMENT_BYTES){result.skipped_size++;continue;}
+      if(budget+entry.unpacked>MAX_ATTACHMENT_TOTAL){result.skipped_budget++;continue;}
+      budget+=entry.unpacked;
+      result.checked_entries++;
+      try{
+        const p=entry.localOffset;
+        if(p+30>bytes.length||uint32(view,p)!==0x04034b50)fail('LOCAL_HEADER_INVALID');
+        const localFlags=view.getUint16(p+6,true),method=view.getUint16(p+8,true);
+        const nameLen=view.getUint16(p+26,true),extraLen=view.getUint16(p+28,true);
+        if(method!==entry.method||localFlags!==entry.flags)fail('HEADER_MISMATCH');
+        const nameEnd=p+30+nameLen;
+        if(nameEnd>bytes.length)fail('LOCAL_NAME_OUT_OF_BOUNDS');
+        const localName=decodeName(bytes.subarray(p+30,nameEnd),localFlags);
+        if(localName!==entry.name)fail('LOCAL_CENTRAL_NAME_MISMATCH');
+        const dataStart=nameEnd+extraLen;
+        if(dataStart>bytes.length||dataStart+entry.compressed>bytes.length)fail('DATA_OUT_OF_BOUNDS');
+        const compressed=bytes.subarray(dataStart,dataStart+entry.compressed);
+        const output=entry.method===0?compressed:await inflateRawLimited(compressed,entry.unpacked,MAX_ATTACHMENT_BYTES);
+        if(output.length!==entry.unpacked || crc32(output)!==entry.crc)fail('CRC_OR_SIZE_MISMATCH');
+        result.bytes_crc32_verified++;
+        result.checked_uncompressed_bytes+=output.length;
+      }catch(_){
+        result.failed_integrity++;
+      }
+    }
+    return result;
+  }
+  return Object.freeze({readEntries,getConversationsJson,verifyMatchedAttachments,crc32,
+    MAX_ARCHIVE,MAX_UNPACKED_JSON,MAX_ATTACHMENT_BYTES,MAX_ATTACHMENT_TOTAL,MAX_ATTACHMENT_ENTRIES});
 });

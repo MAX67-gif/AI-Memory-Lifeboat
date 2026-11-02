@@ -19,3 +19,15 @@
 .compare-list span{color:#66737b}
 .archive-assessment{background:#edf5f6;color:#25535d;border-radius:9px;padding:12px 14px;font-size:.85rem;margin:16px 0}
 @media(prefers-color-scheme:dark){.compare-import input[type=file]{background:#253b45;border-color:#46616b;color:#f1f7f9}#comparePanel,.compare-list,.compare-list li{border-color:#38505a}.compare-list span{color:#b3c7ce}.archive-assessment{background:#25464c;color:#d1e9ee}}
+
+/* R3: deterministic, accessible next-action cards; no color-only meaning. */
+.health-intro{margin-top:20px}.health-intro h3,.byte-check h3{margin:0 0 8px;font-size:1.08rem}
+.health-summary{padding:12px 14px;border:1px solid var(--border,#9ca3af);border-radius:10px;margin:0 0 12px;font-weight:650}
+.health-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,265px),1fr));gap:10px;margin-bottom:15px}
+.health-card{padding:12px 14px;border:1px solid var(--border,#9ca3af);border-left:4px solid #718096;border-radius:10px;min-width:0}
+.health-card[data-priority="ATTENTION"]{border-left-color:#bb5a37}
+.health-card[data-priority="REVIEW"]{border-left-color:#7f73bc}
+.health-card h4{font-size:.98rem;margin:0 0 6px}.health-card p{margin:0 0 4px;font-size:.89rem;line-height:1.65}
+.health-card small{font-size:.78rem;opacity:.85}
+.byte-check{margin:16px 0;padding:13px 15px;border:1px solid var(--border,#9ca3af);border-radius:12px}
+.byte-check button{margin:7px 0}.byte-check .status{overflow-wrap:anywhere}

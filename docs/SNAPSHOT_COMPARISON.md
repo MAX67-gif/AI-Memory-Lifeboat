@@ -1,6 +1,6 @@
 # R2 雙快照比對｜差異不等於刪除或完整備份證明
 
-版本：應用 v0.2.0；比對摘要 schema `aml.snapshot-diff.v1`。
+版本：v0.2.0 起支援（v0.3.0 持續相容）；比對摘要 schema `aml.snapshot-diff.v1`。
 
 ## 使用流程
 

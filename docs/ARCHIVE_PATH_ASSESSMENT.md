@@ -15,3 +15,6 @@ Schema `aml.archive-path-assessment.v1`，不代表內容完整性認證。
 其他 ZIP 檔案完全不解壓、不開啟、不解析、不執行；它們可能是非附件，也可能不是完整原件。`conversations.json` 本身會檢查 CRC32，這不能延伸為整份 ZIP 內容完整證明。
 
 Audit JSON 只輸出數量和狀態，不包含照片名稱、對話原文、對話 ID、私有路徑。資料來源仍可能包含未支援欄位，請保留原始備份。
+
+
+R3 新增選用的附件 CRC32 位元組檢查（`aml.attachment-bytes.v1`），與本頁 R2 路徑檢查是**不同證據級別**。只有已比對唯一且安全的相對路徑才可進入最多 24 項／每項 4 MiB／合計 16 MiB 的限額掃描。CRC32 成功不能證明上傳原始附件同一內容或全部附件存在。完整說明見 [R3 健康指引](HEALTH_AND_BYTE_VERIFICATION.md)。
