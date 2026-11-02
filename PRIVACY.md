@@ -1,4 +1,4 @@
-# Privacy｜隱私說明（v0.3.0）
+# Privacy｜隱私說明（v0.4.0）
 
 此工具的 JavaScript 在使用者的瀏覽器分頁內處理被主動選入的 ZIP/JSON。程式碼沒有 `fetch`、XHR、WebSocket、登入、分析 SDK、廣告或本專案控制的聊天內容傳輸端點。
 
@@ -13,3 +13,5 @@
 R2: the optional older snapshot is kept temporarily in browser memory for comparison; no localStorage/IndexedDB or network upload. The downloaded diff report contains counts, schema and fixed warnings only, but single-conversation HTML does contain conversation text. Clearing the page releases references; it does not securely erase browser RAM or previously downloaded files.
 
 R3: 健康指引 JSON 僅包含固定文案、狀態碼與數量；不包含聊天內容、對話標題、ID 或附件路徑。選用 CRC32 檢查時，瀏覽器會重新讀取所選 ZIP，在記憶體內有限量解壓可比對項目以驗證 ZIP 內的檔案 CRC32 與宣告尺寸，不送往任何伺服器、不將附件寫入磁碟。檔案內容仍可能短暫留在瀏覽器 RAM；按清除不代表安全抹除已存在的下載檔或 RAM。
+
+R4: `src/demo.js` only includes original synthetic examples. The optional pilot receipt contains only three fixed-choice answers and a synthetic/personal source mode, with no arbitrary input strings, chat data, paths, titles, IDs, timestamps or automatic network submission. Downloading an opt-in JSON locally does not send anything to us. **If you manually post a GitHub Issue, your GitHub identity is public.** Never upload your real export to Issue or PR.

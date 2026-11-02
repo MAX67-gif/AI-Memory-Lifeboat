@@ -11,3 +11,7 @@
 5. 任何新增資料來源、外部服務或第三方碼，需寫明授權、資料流向與風險。
 
 不得用自動產生的假使用者回報、假下載數或假評分作為開源採用證據。作者保有其合法貢獻的權利；本 Repo MIT 授權範圍僅含有權授權的內容。
+
+## First-use pilot (R4)
+
+The demo is entirely fictional. If you try the app, read [the pilot protocol](docs/FIRST_RESULT_PILOT.md) and [privacy contract](docs/PILOT_PRIVACY_CONTRACT.md). You may save a fixed-choice feedback receipt locally and voluntarily submit only safe choices via the [GitHub issue form](https://github.com/MAX67-gif/AI-Memory-Lifeboat/issues/new?template=pilot-feedback.yml). Never attach real ChatGPT export files, real conversation content, titles, IDs or screenshots. GitHub issues display your account name. Real-user adoption remains unverified until independently documented.

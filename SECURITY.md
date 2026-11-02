@@ -13,3 +13,7 @@
 R2: ZIP entry names are metadata only; ambiguous/unsafe relative paths fail closed and are not treated as recovered attachments. Do not rely on the comparison to prove missing content was deleted or identical content was fully backed up. The two archives may exhaust memory within the stated per-file limits; never execute their contents.
 
 R3 新增選用的 ZIP 明確路徑附件 CRC32 位元組檢查：只檢查 ZIP 中唯一的檔案項目，每項最多 4 MiB、總計 16 MiB、最多 24 項；拒絕未知壓縮、加密與不安全／重複路徑。資料只在記憶體處理、不執行、不預覽附件。CRC32 並非加密驗證或原始檔來源證明；沒有比對來源 SHA 或驗證所有附件。ZIP 加載可能占用記憶體，不適合所有裝置／容量。
+
+## R4 synthetic first-use and pilot consent
+
+The demo is fully embedded fictional data; CSP `connect-src 'none'` remains. The downloaded pilot receipt is generated from a strict whitelist of three choices; no user-entered free text, content, filenames or identifiers. No automatic telemetry or submission was added. Users who voluntarily post GitHub Issues expose their account identity to GitHub readers. All real exports remain local to the browser.

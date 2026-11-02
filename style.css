@@ -31,3 +31,14 @@
 .health-card small{font-size:.78rem;opacity:.85}
 .byte-check{margin:16px 0;padding:13px 15px;border:1px solid var(--border,#9ca3af);border-radius:12px}
 .byte-check button{margin:7px 0}.byte-check .status{overflow-wrap:anywhere}
+
+/* R4: short, optional first-use walkthrough and fully local pilot receipt. */
+.first-use-panel{background:#edf8f5;border-color:#b5d7d0}
+.first-use-panel p{color:#2e5661}.first-use-panel .primary{font-weight:750}
+.demo-banner{padding:13px 16px;border:2px solid #557c9d;border-radius:11px;background:#f0f7ff;color:#1d4565;font-size:.92rem;margin:6px 0 20px}
+.pilot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pilot-grid label{display:flex;flex-direction:column;gap:7px;font-size:.85rem;font-weight:650;color:#455a65}
+.pilot-grid select{border:1px solid #b9cbd3;border-radius:9px;padding:10px;background:#fff;color:#244e5a;max-width:100%;font:inherit}
+.pilot-panel p{color:#526674}
+@media(max-width:750px){.pilot-grid{grid-template-columns:1fr}}
+@media(prefers-color-scheme:dark){.first-use-panel{background:#193b37;border-color:#3d726b}.first-use-panel p,.pilot-panel p,.pilot-grid label{color:#d7e6e6}.demo-banner{background:#193b50;color:#cce7f8;border-color:#5e96bd}.pilot-grid select{background:#253b45;border-color:#46616b;color:#f1f7f9}}

@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.3.0 ZIP reader. Minimal central-directory reader.
+/* AI Memory Lifeboat v0.4.0 ZIP reader. Minimal central-directory reader.
  * No file extraction; bounded decompression; CRC check for target JSON.
  * Copyright (c) 2026 MAX67-gif. MIT.
  */
@@ -127,7 +127,7 @@
   async function verifyMatchedAttachments(bytes, paths) {
     if (!(bytes instanceof Uint8Array) || !Array.isArray(paths)) throw new TypeError('INVALID_ATTACHMENT_VERIFY_INPUT');
     const entries = readEntries(bytes);
-    const result={schema:'aml.attachment-bytes.v1',tool_version:'0.3.0',
+    const result={schema:'aml.attachment-bytes.v1',tool_version:'0.4.0',
       verification:'LIMITED_ZIP_ENTRY_CRC32_ONLY',account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
       requested_unique_paths:0,unique_matching_entries:0,bytes_crc32_verified:0,
       failed_integrity:0,skipped_size:0,skipped_budget:0,skipped_method:0,skipped_unsafe:0,

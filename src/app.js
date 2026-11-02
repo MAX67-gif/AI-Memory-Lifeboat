@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.3.0 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.4.0 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -7,10 +7,13 @@
     olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
     compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
     archiveAssessment:$('archiveAssessment'),healthSummary:$('healthSummary'),healthCards:$('healthCards'),
-    downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus')};
+    downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus'),
+    tryDemo:$('tryDemo'),demoBanner:$('demoBanner'),pilotPanel:$('pilotPanel'),pilotEase:$('pilotEase'),
+    pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus')};
   const core=window.AMLCore, zip=window.AMLZip;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
+  let demoActive=false;
   const MAX_JSON=64*1024*1024;
   const comparisonLabels={
     ONLY_IN_NEW_EXPORT:'只在新版匯出中出現',
@@ -37,7 +40,10 @@
   }
   function reset(){
     generation++;comparisonGeneration++;current=null;older=null;compared=null;selected=null;
-    currentFile=null;matchedAttachmentPaths=[];byteReport=null;healthReport=null;
+    currentFile=null;matchedAttachmentPaths=[];byteReport=null;healthReport=null;demoActive=false;
+    e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
+    for(const sel of [e.pilotEase,e.pilotClarity,e.pilotReuse])sel.value='NOT_TESTED';
+    e.pilotStatus.textContent='沒有背景傳送或追蹤；不需要登入 GitHub 才能使用本工具。';
     e.verifyAttachments.disabled=true;e.attachmentVerifyStatus.textContent='請先載入 ZIP，才能進行選用檢查。';
     e.file.value='';e.olderFile.value='';e.olderFile.disabled=true;e.olderStatus.textContent='請先載入最新版匯出檔。';e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;e.search.value='';e.list.replaceChildren();
     e.detail.textContent='';e.results.hidden=true;e.clear.disabled=true;e.html.disabled=true;
@@ -163,6 +169,7 @@
   }
   async function importFile(file){
     if(!file)return;
+    demoActive=false;e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
     const rev=++generation;comparisonGeneration++;
     current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;
     currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;
@@ -174,7 +181,7 @@
     try{
       const parsed=await parseSource(file);
       if(rev!==generation)return;
-      current=parsed;e.results.hidden=false;e.search.value='';
+      current=parsed;e.results.hidden=false;e.pilotPanel.hidden=false;e.search.value='';
       currentFile=file.name.toLowerCase().endsWith('.zip')?file:null;
       matchedAttachmentPaths=parsed._exactAttachmentPaths||[];delete parsed._exactAttachmentPaths;
       e.verifyAttachments.disabled=!currentFile||matchedAttachmentPaths.length===0;
@@ -190,7 +197,7 @@
     }
   }
   async function importOlder(file){
-    if(!file||!current)return;
+    if(!file||!current||demoActive)return;
     const rev=++comparisonGeneration, sourceRev=generation;
     e.olderStatus.textContent='正在本機比較兩份匯出…';
     older=null;compared=null;e.comparePanel.hidden=true;
@@ -225,16 +232,39 @@
       e.attachmentVerifyStatus.textContent=`附件位元組檢查無法完成（${code}）；不能視為已驗證。`;
     }finally{if(rev===generation)e.verifyAttachments.disabled=false;}
   }
+  function loadSyntheticDemo(){
+    reset();
+    const fixture=window.AMLDemo.getSnapshots();
+    current=core.parseChatGPTExport(fixture.newer);
+    older=core.parseChatGPTExport(fixture.older);
+    compared=window.AMLCompare.compareSnapshots(older,current);
+    current.audit.source_mode='SYNTHETIC_DEMO';
+    demoActive=true;e.demoBanner.hidden=false;e.pilotPanel.hidden=false;e.results.hidden=false;
+    e.clear.disabled=false;
+    e.verifyAttachments.disabled=true;e.olderFile.disabled=true;
+    e.attachmentVerifyStatus.textContent='示例為 JSON，沒有實際 ZIP 附件可檢查。';
+    e.olderStatus.textContent='合成新舊版本已自動載入，請勿與真實帳戶資料混合比較。';
+    renderAudit();renderList();renderComparison();
+    status('合成示例已載入：不是帳戶備份檢查。可選取對話、搜尋文字和閱讀差異。','ok');
+    e.results.scrollIntoView({block:'start',behavior:'auto'});
+  }
+  e.tryDemo.addEventListener('click',loadSyntheticDemo);
+  e.downloadPilot.addEventListener('click',()=>{
+    if(!current)return;
+    const receipt=window.AMLPilot.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.4.0.json','application/json;charset=utf-8');
+    e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
+  });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify(healthReport,null,2),'aml-health-v0.3.0.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.4.0.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.3.0.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.4.0.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.3.0.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.4.0.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',()=>{if(current&&selected!==null){
     const c=current.conversations[selected];download(core.exportConversationHtml(c),'aml-conversation.html','text/html;charset=utf-8');
   }});

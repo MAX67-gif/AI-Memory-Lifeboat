@@ -8,7 +8,7 @@
 
 **V0.3 completed scope (synthetic engineering validation):** deterministic, content-free priority/action health cards and an optional capped ZIP attachment byte CRC32 check. Not a recovery guarantee or source authentication.
 
-**Possible V0.4:** prove real-user completion and comprehension, independently test accessibility and improve unsupported export format diagnostics. Consider larger ZIP streaming and additional vendor formats only after owned fixtures and clear technical evidence. No default cloud upload.
+**V0.4 engineering scope:** add a one-click fictional demo and content-free optional pilot feedback export; both tested synthetically. External human trial results remain NOT_COLLECTED. **Next proof gate:** independently observe actual first-task completion and comprehension; improve accessibility and unsupported-export diagnostics only from real evidence. Consider larger ZIP streaming and additional vendor formats only after owned fixtures and clear technical evidence. No default cloud upload.
 
 **Stop/pivot:** if users prefer existing readers, critical errors remain, or maintainers do not adopt checks, contribute improvements upstream rather than keep a redundant project.
 
