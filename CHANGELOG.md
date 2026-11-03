@@ -1,3 +1,9 @@
+## v0.5.0 Preview — 2026-11-02
+
+- Added result-navigation anchors and a content-free plain-text first-result summary with strict trusted-only wording.
+- Added voluntary five-choice v2 feedback without transmitting personal content or inferred adoption results; v1 remains unchanged for compatibility.
+- Added negative security, accessibility and backward-compatibility tests. No real-user study or official Release claimed.
+
 # Changelog
 
 ## v0.4.0 Preview — 2026-11-02

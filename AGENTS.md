@@ -22,3 +22,5 @@ R2 additions: The diff is between user-selected exports, not proof of deletion o
 R3 additions: Health suggestions use fixed messages and numeric counters only; no risk score can prove completeness. Explicit ZIP byte CRC checks are opt-in, capped (4 MiB/item, 16 MiB total, 24 entries); CRC is archive-internal consistency, not original-attachment authenticity. Do not persist or include source paths in downloadable reports.
 
 R4 additions: A synthetic demo must remain clearly labeled and cannot be claimed as personal account inspection. The pilot receipt must only contain fixed enumerated answers; no chat text, titles, IDs, filenames, hashes, device data, timestamps or automatic sending. Github issue participation is optional and publicly attributable. An engineering CI pass does not constitute real volunteer adoption.
+
+R5 additions: Fixed-text summary must not echo external titles, IDs, filenames, paths, or arbitrary warning strings. Pilot v2 is local-only and SELF_REPORTED, not independently verified adoption. Preserve pilot v1 and R4 synthetic demo semantics; never turn synthetic results into personal verification.

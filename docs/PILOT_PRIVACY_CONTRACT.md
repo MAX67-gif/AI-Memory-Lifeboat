@@ -9,3 +9,7 @@
 - 回饋不得被默認成產品已被採用；只有真實且經同意的外部回饋可以進入帶證據的採用帳本。
 
 本契約不代表其他下載檔案都是內容無關：**單篇 HTML 含有完整當前分支文字，應私下保存**；既有 audit/health 可能含計數與固定診斷文案，不應冒充全帳戶完整證明。
+
+## R5 v2（加法、不取代 v1）
+
+新增 `firstTask`、`understandsScope` 兩個固定選項欄位，保持使用者自行下載、檢查與分享；新增 `evidence_status=SELF_REPORTED_NOT_INDEPENDENT_HUMAN_VERIFICATION`。詳見 [R5 文檔](R5_FIRST_RESULT_AND_PILOT_V2.md)。

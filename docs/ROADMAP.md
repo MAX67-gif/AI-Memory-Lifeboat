@@ -13,3 +13,7 @@
 **Stop/pivot:** if users prefer existing readers, critical errors remain, or maintainers do not adopt checks, contribute improvements upstream rather than keep a redundant project.
 
 **Codex for Open Source:** no acceptance probability claim; first collect verifiable use, external contributions and sustained maintainer activity. Application is separate from software quality and availability.
+
+## R5 後的證據門檻
+
+R5 已提供純文字可讀結果、簡單導航與自述回饋 v2。真人獨立試用仍為 `NOT_COLLECTED`；優先取得知情同意下的 5 位外部測試者、保留未完成與不理解限制的情況，再決定格式擴張。不可把自述結果直接當成獨立試驗成績或 OpenAI Codex for Open Source 入選證據。

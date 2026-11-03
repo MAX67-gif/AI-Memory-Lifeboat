@@ -15,3 +15,7 @@ R2: the optional older snapshot is kept temporarily in browser memory for compar
 R3: 健康指引 JSON 僅包含固定文案、狀態碼與數量；不包含聊天內容、對話標題、ID 或附件路徑。選用 CRC32 檢查時，瀏覽器會重新讀取所選 ZIP，在記憶體內有限量解壓可比對項目以驗證 ZIP 內的檔案 CRC32 與宣告尺寸，不送往任何伺服器、不將附件寫入磁碟。檔案內容仍可能短暫留在瀏覽器 RAM；按清除不代表安全抹除已存在的下載檔或 RAM。
 
 R4: `src/demo.js` only includes original synthetic examples. The optional pilot receipt contains only three fixed-choice answers and a synthetic/personal source mode, with no arbitrary input strings, chat data, paths, titles, IDs, timestamps or automatic network submission. Downloading an opt-in JSON locally does not send anything to us. **If you manually post a GitHub Issue, your GitHub identity is public.** Never upload your real export to Issue or PR.
+
+## R5 無內容結果與自願回饋
+
+R5 純文字摘要只從固定白名單檢查碼和有限計數構成，不會匯入或反射任意原文、路徑與 ID。R5 五題回饋也只使用白名單選項，僅由使用者按下下載才建立本地 JSON，不包含使用者身分或自動追蹤資訊；自行送至 GitHub Issue 仍會公開 GitHub 帳號。下載的單篇 HTML **會包含對話本文**，不能誤當作無敏感內容文件。
