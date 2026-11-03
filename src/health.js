@@ -24,6 +24,8 @@
     BYTE_LIMIT:['位元組驗證只有部分覆蓋','僅檢查明確且唯一的 ZIP 路徑中符合容量與格式限制的項目；跳過項目保持未知。'],
     JSON_LIMIT:['JSON 無法核對 ZIP 內附件','目前載入的是 JSON 單檔。要檢查 ZIP 的附件路徑與位元組，請選擇自己的官方 ZIP。'],
     DIFF_LIMIT:['兩次匯出出現差異或無法比對','新版未見不等於帳戶已刪除；匯出先後與帳戶是否相同仍需自行確認。'],
+    SINGLE_NUMBERED_JSON:['只載入一個編號 JSON 分片','這不是完整分片集合；請選擇包含所有分片的官方 ZIP，並妥善保留來源檔。'],
+    MULTIPLE_NUMBERED_JSON:['已讀取連續編號的 JSON 分片','只代表此 ZIP 中識別到的分片已解析，不代表帳戶完整或附件已保存。'],
     NO_DETECTED_PROBLEMS:['已支援範圍暫無明顯結構異常','這只是局部檢查沒有發現上述問題，不代表完整備份、安全認證或平台可還原。'],
   });
   function evaluate(audit, options={}){
@@ -35,6 +37,8 @@
     const checks=[];
     const add=(code,priority,count=null)=>{const [title,action]=labels[code];checks.push({code,priority,title,action,...(count===null?{}:{count})});};
     add('PRESERVE_SOURCE','ESSENTIAL');
+    if(a.source_container==='SINGLE_NUMBERED_JSON')add('SINGLE_NUMBERED_JSON','REVIEW',1);
+    if(a.source_container==='NUMBERED_JSON_SHARDS')add('MULTIPLE_NUMBERED_JSON','INFORMATION',nonneg(a.numbered_json_parts));
     if (nonneg(a.invalid_records))add('INVALID_RECORDS','ATTENTION',nonneg(a.invalid_records));
     if (nonneg(a.missing_current_paths))add('CURRENT_PATHS','ATTENTION',nonneg(a.missing_current_paths));
     if (z && nonneg(z.missing_explicit_paths))add('ZIP_PATH_MISSING','ATTENTION',nonneg(z.missing_explicit_paths));

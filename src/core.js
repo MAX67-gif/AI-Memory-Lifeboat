@@ -206,7 +206,7 @@
       if(e.name.endsWith('/'))continue;
       files++;
       counts.set(e.name,(counts.get(e.name)||0)+1);
-      if(!/(^|\/)conversations\.json$/.test(e.name))declaredNonJson++;
+      if(!/(^|\/)conversations(?:-\d{3})?\.json$/.test(e.name))declaredNonJson++;
     }
     for(const v of counts.values())if(v>1)duplicates+=v-1;
     const result={schema:'aml.archive-path-assessment.v1',verification:'ARCHIVE_METADATA_ONLY',

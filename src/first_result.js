@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.5.0 — offline, content-free, human-readable first-result report. MIT.
+/* AI Memory Lifeboat v0.6.0 — offline, content-free, human-readable first-result report. MIT.
  * Never reflect exported titles, paths, text, IDs, filenames, unknown issue details or metadata.
  */
 (function(root,factory){
@@ -6,7 +6,7 @@
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
  if(root)root.AMLFirstResult=api;
 })(typeof globalThis==='object'?globalThis:null,function(){'use strict';
- const VERSION='0.5.0';
+ const VERSION='0.6.0';
  const SOURCE=Object.freeze({
    SYNTHETIC_DEMO:'合成示範（不代表你的帳戶已被檢查）',
    PERSONAL_EXPORT:'使用者自行選擇的匯出檔（不是帳戶完整性證明）'
@@ -30,6 +30,8 @@
    BYTE_LIMIT:['ZIP 位元組檢查範圍有限','大小、壓縮格式或安全限制以外的項目未驗證。'],
    JSON_LIMIT:['JSON 單檔無法核對 ZIP 附件','如要進行限定 ZIP 附件檢查，應使用自己的官方 ZIP。'],
    DIFF_LIMIT:['兩份匯出有差異或未知','新版匯出未出現某筆資料，不代表帳戶已刪除。'],
+   SINGLE_NUMBERED_JSON:['只載入一個編號 JSON 分片','可能還有其他分片尚未讀取，不能宣稱完整備份。'],
+   MULTIPLE_NUMBERED_JSON:['已辨識連續編號的 JSON 分片','這只確認目前 ZIP 中可讀分片，不是所有帳戶資料完整性的證明。'],
    NO_DETECTED_PROBLEMS:['已支援範圍未見明顯問題','此結果不是完整性認證或平台可還原性保證。']
  });
  function safeCount(x){return Number.isSafeInteger(x)&&x>=0&&x<=100000000?x:null;}

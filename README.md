@@ -2,25 +2,25 @@
 
 [English](README.en.md) · [使用說明](docs/QUICK_START.md) · [隱私](PRIVACY.md) · [安全](SECURITY.md) · [限制與資料契約](docs/FORMAT_SUPPORT.md)
 
-**匯入自己的 ChatGPT 官方資料匯出 ZIP 或 `conversations.json`，在瀏覽器本機檢查可讀的對話、搜尋目前分支、比較兩次匯出、檢查 ZIP 中明確附件路徑、選擇性檢查小型附件 CRC32、查看下一步健康指引，下載檢查報告及單篇 HTML。** 免費、MIT 開源、無帳號、無第三方模型與分析 SDK。
+**匯入自己的 ChatGPT 官方資料匯出 ZIP、`conversations.json`，或 ZIP 中連續編號的 `conversations-000.json` 等分片，在瀏覽器本機檢查可讀的對話、搜尋目前分支、比較兩次匯出、檢查 ZIP 中明確附件路徑、選擇性檢查小型附件 CRC32、查看下一步健康指引，下載檢查報告及單篇 HTML。** 免費、MIT 開源、無帳號、無第三方模型與分析 SDK。
 
-> **v0.5.0 Preview（2026-11-02）。** 這不是完整備份認證：無法證明帳戶所有資料或附件均已匯出、不能還原原平台的對話、記憶、檔案或工具狀態。保留原始官方 ZIP；不要只保留本工具輸出的 HTML。
+> **v0.6.0 Preview（2026-11-03 首次完成沙盒測試）。** 這不是完整備份認證：無法證明帳戶所有資料或附件均已匯出、不能還原原平台的對話、記憶、檔案或工具狀態。保留原始官方 ZIP；不要只保留本工具輸出的 HTML。
 
 ## 三步開始
 
 **首次體驗：**解壓、開啟 `index.html`，先按「試用合成示範」，再按三個導覽捷徑；可下載不含聊天內容的純文字健康摘要。不必提供自己的聊天資料；合成示範不算真人採用或帳戶驗證。詳細見 [R5 第一次結果與自願回饋](docs/R5_FIRST_RESULT_AND_PILOT_V2.md)。
 
 1. 從 [GitHub 專案頁](https://github.com/MAX67-gif/AI-Memory-Lifeboat) 選 **Code → Download ZIP**，解壓後開啟根目錄 `index.html`。（專案尚未宣稱 GitHub Pages 已啟用。）
-2. 透過 [ChatGPT 官方資料匯出教學](https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data) 取得自己的 ZIP，或準備其中的 `conversations.json`。將檔案選入工具。
+2. 透過 [ChatGPT 官方資料匯出教學](https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data) 取得自己的 ZIP，或準備其中的 `conversations.json`。若你的 ZIP 包含 `conversations-000.json` 等編號分片，請保留**整份 ZIP** 一次匯入，不要只挑其中一個檔案。將檔案選入工具。
 3. 查看健康指引和已檢查的範圍；ZIP 來源有明確附件路徑時可選擇執行有限 CRC32 檢查。想比對時再載入較早的匯出檔，查看新增、未見與變動。搜尋對話；需要時下載 **不包含原文的 JSON 檢查報告／差異摘要**或**單篇目前分支 HTML**。
 
 [用合成範例練習](examples/sample-conversations.json) · [新版合成資料](examples/sample-newer.json) · [舊版合成資料](examples/sample-older.json)：此檔全為專案原創假資料，無真實使用者對話。
 
-## V0.5.0 已實作
+## v0.6.0 的功能範圍
 
 | 內容 | 目前支持 | 未支持或限制 |
 | --- | --- | --- |
-| 來源 | ChatGPT `conversations.json` 的已知 mapping/parent/current_node 結構、含單一目標 JSON 的 ZIP | Claude/Gemini 匯入、其他未知結構、ZIP64、加密 ZIP |
+| 來源 | ChatGPT `conversations.json` 與 ZIP 內連續編號 JSON（含已知 mapping/parent/current_node 結構） | Claude/Gemini 匯入、其他未知結構、ZIP64、加密 ZIP |
 | 分支 | 沿 `current_node` 的 parent 鏈顯示目前分支，統計其他訊息節點 | 不在閱讀畫面合併其他分支；絕不假造分支順序 |
 | 非文字／附件 | 計數參照與非文字片段並提醒 | 無法確保附件可用、無影像/音訊還原 |
 | 雙快照比對 | 依明確且唯一的 ID 比對兩份已匯出資料的目前分支、標題與計數 | 不能證明資料刪除、帳戶相同、所有分支完整或附件位元組一致 |
@@ -31,7 +31,7 @@
 | 自願回饋 | 本機下載 5 道固定選項的 v2 JSON；沒有自動傳送、未收集原文；保留 v1 格式相容 | 實際提交須由使用者自行決定，且先檢查檔案 |
 | 搜尋 | 目前分支的標題與可讀文字，本機執行 | 不搜尋其他分支或非文字內容 |
 | 匯出 | 不含聊天原文的 Audit JSON、單篇目前分支 HTML | 不能用這些檔案還原 ChatGPT 帳戶 |
-| 大小 | ZIP 最多 128 MiB、其中目標 JSON 最多 64 MiB；JSON 單檔 64 MiB | 大量大型附件的匯出包可能不適用 |
+| 大小 | ZIP 最多 128 MiB，單檔或編號分片合計解壓 JSON 最多 64 MiB；最多 32 份分片；JSON 單檔 64 MiB | 大量大型附件的匯出包可能不適用 |
 
 程式以本機瀏覽器執行，沒有網路 API 呼叫，也沒有內建上傳後端。載入網站本身、GitHub Pages 或瀏覽器擴充功能仍可能有各自的網路及權限行為，請閱讀 [PRIVACY](PRIVACY.md)。
 
@@ -50,3 +50,13 @@
 MIT © 2026 MAX67-gif；第三方平台名稱屬各自權利人，本工具非官方產品，亦非相關 AI 服務商授權的匯入／移轉工具。
 
 **使用建議：** 先用原創合成新舊資料練習，比對完成後保留官方原始 ZIP。差異摘要不包含對話名稱或原文；單篇 HTML 則包含所選對話文字，請勿公開分享。
+
+## R6｜已編號分片的有界離線匯入
+
+OpenAI 官方文件明示較大的匯出可能包含多個編號對話 JSON。R6 在既有單一 `conversations.json` 之外，新增 ZIP 內 **同一目錄、從 000 開始、連號且不重複** 的 `conversations-NNN.json`（最長三位，最多 32 份），將所有合法分片一併檢查。超出 64 MiB 解壓 JSON 合計或 128 MiB ZIP 的資料會明確拒絕，**不會只讀第一份偷偷少算**。
+
+只匯入**一個**編號 JSON 時，健康指引會標「尚未確認其他分片」。格式錯誤、缺號、重複、混用單檔與分片、CRC 錯誤均回報無法匯入。此功能沒有增加任何雲端 API、追蹤 SDK 或上傳機制；不代表所有真正的大型匯出都在容量範圍內。
+
+本版的公開原始碼交付須以 GitHub main、PR 與 CI 的實際結果確認；獨立 GitHub Release、Pages、真人正式資料覆蓋率均需另外驗證。詳見 [R6 多分片匯入與安全邊界](docs/R6_NUMBERED_SHARDS_SUPPORT.md)。
+
+[下載原創編號 ZIP 測試範例](examples/synthetic-numbered-export.zip)；該檔完全虛構，僅供確認 R6 匯入操作，不代表任何真實資料。
