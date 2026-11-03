@@ -15,12 +15,14 @@
   <script defer src="src/health.js"></script>
   <script defer src="src/demo.js"></script>
   <script defer src="src/pilot.js"></script>
+  <script defer src="src/pilot_r5.js"></script>
+  <script defer src="src/first_result.js"></script>
   <script defer src="src/app.js"></script>
 </head>
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.4.0 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.5.0 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -48,13 +50,19 @@
         <p id="status" class="status" role="status" aria-live="polite">尚未載入任何檔案。</p>
       </section>
       <section id="results" class="results" hidden aria-label="備份檢查結果">
+        <nav class="panel quick-nav" aria-label="第一次使用：結果導覽">
+          <strong>第一次看結果，先完成這三件事</strong>
+          <p>以下是導覽捷徑，不會自動記錄你是否完成。示範結果不是你的帳戶。</p>
+          <div class="actions"><a href="#auditTitle">① 先看備份健康指引</a><a href="#compareTitle">② 查看新舊備份差異</a><a href="#browseTitle">③ 搜尋並閱讀一則對話</a></div>
+          <p class="small-note">需要保存簡明結論時，可在健康指引下載「純文字摘要」。此導覽不會傳送或儲存操作紀錄。</p>
+        </nav>
         <p id="demoBanner" class="demo-banner" role="status" hidden><strong>示範資料</strong>：這是合成的兩份假備份，不是你的帳戶。所有結果只用來熟悉操作；若要檢查個人備份，請重新選擇自己的官方匯出檔。</p>
         <section class="panel audit-panel" aria-labelledby="auditTitle">
           <div class="section-heading"><div><span class="step">02</span><h2 id="auditTitle">備份體檢</h2></div><button class="secondary" id="downloadAudit" type="button">下載檢查報告 JSON</button></div>
           <div class="metrics" id="metrics"></div>
           <div class="health-intro"><h3>下一步怎麼做？</h3><p id="healthSummary" class="health-summary" aria-live="polite"></p></div>
           <div id="healthCards" class="health-cards"></div>
-          <button id="downloadHealth" type="button" class="secondary">下載不含聊天內容的健康指引 JSON</button>
+          <div class="actions"><button id="downloadHealth" type="button" class="secondary">下載不含聊天內容的健康指引 JSON</button><button id="downloadFirstResult" type="button" class="secondary">下載可閱讀的純文字摘要 TXT</button></div>
           <p id="archiveAssessment" class="archive-assessment" hidden></p>
           <div class="byte-check">
             <h3>進階：有限的附件位元組檢查（選用）</h3>
@@ -90,11 +98,14 @@
         </section>
         <section class="panel pilot-panel" id="pilotPanel" aria-labelledby="pilotTitle" hidden>
           <div class="section-heading"><div><span class="step">05</span><h2 id="pilotTitle">願意分享使用感受嗎？（完全自願）</h2></div><p>先在本機產生，不會自動送出</p></div>
-          <p>三個選項可以跳過；不必提供名稱、Email、檔案或聊天內容。產生的 JSON 只有固定答案代碼；如果要分享，請先自行檢查內容，再決定是否送給維護者。</p>
+          <p>五個選項可以跳過；其中「是否完成」與「是否理解限制」都只代表你自己選的答案，程式不會把操作行為推論成成功。
+          不必提供名稱、Email、檔案或聊天內容。產生的 JSON 只有固定答案代碼；如果要分享，請先自行檢查內容，再決定是否送給維護者。</p>
           <div class="pilot-grid">
             <label>這次操作容易嗎？<select id="pilotEase"><option value="NOT_TESTED">不填寫</option><option value="EASY">容易</option><option value="NEEDED_HELP">需要協助</option><option value="COULD_NOT_FINISH">無法完成</option></select></label>
             <label>檢查結果好理解嗎？<select id="pilotClarity"><option value="NOT_TESTED">不填寫</option><option value="CLEAR">清楚</option><option value="NEEDS_EXPLANATION">需要額外說明</option><option value="CONFUSING">不易理解</option></select></label>
             <label>之後會再使用嗎？<select id="pilotReuse"><option value="NOT_TESTED">不填寫</option><option value="YES">會</option><option value="MAYBE">不確定</option><option value="NO">不會</option></select></label>
+            <label>這次有完成第一個任務嗎？（自行回報）<select id="pilotTask"><option value="NOT_TESTED">不填寫</option><option value="COMPLETED_ALONE">自己完成</option><option value="COMPLETED_WITH_HELP">有人協助才完成</option><option value="COULD_NOT_FINISH">沒有完成</option></select></label>
+            <label>你理解「本工具無法證明帳戶完整」嗎？<select id="pilotScope"><option value="NOT_TESTED">不填寫</option><option value="YES">理解</option><option value="UNSURE">不確定</option><option value="NO">尚未理解</option></select></label>
           </div>
           <div class="actions"><button class="secondary" type="button" id="downloadPilot">下載不含對話內容的試用回饋 JSON</button><a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat/issues/new?template=pilot-feedback.yml" target="_blank" rel="noopener noreferrer">自願到 GitHub 留下回饋</a></div>
           <p id="pilotStatus" class="small-note" role="status" aria-live="polite">沒有背景傳送或追蹤；不需要登入 GitHub 才能使用本工具。</p>

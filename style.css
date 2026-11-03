@@ -42,3 +42,13 @@
 .pilot-panel p{color:#526674}
 @media(max-width:750px){.pilot-grid{grid-template-columns:1fr}}
 @media(prefers-color-scheme:dark){.first-use-panel{background:#193b37;border-color:#3d726b}.first-use-panel p,.pilot-panel p,.pilot-grid label{color:#d7e6e6}.demo-banner{background:#193b50;color:#cce7f8;border-color:#5e96bd}.pilot-grid select{background:#253b45;border-color:#46616b;color:#f1f7f9}}
+
+
+/* R5: first-result shortcuts and text report; navigable without extra JavaScript. */
+.quick-nav{border-color:#a6c8c1;background:#f4fbf9}
+.quick-nav strong{display:block;font-size:1.04rem}
+.quick-nav p{font-size:.87rem;color:#4a6871;margin:7px 0}
+.quick-nav .actions{margin:10px 0;gap:9px}
+.quick-nav .actions a{border:1px solid #9dbfc4;border-radius:10px;padding:9px 12px;display:inline-block;background:#fff;font-size:.88rem;font-weight:650}
+.quick-nav .actions a:focus-visible,.pilot-grid select:focus-visible{outline:3px solid #2674a6;outline-offset:2px}
+@media(prefers-color-scheme:dark){.quick-nav{background:#183832;border-color:#39776c}.quick-nav p{color:#d7e6e6}.quick-nav .actions a{background:#253b45;border-color:#46616b;color:#d9eef5}}

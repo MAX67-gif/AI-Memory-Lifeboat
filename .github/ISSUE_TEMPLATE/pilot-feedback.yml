@@ -1,6 +1,6 @@
 name: First-use feedback / 首次使用回饋
 description: Voluntary, fixed-choice feedback with no chat exports, content or personal details.
-title: "[First-use feedback] R4 preview"
+title: "[First-use feedback] R5 preview"
 labels: []
 body:
   - type: markdown
@@ -45,6 +45,28 @@ body:
       options:
         - YES
         - MAYBE
+        - NO
+        - NOT_TESTED
+    validations:
+      required: true
+  - type: dropdown
+    id: first_task
+    attributes:
+      label: First task outcome / 第一個任務結果（自行回報）
+      options:
+        - COMPLETED_ALONE
+        - COMPLETED_WITH_HELP
+        - COULD_NOT_FINISH
+        - NOT_TESTED
+    validations:
+      required: true
+  - type: dropdown
+    id: understands_scope
+    attributes:
+      label: Understand the limited scope / 是否理解不保證帳戶完整
+      options:
+        - YES
+        - UNSURE
         - NO
         - NOT_TESTED
     validations:

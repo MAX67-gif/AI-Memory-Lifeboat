@@ -17,3 +17,7 @@ R3 新增選用的 ZIP 明確路徑附件 CRC32 位元組檢查：只檢查 ZIP 
 ## R4 synthetic first-use and pilot consent
 
 The demo is fully embedded fictional data; CSP `connect-src 'none'` remains. The downloaded pilot receipt is generated from a strict whitelist of three choices; no user-entered free text, content, filenames or identifiers. No automatic telemetry or submission was added. Users who voluntarily post GitHub Issues expose their account identity to GitHub readers. All real exports remain local to the browser.
+
+## R5 無內容結果與自願回饋
+
+R5 純文字摘要只從固定白名單檢查碼和有限計數構成，不會匯入或反射任意原文、路徑與 ID。R5 五題回饋也只使用白名單選項，僅由使用者按下下載才建立本地 JSON，不包含使用者身分或自動追蹤資訊；自行送至 GitHub Issue 仍會公開 GitHub 帳號。下載的單篇 HTML **會包含對話本文**，不能誤當作無敏感內容文件。

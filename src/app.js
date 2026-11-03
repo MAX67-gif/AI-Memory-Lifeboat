@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.4.0 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.5.0 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -9,7 +9,8 @@
     archiveAssessment:$('archiveAssessment'),healthSummary:$('healthSummary'),healthCards:$('healthCards'),
     downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus'),
     tryDemo:$('tryDemo'),demoBanner:$('demoBanner'),pilotPanel:$('pilotPanel'),pilotEase:$('pilotEase'),
-    pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus')};
+    pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),pilotTask:$('pilotTask'),pilotScope:$('pilotScope'),
+    downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult')};
   const core=window.AMLCore, zip=window.AMLZip;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
@@ -42,7 +43,7 @@
     generation++;comparisonGeneration++;current=null;older=null;compared=null;selected=null;
     currentFile=null;matchedAttachmentPaths=[];byteReport=null;healthReport=null;demoActive=false;
     e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
-    for(const sel of [e.pilotEase,e.pilotClarity,e.pilotReuse])sel.value='NOT_TESTED';
+    for(const sel of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])sel.value='NOT_TESTED';
     e.pilotStatus.textContent='沒有背景傳送或追蹤；不需要登入 GitHub 才能使用本工具。';
     e.verifyAttachments.disabled=true;e.attachmentVerifyStatus.textContent='請先載入 ZIP，才能進行選用檢查。';
     e.file.value='';e.olderFile.value='';e.olderFile.disabled=true;e.olderStatus.textContent='請先載入最新版匯出檔。';e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;e.search.value='';e.list.replaceChildren();
@@ -170,6 +171,8 @@
   async function importFile(file){
     if(!file)return;
     demoActive=false;e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
+    // R5: never carry a demo/previous-export answer into a new source's optional feedback.
+    for(const select of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])select.value='NOT_TESTED';
     const rev=++generation;comparisonGeneration++;
     current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;
     currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;
@@ -251,20 +254,25 @@
   e.tryDemo.addEventListener('click',loadSyntheticDemo);
   e.downloadPilot.addEventListener('click',()=>{
     if(!current)return;
-    const receipt=window.AMLPilot.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.4.0.json','application/json;charset=utf-8');
+    const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
+      firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.5.0.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
+  e.downloadFirstResult.addEventListener('click',()=>{
+    if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
+      'aml-first-result-v0.5.0.txt','text/plain;charset=utf-8');
+  });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.4.0.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.5.0.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.4.0.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.5.0.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.4.0.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.5.0.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',()=>{if(current&&selected!==null){
     const c=current.conversations[selected];download(core.exportConversationHtml(c),'aml-conversation.html','text/html;charset=utf-8');
   }});
