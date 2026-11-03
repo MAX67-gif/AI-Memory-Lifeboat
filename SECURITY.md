@@ -21,3 +21,7 @@ The demo is fully embedded fictional data; CSP `connect-src 'none'` remains. The
 ## R5 無內容結果與自願回饋
 
 R5 純文字摘要只從固定白名單檢查碼和有限計數構成，不會匯入或反射任意原文、路徑與 ID。R5 五題回饋也只使用白名單選項，僅由使用者按下下載才建立本地 JSON，不包含使用者身分或自動追蹤資訊；自行送至 GitHub Issue 仍會公開 GitHub 帳號。下載的單篇 HTML **會包含對話本文**，不能誤當作無敏感內容文件。
+
+## R6 numbered-part safety boundary (2026-11-03, sandbox)
+
+No nested ZIP extraction, no auto-repair, no partial ZIP success. A set of numbered shards must be unique, contiguous from `000`, in one directory, and mutually exclusive with classic `conversations.json`. All selected JSON entries must pass exact local-header checks, DEFLATE/STORE restrictions, UTF-8/JSON validation and ZIP CRC32, within the existing 128 MiB archive and 64 MiB total uncompressed JSON budget; max 32 shards and 30,000 rows. Neither the ZIP file names nor source content are reflected into shareable health guidance. Users must keep the original export; passing these scoped checks does not prove full provider account data.

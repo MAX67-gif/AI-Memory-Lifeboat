@@ -1,10 +1,18 @@
+# Changelog
+
+## v0.6.0 Preview — first sandbox validation 2026-11-03 (source publication requires GitHub CI)
+
+- Add bounded recognition of consecutive numbered `conversations-NNN.json` shards inside a ZIP, preserving the single `conversations.json` workflow.
+- Reject missing, duplicate, mixed, mismatched-directory, oversized and corrupted shards without silently dropping records.
+- Warn when a user opens one numbered JSON outside its collection; indicate number of recognized shards without echoing paths in shareable reports.
+- Add synthetic adversarial tests. No account completeness, attachment authenticity, external pilot/adoption or public Release is claimed.
+
 ## v0.5.0 Preview — 2026-11-02
 
 - Added result-navigation anchors and a content-free plain-text first-result summary with strict trusted-only wording.
 - Added voluntary five-choice v2 feedback without transmitting personal content or inferred adoption results; v1 remains unchanged for compatibility.
 - Added negative security, accessibility and backward-compatibility tests. No real-user study or official Release claimed.
 
-# Changelog
 
 ## v0.4.0 Preview — 2026-11-02
 

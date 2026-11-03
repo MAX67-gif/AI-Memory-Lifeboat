@@ -22,14 +22,14 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.5.0 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.6.0 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
       <section class="hero" aria-labelledby="headline">
         <p class="eyebrow">LOCAL-FIRST · OPEN SOURCE · NO ACCOUNT</p>
         <h1 id="headline">把 AI 對話備份，變成<span>看得懂的紀錄。</span></h1>
-        <p class="lead">載入 ChatGPT 官方匯出的 ZIP 或 <code>conversations.json</code>，檢查可讀結構、搜尋對話、比較兩次匯出並另存單篇離線閱讀檔。所有分析在這個瀏覽器分頁進行。</p>
+        <p class="lead">載入 ChatGPT 官方匯出的 ZIP 或 <code>conversations.json</code>（支援 ZIP 內連續編號 JSON 分片），檢查可讀結構、搜尋對話、比較兩次匯出並另存單篇離線閱讀檔。所有分析在這個瀏覽器分頁進行。</p>
         <div class="trust"><span>無需註冊</span><span>不向我們上傳對話</span><span>保留原始備份</span></div>
       </section>
       <section class="panel first-use-panel" aria-labelledby="firstUseTitle">
@@ -44,7 +44,7 @@
           <div class="upload-icon" aria-hidden="true">⇧</div>
           <label class="primary" for="archiveFile" tabindex="0" role="button">選擇本機檔案</label>
           <input id="archiveFile" tabindex="-1" type="file" accept=".zip,.json,application/zip,application/json" aria-describedby="uploadHint">
-          <p id="uploadHint">支援 ZIP 128 MiB 以下、單一 JSON 64 MiB 以下。僅支援已知的 ChatGPT <code>conversations.json</code> 結構。</p>
+          <p id="uploadHint">支援 ZIP 128 MiB 以下、單一 JSON 64 MiB 以下。支援 ChatGPT <code>conversations.json</code>，及 ZIP 內連續編號的 <code>conversations-000.json</code> 等分片；單一編號 JSON 只能視為局部資料。</p>
         </div>
         <div class="actions"><button id="clearBtn" type="button" class="quiet" disabled>清除本頁資料</button><a href="https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data" target="_blank" rel="noopener noreferrer">如何取得官方匯出檔？</a></div>
         <p id="status" class="status" role="status" aria-live="polite">尚未載入任何檔案。</p>

@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.4.0 ZIP reader. Minimal central-directory reader.
+/* AI Memory Lifeboat v0.6.0 ZIP reader. Minimal central-directory reader.
  * No file extraction; bounded decompression; CRC check for target JSON.
  * Copyright (c) 2026 MAX67-gif. MIT.
  */
@@ -11,6 +11,7 @@
   const MAX_ARCHIVE = 128 * 1024 * 1024;
   const MAX_UNPACKED_JSON = 64 * 1024 * 1024;
   const MAX_FILES = 25000;
+  const MAX_JSON_SHARDS = 32; // bounded list of numbered JSON parts, not full-account certification
   const MAX_NAME_BYTES = 4096;
   const decoder = new TextDecoder('utf-8', {fatal:true});
   function fail(code) { throw new Error('ZIP_'+code); }
@@ -91,35 +92,66 @@
     for (const c of chunks) {out.set(c,cursor); cursor+=c.byteLength;}
     return out;
   }
-  async function getConversationsJson(bytes) {
-    const entries=readEntries(bytes);
-    const candidates=entries.filter(e => e.name==='conversations.json'||e.name.endsWith('/conversations.json'));
-    if (!candidates.length) fail('CONVERSATIONS_JSON_MISSING');
-    if (candidates.length!==1) fail('MULTIPLE_CONVERSATIONS_JSON');
-    const e=candidates[0];
-    if (e.flags & 1) fail('ENCRYPTED_UNSUPPORTED');
-    if (e.method!==0 && e.method!==8) fail('COMPRESSION_UNSUPPORTED');
-    if (e.unpacked>MAX_UNPACKED_JSON || e.compressed>MAX_ARCHIVE) fail('JSON_TOO_LARGE');
-    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    const p=e.localOffset;
-    if (p+30>bytes.byteLength || uint32(view,p)!==0x04034b50) fail('LOCAL_HEADER_INVALID');
-    const nameLen=view.getUint16(p+26,true),extraLen=view.getUint16(p+28,true);
-    const method=view.getUint16(p+8,true);
-    const localFlags=view.getUint16(p+6,true);
-    if (method!==e.method || localFlags!==e.flags) fail('HEADER_MISMATCH');
-    const localName=decodeName(bytes.subarray(p+30,p+30+nameLen),localFlags);
-    if (localName!==e.name) fail('LOCAL_CENTRAL_NAME_MISMATCH');
-    const dataStart=p+30+nameLen+extraLen;
-    if (dataStart>bytes.length||dataStart+e.compressed>bytes.length) fail('DATA_OUT_OF_BOUNDS');
+  function selectConversationEntries(entries) {
+    const full=entries.filter(e => /(^|\/)conversations\.json$/.test(e.name));
+    const shards=entries.map(e => {
+      const m=/^(.*\/)?conversations-(\d{3})\.json$/.exec(e.name);
+      return m?{entry:e, prefix:m[1]||'', number:Number(m[2])}:null;
+    }).filter(Boolean);
+    const possible=entries.filter(e => /(^|\/)conversations-\d+\.json$/.test(e.name));
+    if(possible.length>shards.length)fail('UNSUPPORTED_SHARD_NAME');
+    if(full.length && (full.length!==1 || shards.length))fail('AMBIGUOUS_JSON_SOURCES');
+    if(full.length===1)return {kind:'SINGLE_JSON',selected:[full[0]]};
+    if(!shards.length)fail('CONVERSATIONS_JSON_MISSING');
+    if(shards.length>MAX_JSON_SHARDS)fail('TOO_MANY_JSON_SHARDS');
+    const prefix=shards[0].prefix;
+    if(shards.some(s=>s.prefix!==prefix))fail('MULTIPLE_SHARD_DIRECTORIES');
+    shards.sort((a,b)=>a.number-b.number);
+    for(let i=0;i<shards.length;i++)if(shards[i].number!==i)
+      fail(shards[i].number<i?'DUPLICATE_JSON_SHARD':'MISSING_JSON_SHARD');
+    const combined=shards.reduce((size,s)=>size+s.entry.unpacked,0);
+    if(combined>MAX_UNPACKED_JSON)fail('JSON_SHARDS_TOO_LARGE');
+    return {kind:'NUMBERED_JSON_SHARDS',selected:shards.map(s=>s.entry)};
+  }
+  async function readJsonEntry(bytes, view, e) {
+    if(e.flags&1)fail('ENCRYPTED_UNSUPPORTED');
+    if(e.method!==0&&e.method!==8)fail('COMPRESSION_UNSUPPORTED');
+    if(e.unpacked>MAX_UNPACKED_JSON||e.compressed>MAX_ARCHIVE)fail('JSON_TOO_LARGE');
+    const at=e.localOffset;
+    if(at+30>bytes.length||uint32(view,at)!==0x04034b50)fail('LOCAL_HEADER_INVALID');
+    const nameLen=view.getUint16(at+26,true),extraLen=view.getUint16(at+28,true);
+    const method=view.getUint16(at+8,true),flags=view.getUint16(at+6,true);
+    if(method!==e.method||flags!==e.flags)fail('HEADER_MISMATCH');
+    const nameEnd=at+30+nameLen;
+    if(nameEnd>bytes.length)fail('LOCAL_NAME_OUT_OF_BOUNDS');
+    const localName=decodeName(bytes.subarray(at+30,nameEnd),flags);
+    if(localName!==e.name)fail('LOCAL_CENTRAL_NAME_MISMATCH');
+    const dataStart=nameEnd+extraLen;
+    if(dataStart>bytes.length||dataStart+e.compressed>bytes.length)fail('DATA_OUT_OF_BOUNDS');
     const compressed=bytes.subarray(dataStart,dataStart+e.compressed);
     const unpacked=e.method===0?compressed:await inflateRawLimited(compressed,e.unpacked);
-    if (unpacked.length!==e.unpacked) fail('UNCOMPRESSED_SIZE_MISMATCH');
-    if (crc32(unpacked)!==e.crc) fail('CRC_MISMATCH');
-    let text;
-    try {text=decoder.decode(unpacked);} catch (_) {fail('INVALID_UTF8_JSON');}
-    let parsed;
-    try {parsed=JSON.parse(text.replace(/^\uFEFF/,''));} catch (_) {fail('INVALID_JSON');}
-    return {parsed, entryCount:entries.length, targetPath:e.name, entries};
+    if(unpacked.length!==e.unpacked)fail('UNCOMPRESSED_SIZE_MISMATCH');
+    if(crc32(unpacked)!==e.crc)fail('CRC_MISMATCH');
+    let txt;
+    try{txt=decoder.decode(unpacked);}catch(_){fail('INVALID_UTF8_JSON');}
+    try{return JSON.parse(txt.replace(/^\uFEFF/,''));}catch(_){fail('INVALID_JSON');}
+  }
+  async function getConversationsJson(bytes) {
+    const entries=readEntries(bytes);
+    const selection=selectConversationEntries(entries);
+    const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+    const all=[];
+    let total=0;
+    for(const e of selection.selected){
+      const parsed=await readJsonEntry(bytes,view,e);
+      if(!Array.isArray(parsed))fail('EXPECTED_CONVERSATIONS_ARRAY');
+      total+=parsed.length;
+      if(total>30000)fail('TOO_MANY_CONVERSATIONS');
+      for(const row of parsed)all.push(row);
+    }
+    return {parsed:all,entryCount:entries.length,
+      targetPath:selection.kind==='SINGLE_JSON'?selection.selected[0].name:null,
+      sourceKind:selection.kind,sourceFileCount:selection.selected.length,entries};
   }
   const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024;
   const MAX_ATTACHMENT_TOTAL = 16 * 1024 * 1024;
@@ -183,5 +215,5 @@
     return result;
   }
   return Object.freeze({readEntries,getConversationsJson,verifyMatchedAttachments,crc32,
-    MAX_ARCHIVE,MAX_UNPACKED_JSON,MAX_ATTACHMENT_BYTES,MAX_ATTACHMENT_TOTAL,MAX_ATTACHMENT_ENTRIES});
+    MAX_ARCHIVE,MAX_UNPACKED_JSON,MAX_JSON_SHARDS,MAX_ATTACHMENT_BYTES,MAX_ATTACHMENT_TOTAL,MAX_ATTACHMENT_ENTRIES});
 });
