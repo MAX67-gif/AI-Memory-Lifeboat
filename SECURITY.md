@@ -25,3 +25,9 @@ R5 純文字摘要只從固定白名單檢查碼和有限計數構成，不會�
 ## R6 numbered-part safety boundary (2026-11-03, sandbox)
 
 No nested ZIP extraction, no auto-repair, no partial ZIP success. A set of numbered shards must be unique, contiguous from `000`, in one directory, and mutually exclusive with classic `conversations.json`. All selected JSON entries must pass exact local-header checks, DEFLATE/STORE restrictions, UTF-8/JSON validation and ZIP CRC32, within the existing 128 MiB archive and 64 MiB total uncompressed JSON budget; max 32 shards and 30,000 rows. Neither the ZIP file names nor source content are reflected into shareable health guidance. Users must keep the original export; passing these scoped checks does not prove full provider account data.
+
+## R7 單檔分發 CSP／安全保護
+
+`tools/build_standalone.js` 每次讀取原始碼與樣式，產生固定內容的單一 HTML；每個內嵌 JavaScript 與 CSS 各計算 **SHA256 CSP hash**。完整單檔仍用 `default-src 'none'`、`connect-src 'none'`、`form-action 'none'`，沒有 CDN、遠端模型、登入或任意 ZIP 程式碼執行。CI 必須比對所有來源檔與分發單檔的一致性（`npm run build:check`）；合成瀏覽器驗證非外部審計，也不等於部署網站 CSP 已測。
+
+English first-task guide 只保證首次任務文字，進階檢查仍主要是繁體中文。GitHub File 頁面與 raw 下載屬 GitHub 平台網路流程，不能寫成完全沒有任何網路請求。未經使用者同意，本版不開 GitHub Pages 設定。

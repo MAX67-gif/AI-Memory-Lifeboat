@@ -1,5 +1,13 @@
 # AI Memory Lifeboat
 
+## Start in one file — R7 offline first-task gateway
+
+**[Get the single-file offline inspector](dist/AI_Memory_Lifeboat_Offline.html)**: open its GitHub file page, choose **Download raw**, then open the downloaded HTML in your browser. You do not need Node.js, an account, an API key, or your personal data to try the fictional sample. The same underlying inspector code is included in the file, along with a hash-based Content Security Policy (CSP).
+
+A **bilingual English/Traditional Chinese first-task guide** is available. **The advanced inspection screens are still primarily Traditional Chinese**; this is not a claim of full English translation. Your official export is processed in your own browser tab; keep your original ZIP. The fictional sample **does not** validate any personal account.
+
+If the direct HTML cannot be downloaded, use **Code → Download ZIP → extract → open index.html**. GitHub Pages and formal GitHub Releases are **not claimed to be enabled**. Version v0.7.0 Preview is not evidence of independent adoption or OpenAI Codex for Open Source selection.
+
 [繁體中文](README.md) · [Getting started](docs/QUICK_START.md) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Pilot protocol](docs/FIRST_RESULT_PILOT.md)
 
 **Open a supported ChatGPT export locally, examine readable conversation structures, search current branches, compare two snapshots, inspect limited ZIP attachment references, and download a content-free health guide.** No sign-in, uploads, tracking SDKs or third-party model API is required.

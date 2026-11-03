@@ -18,3 +18,7 @@ R2 extensions: `aml.snapshot-diff.v1` (summary only), `aml.archive-path-assessme
 R3 adds independent, append-only sidecars `aml.health.v1` and `aml.attachment-bytes.v1`. `aml.audit.v1`, `aml.snapshot-diff.v1`, and `aml.archive-path-assessment.v1` retain previous field meanings. Optional `audit.attachment_byte_assessment` is a scope-limited addition, never a blanket file-integrity verdict. See [R3 guide](HEALTH_AND_BYTE_VERIFICATION.md).
 
 R6 optional audit additions: `source_container` = `SINGLE_JSON` / `NUMBERED_JSON_SHARDS` / `SINGLE_NUMBERED_JSON`; `numbered_json_parts` is a count, **not** a content completeness proof. `health` gains two trusted-only guidance codes `SINGLE_NUMBERED_JSON` and `MULTIPLE_NUMBERED_JSON`. A ZIP that fails shard validation yields no partial success. See [R6 detailed contract](R6_NUMBERED_SHARDS_SUPPORT.md).
+
+## R7 檔案分發與格式相容
+
+R7 新增的是**分發形式**而不是新的匯入格式；單檔 HTML 與原多檔 `index.html` 共用相同 `AMLCore`／`AMLZip`／`AMLCompare`／`AMLHealth`。R6 既有 JSON/ZIP、連號分片、容量、安全拒絕、附件 CRC 與 v1/v2 回饋資料契約保持不變。單一 HTML 內建 hash-based CSP，可在本機使用，仍不能證明全部帳戶資料完整。

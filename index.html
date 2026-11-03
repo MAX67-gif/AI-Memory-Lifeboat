@@ -7,7 +7,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.7.0 Preview</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="src/core.js"></script>
   <script defer src="src/zip.js"></script>
@@ -18,11 +18,12 @@
   <script defer src="src/pilot_r5.js"></script>
   <script defer src="src/first_result.js"></script>
   <script defer src="src/app.js"></script>
+  <script defer src="src/gateway.js"></script>
 </head>
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.6.0 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.7.0 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -31,6 +32,24 @@
         <h1 id="headline">把 AI 對話備份，變成<span>看得懂的紀錄。</span></h1>
         <p class="lead">載入 ChatGPT 官方匯出的 ZIP 或 <code>conversations.json</code>（支援 ZIP 內連續編號 JSON 分片），檢查可讀結構、搜尋對話、比較兩次匯出並另存單篇離線閱讀檔。所有分析在這個瀏覽器分頁進行。</p>
         <div class="trust"><span>無需註冊</span><span>不向我們上傳對話</span><span>保留原始備份</span></div>
+      </section>
+      <section class="panel gateway-panel" id="firstTaskGateway" aria-labelledby="gatewayTitle" lang="zh-Hant">
+        <div class="gateway-heading">
+          <div><span class="step">00</span><h2 id="gatewayTitle">先試一次，不必準備私人資料</h2></div>
+          <button id="gatewayLanguage" type="button" class="secondary" aria-pressed="false" aria-controls="firstTaskGateway">English</button>
+        </div>
+        <p id="gatewayDescription">使用原創合成對話，在這台裝置體驗備份檢查。這不是你的帳戶，也不會證明任何真實備份完整。</p>
+        <div class="gateway-steps" role="list">
+          <p id="gatewayStepOne" role="listitem">① 點選「試用合成示範」，不必下載帳戶資料。</p>
+          <p id="gatewayStepTwo" role="listitem">② 檢查可讀對話與限制，試著找出範例內容。</p>
+          <p id="gatewayStepThree" role="listitem">③ 真正要檢查自己的備份時，請使用下方本機檔案選擇器並保留原始 ZIP。</p>
+        </div>
+        <p class="gateway-honesty" id="gatewayHonesty">這份網頁的首次使用引導提供英文；進階體檢介面目前以繁體中文為主，並非完整英文版。</p>
+        <div id="gatewayOutcome" class="gateway-outcome" role="status" aria-live="polite" hidden>
+          <p id="gatewayOutcomeText"></p>
+          <button id="gatewayFindExample" type="button" class="secondary">搜尋合成示範中的 umbrella</button>
+          <a id="gatewayJump" href="#auditTitle">查看詳細體檢（繁體中文）</a>
+        </div>
       </section>
       <section class="panel first-use-panel" aria-labelledby="firstUseTitle">
         <div class="section-heading"><div><span class="step">00</span><h2 id="firstUseTitle">第一次使用？先看合成範例</h2></div><p>不需要匯出帳戶資料</p></div>

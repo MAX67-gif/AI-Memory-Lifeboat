@@ -6,7 +6,7 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFES
 const excluded=new Set(['PUBLIC_PACKAGE_MANIFEST.json','FILE_SHA256SUMS.txt']);
 test('R6 package manifest only lists safe relative public file paths and correct bytes',()=>{
   assert.equal(manifest.schema,'aml.public-package.v1');
-  assert.equal(manifest.version,'0.6.0-preview-source');
+  assert.equal(manifest.version,'0.7.0-preview-source');
   assert.equal(manifest.github_publication,'EXTERNAL_VERIFICATION_REQUIRED');
   assert.equal(manifest.github_branch_merge,'EXTERNAL_VERIFICATION_REQUIRED');
   assert.ok(Array.isArray(manifest.files)&&manifest.files.length>=40);
@@ -21,7 +21,7 @@ test('R6 package manifest only lists safe relative public file paths and correct
     assert.equal(fs.statSync(path.join(root,f.path)).size,f.bytes);
   }
   assert.ok(seen.has('examples/synthetic-numbered-export.zip'));
-  assert.ok(seen.has('tests/test_shards_r6.js'));
+  assert.ok(seen.has('tests/test_shards_r6.js'));assert.ok(seen.has('dist/AI_Memory_Lifeboat_Offline.html'));assert.ok(seen.has('src/gateway.js')); 
 });
 test('R6 SHA256SUMS and manifest list have exactly the same public files',()=>{
  const rows=fs.readFileSync(path.join(root,'FILE_SHA256SUMS.txt'),'utf8').trim().split('\n').map(s=>s.match(/^([a-f0-9]{64})  (.+)$/));

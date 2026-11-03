@@ -21,3 +21,7 @@ R5 已提供純文字可讀結果、簡單導航與自述回饋 v2。真人獨�
 ## R6 sandbox scope and decision gate
 
 OpenAI's documented numbered ChatGPT export variant is supported in a **bounded experimental ZIP path** with explicit fail-closed behavior. Before public release: verify this against synthetic ZIP adversarial cases plus real-browser controls; only independent opt-in users may assess true-export compatibility on their own devices. ZIP64, nested ZIPs, large archives beyond the existing caps, and alternate providers remain unsupported. Do not treat R6 engineering checks as external adoption.
+
+## R7｜A/B First-Task Gateway
+
+A：判斷主要障礙是新手從 GitHub 首次使用的繁瑣，而非缺乏其他 AI 格式。B：先以單一可攜 HTML 與中英文首次任務引導完成可測能力；不擅自打開 GitHub Pages 設定或宣稱正式 Release。B 工程合成測試不能取代 5 位自願一般使用者的 T1／T2；真實完成、回訪、競品同任務對照依舊 `NOT_COLLECTED`。後續功能需由這些外部結果決定。

@@ -20,3 +20,9 @@ R4 新增三題式選用回饋，下載 JSON 並不會自動送出。只有明�
 ## R6｜ZIP 裡有多個編號的對話 JSON？
 
 先選**整份原始 ZIP**，本工具會在 128 MiB ZIP 與 64 MiB 解壓 JSON 上限內，處理同一資料夾、從 `conversations-000.json` 開始的連續編號分片。只選其中一個編號 JSON 會標記「可能缺少其他分片」。ZIP 缺號或有衝突時，工具會拒絕整份匯入；不能宣稱已經讀完所有紀錄。
+
+## R7｜下載單一離線 HTML（免解壓）
+
+從 [單檔工具頁](../dist/AI_Memory_Lifeboat_Offline.html) 點選 GitHub「Download raw」，下載 `AI_Memory_Lifeboat_Offline.html` 並開啟，即可先以原創假資料體驗。點選「English」可以切換首次任務引導語言。**進階體檢仍主要是繁體中文**，目前無 Pages/Release 正式上線證據；不要誤認單檔通過測試等於整個帳戶已備份。
+
+若 GitHub 檔案下載按鈕不可用，使用 Code → Download ZIP 及內含的 `index.html`。單檔沒有自動上傳、遠端模型、註冊、CDN、遙測；離線 HTML 以 SHA256 CSP 限制內嵌程式執行。使用者如有自己的官方匯出，應自行在瀏覽器內選擇、保留原 ZIP；不要將真實內容提交到 Issue。
