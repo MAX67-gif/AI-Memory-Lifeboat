@@ -1,3 +1,11 @@
+## v0.7.0 Preview — 2026-11-03
+
+- Deliver deterministic, dependency-free single-file offline inspector (`dist/AI_Memory_Lifeboat_Offline.html`); users can download one HTML from GitHub without extracting the entire source repository.
+- Add bilingual zh-TW/en first-task gateway to the same inspector; do not claim full English advanced UI.
+- Build hashed inline-script/style Content Security Policy without `unsafe-inline`, remote assets, telemetry or upload endpoints.
+- Preserve R6 ZIP/JSON shard limits, both existing offline workflows and privacy-preserving v1/v2 pilot schemas.
+- Test source/distribution parity and Chromium offline synthetic tasks; no claims of verified GitHub Pages, formal Release, real-user adoption, account completeness or Codex selection.
+
 # Changelog
 
 ## v0.6.0 Preview — first sandbox validation 2026-11-03 (source publication requires GitHub CI)

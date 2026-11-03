@@ -1,0 +1,1380 @@
+<!-- Generated from committed sources. Edit originals then rebuild. v0.7.0 -->
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-f1B/DT73QJhb150+SzrJRPtB6NG9BE+vkOa2dfVkAMo=' 'sha256-BqUy/mzwn6RfXyerzB2OTw+2+ZkjQ/x6tyADmOKQejY=' 'sha256-Y7BgT0pdKLS2GbcYru5O6J2PusaZqMgFOKp9IAzyE90=' 'sha256-t8U8mo2SrAPRb4OEayiZxcQKdLWAVYKDvrfpns8G6i0=' 'sha256-CGguLXYdujCKeSU5k3uKxPFiyOh33/kOD5gos+2MeLQ=' 'sha256-3X8ZjQHhkdNew2ef/lw5XG/zgEqGm1qbgiOOnkPsprU=' 'sha256-c8NHi5l/4DWr9LYbx3GXuZdh79SYsQHEC2K6CZFwpf0=' 'sha256-qRfndb+zoplTm7KwYlsaz5Mxce7LYobWmo4xLxrSirQ=' 'sha256-Cxk23XZpvMfvMoGI7yWJ6LRCHwFZNzS5Ni2DaDBUgjQ=' 'sha256-Qj9XcNFOdlH0xUHnADL8nB63ENKk8dQWr2XNUviYsc4='; style-src 'sha256-KZA0w30N+yx4sWjBk5UzQ1KSE3vy015fwWxa+EGvzOY='; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
+  <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.7.0 Preview</title>
+  <style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.56;color:#1d2933;background:#f4f7f9;color-scheme:light}
+*{box-sizing:border-box}body{margin:0}a{color:#12618f;text-decoration:none}a:hover{text-decoration:underline}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #2674a6;outline-offset:2px}
+.shell{max-width:1150px;margin:auto;padding:0 28px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0;border-bottom:1px solid #dfe6eb;font-size:.91rem}.identity{display:flex;align-items:center;gap:12px}.identity strong{display:block;font-size:1rem}.identity span:not(.mark){color:#657380;font-size:.78rem}.mark{display:grid;place-items:center;background:#123849;color:white;border-radius:12px;font-size:27px;font-weight:bold;width:42px;height:42px}
+.hero{padding:52px 0 34px;max-width:830px}.eyebrow{font-size:.75rem;font-weight:750;letter-spacing:.16em;color:#327180;margin-bottom:12px}h1{font-size:clamp(2rem,4.1vw,3.4rem);line-height:1.25;margin:0 0 17px;letter-spacing:-.045em}h1 span{display:block;color:#247780}.lead{color:#526674;font-size:1.07rem;max-width:780px;margin-bottom:20px}.trust{display:flex;gap:9px;flex-wrap:wrap}.trust span{background:#e5f2ef;color:#185f5e;border-radius:50px;padding:5px 12px;font-size:.81rem;font-weight:600}
+.panel{background:#fff;border:1px solid #dce5e9;border-radius:18px;padding:25px;margin-bottom:22px;box-shadow:0 7px 26px rgba(25,53,70,.04)}.section-heading,.section-heading>div{display:flex;align-items:center;gap:10px}.section-heading{justify-content:space-between;flex-wrap:wrap;margin-bottom:22px}.section-heading h2{font-size:1.23rem;margin:0;letter-spacing:-.015em}.section-heading p{font-size:.83rem;color:#6d7b85;margin:0}.step{background:#e8f1f3;color:#235a66;font-size:.76rem;font-weight:750;min-width:32px;height:32px;border-radius:9px;display:grid;place-items:center}
+.upload-zone{text-align:center;border:2px dashed #b7cbd2;background:#f8fbfc;border-radius:15px;padding:30px 20px}.upload-icon{font-size:2.15rem;color:#22616a;line-height:1}.primary{display:inline-block;background:#165b6a;color:#fff;border:0;border-radius:10px;padding:11px 24px;margin:10px 0 6px;font-weight:700;cursor:pointer}.primary:hover{background:#0f4752}.upload-zone input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}.upload-zone input:focus-visible+.primary{outline:3px solid #2674a6}.upload-zone p{font-size:.84rem;color:#607682;margin:6px 0}.actions{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:17px}.secondary,.quiet{border:1px solid #c0d1d7;background:#fff;color:#244e5a;border-radius:9px;padding:8px 13px;font-size:.86rem;font-weight:680}.secondary:hover:not(:disabled){background:#edf6f7}.quiet{color:#66737b}.status{font-size:.9rem;color:#4f5f67;margin:16px 0 0}.status.error{color:#a22a31;font-weight:650}.status.ok{color:#186547}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.metric{border:1px solid #e2e8ec;border-radius:12px;padding:15px;background:#fbfcfd}.metric strong{font-size:1.7rem;display:block;color:#173c49;line-height:1.3}.metric span{font-size:.79rem;color:#657680}.notice{border-left:4px solid #a77d36;padding:12px 16px;background:#fff8e9;margin-top:17px;border-radius:8px}.notice strong{color:#7c571d}.notice p{margin:4px 0;font-size:.9rem;color:#6f6048}details{margin-top:15px;border:1px solid #e2e8ec;border-radius:10px;padding:10px 13px;color:#40545d;font-size:.9rem}summary{cursor:pointer;font-weight:650}details ul{padding-left:22px}details li{margin-top:5px;overflow-wrap:anywhere}
+.field-label{display:block;margin-bottom:7px;font-size:.87rem;font-weight:650;color:#455a65}#searchBox{width:100%;border:1px solid #b9cbd3;padding:11px 13px;border-radius:9px;margin-bottom:16px;background:#fff;color:#223842}.reader{display:grid;grid-template-columns:minmax(205px,32%) minmax(0,1fr);min-height:340px;max-height:570px;border:1px solid #e0e8eb;border-radius:12px;overflow:hidden}.conversation-list{overflow:auto;border-right:1px solid #e0e8eb;background:#fbfcfd}.conversation-list button{display:block;text-align:left;width:100%;background:none;border:none;border-bottom:1px solid #ebeff1;padding:13px;color:#264551;overflow-wrap:anywhere}.conversation-list button:hover{background:#eff5f6}.conversation-list button.selected{background:#e1f0f2;box-shadow:inset 4px 0 #1b6d7a;font-weight:650}.conversation-list small{display:block;color:#70808a;margin-top:3px;font-size:.73rem}.conversation-detail{padding:18px 24px;overflow:auto;overflow-wrap:anywhere}.conversation-detail h3{font-size:1.3rem;line-height:1.35;margin:0 0 5px}.small-note,.placeholder{font-size:.85rem;color:#65737b}.message{margin:14px 0;border-top:1px solid #e7edef;padding-top:12px}.message strong{color:#285965;font-size:.8rem;text-transform:capitalize}.message pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:.92rem;margin:6px 0;line-height:1.6;color:#2a3e46}.note{font-size:.83rem;color:#926323}footer{padding:14px 0 40px;color:#76848b;font-size:.78rem;border-top:1px solid #e0e6e9}footer p{margin:5px 0}
+@media(max-width:700px){.shell{padding:0 15px}.topbar{padding:16px 0}.hero{padding:30px 0 24px}.panel{padding:17px;border-radius:14px}.metrics{grid-template-columns:repeat(2,1fr)}.reader{grid-template-columns:1fr;max-height:none}.conversation-list{border-right:0;border-bottom:1px solid #dce5e9;max-height:210px}.conversation-detail{max-height:450px;padding:16px}.section-heading{align-items:flex-start}.topbar>a{font-size:.75rem}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important}}
+@media(prefers-color-scheme:dark){:root{background:#0c1a22;color:#e5eff2;color-scheme:dark}.topbar{border-color:#30444c}.lead,.section-heading p,.small-note,.placeholder,footer{color:#a3b7c0}.panel{background:#182932;border-color:#344a55;box-shadow:none}.upload-zone,.metric,.conversation-list{background:#20343e;border-color:#395560}.upload-zone p,.metric span,.conversation-list small,.field-label,.status,details{color:#b2c6ce}.metric strong,.section-heading h2,.conversation-detail h3,.message pre{color:#eef9fa}.secondary,.quiet,#searchBox{background:#253b45;border-color:#46616b;color:#f1f7f9}.notice{background:#3b3025;border-color:#dbaf59}.notice strong{color:#ffda8e}.notice p{color:#ecd2aa}.message,.conversation-list button,.reader,.conversation-list{border-color:#38505a}.conversation-list button{color:#d6e7ec}.conversation-list button:hover,.conversation-list button.selected{background:#31505b}.message strong{color:#96dce4}.note{color:#f6c987}}
+
+/* R2 conservative archive and delta views */
+.compare-import input[type=file]{width:100%;max-width:560px;border:1px solid #b9cbd3;border-radius:9px;padding:10px;background:#fff;color:#244e5a}
+#comparePanel{margin-top:16px;border-top:1px solid #dce5e9;padding-top:18px}
+.compare-list{max-height:320px;overflow-y:auto;padding:0;list-style:none;border:1px solid #e2e8ec;border-radius:10px;margin:14px 0}
+.compare-list li{border-bottom:1px solid #e2e8ec;padding:10px 13px;overflow-wrap:anywhere;font-size:.9rem}
+.compare-list li:last-child{border-bottom:0}
+.compare-list span{color:#66737b}
+.archive-assessment{background:#edf5f6;color:#25535d;border-radius:9px;padding:12px 14px;font-size:.85rem;margin:16px 0}
+@media(prefers-color-scheme:dark){.compare-import input[type=file]{background:#253b45;border-color:#46616b;color:#f1f7f9}#comparePanel,.compare-list,.compare-list li{border-color:#38505a}.compare-list span{color:#b3c7ce}.archive-assessment{background:#25464c;color:#d1e9ee}}
+
+/* R3: deterministic, accessible next-action cards; no color-only meaning. */
+.health-intro{margin-top:20px}.health-intro h3,.byte-check h3{margin:0 0 8px;font-size:1.08rem}
+.health-summary{padding:12px 14px;border:1px solid var(--border,#9ca3af);border-radius:10px;margin:0 0 12px;font-weight:650}
+.health-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,265px),1fr));gap:10px;margin-bottom:15px}
+.health-card{padding:12px 14px;border:1px solid var(--border,#9ca3af);border-left:4px solid #718096;border-radius:10px;min-width:0}
+.health-card[data-priority="ATTENTION"]{border-left-color:#bb5a37}
+.health-card[data-priority="REVIEW"]{border-left-color:#7f73bc}
+.health-card h4{font-size:.98rem;margin:0 0 6px}.health-card p{margin:0 0 4px;font-size:.89rem;line-height:1.65}
+.health-card small{font-size:.78rem;opacity:.85}
+.byte-check{margin:16px 0;padding:13px 15px;border:1px solid var(--border,#9ca3af);border-radius:12px}
+.byte-check button{margin:7px 0}.byte-check .status{overflow-wrap:anywhere}
+
+/* R4: short, optional first-use walkthrough and fully local pilot receipt. */
+.first-use-panel{background:#edf8f5;border-color:#b5d7d0}
+.first-use-panel p{color:#2e5661}.first-use-panel .primary{font-weight:750}
+.demo-banner{padding:13px 16px;border:2px solid #557c9d;border-radius:11px;background:#f0f7ff;color:#1d4565;font-size:.92rem;margin:6px 0 20px}
+.pilot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pilot-grid label{display:flex;flex-direction:column;gap:7px;font-size:.85rem;font-weight:650;color:#455a65}
+.pilot-grid select{border:1px solid #b9cbd3;border-radius:9px;padding:10px;background:#fff;color:#244e5a;max-width:100%;font:inherit}
+.pilot-panel p{color:#526674}
+@media(max-width:750px){.pilot-grid{grid-template-columns:1fr}}
+@media(prefers-color-scheme:dark){.first-use-panel{background:#193b37;border-color:#3d726b}.first-use-panel p,.pilot-panel p,.pilot-grid label{color:#d7e6e6}.demo-banner{background:#193b50;color:#cce7f8;border-color:#5e96bd}.pilot-grid select{background:#253b45;border-color:#46616b;color:#f1f7f9}}
+
+
+/* R5: first-result shortcuts and text report; navigable without extra JavaScript. */
+.quick-nav{border-color:#a6c8c1;background:#f4fbf9}
+.quick-nav strong{display:block;font-size:1.04rem}
+.quick-nav p{font-size:.87rem;color:#4a6871;margin:7px 0}
+.quick-nav .actions{margin:10px 0;gap:9px}
+.quick-nav .actions a{border:1px solid #9dbfc4;border-radius:10px;padding:9px 12px;display:inline-block;background:#fff;font-size:.88rem;font-weight:650}
+.quick-nav .actions a:focus-visible,.pilot-grid select:focus-visible{outline:3px solid #2674a6;outline-offset:2px}
+@media(prefers-color-scheme:dark){.quick-nav{background:#183832;border-color:#39776c}.quick-nav p{color:#d7e6e6}.quick-nav .actions a{background:#253b45;border-color:#46616b;color:#d9eef5}}
+
+/* R7: one-task bilingual gateway; no hidden tracking or remote resources */
+.gateway-panel{border:1px solid var(--line, #c6ced6);}
+.gateway-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.gateway-heading>div{display:flex;align-items:center;gap:12px}
+.gateway-heading h2{margin:0}
+.gateway-steps{display:grid;gap:6px;margin:14px 0}
+.gateway-steps p{margin:0;line-height:1.7}
+.gateway-honesty{font-size:.88rem;line-height:1.7;opacity:.85}
+.gateway-outcome{border:1px solid var(--line, #c6ced6);border-radius:12px;padding:16px;margin-top:14px;background:var(--panel, transparent)}
+.gateway-outcome p{margin-top:0}
+.gateway-outcome a{display:inline-block;margin-left:12px}
+@media(max-width:520px){.gateway-heading{align-items:stretch}.gateway-heading>div{gap:8px}.gateway-outcome a{display:block;margin:12px 0 0}}
+
+</style>
+  </head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.7.0 Preview</span></div></div>
+      <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
+    </header>
+    <main>
+      <section class="hero" aria-labelledby="headline">
+        <p class="eyebrow">LOCAL-FIRST · OPEN SOURCE · NO ACCOUNT</p>
+        <h1 id="headline">把 AI 對話備份，變成<span>看得懂的紀錄。</span></h1>
+        <p class="lead">載入 ChatGPT 官方匯出的 ZIP 或 <code>conversations.json</code>（支援 ZIP 內連續編號 JSON 分片），檢查可讀結構、搜尋對話、比較兩次匯出並另存單篇離線閱讀檔。所有分析在這個瀏覽器分頁進行。</p>
+        <div class="trust"><span>無需註冊</span><span>不向我們上傳對話</span><span>保留原始備份</span></div>
+      </section>
+      <section class="panel gateway-panel" id="firstTaskGateway" aria-labelledby="gatewayTitle" lang="zh-Hant">
+        <div class="gateway-heading">
+          <div><span class="step">00</span><h2 id="gatewayTitle">先試一次，不必準備私人資料</h2></div>
+          <button id="gatewayLanguage" type="button" class="secondary" aria-pressed="false" aria-controls="firstTaskGateway">English</button>
+        </div>
+        <p id="gatewayDescription">使用原創合成對話，在這台裝置體驗備份檢查。這不是你的帳戶，也不會證明任何真實備份完整。</p>
+        <div class="gateway-steps" role="list">
+          <p id="gatewayStepOne" role="listitem">① 點選「試用合成示範」，不必下載帳戶資料。</p>
+          <p id="gatewayStepTwo" role="listitem">② 檢查可讀對話與限制，試著找出範例內容。</p>
+          <p id="gatewayStepThree" role="listitem">③ 真正要檢查自己的備份時，請使用下方本機檔案選擇器並保留原始 ZIP。</p>
+        </div>
+        <p class="gateway-honesty" id="gatewayHonesty">這份網頁的首次使用引導提供英文；進階體檢介面目前以繁體中文為主，並非完整英文版。</p>
+        <div id="gatewayOutcome" class="gateway-outcome" role="status" aria-live="polite" hidden>
+          <p id="gatewayOutcomeText"></p>
+          <button id="gatewayFindExample" type="button" class="secondary">搜尋合成示範中的 umbrella</button>
+          <a id="gatewayJump" href="#auditTitle">查看詳細體檢（繁體中文）</a>
+        </div>
+      </section>
+      <section class="panel first-use-panel" aria-labelledby="firstUseTitle">
+        <div class="section-heading"><div><span class="step">00</span><h2 id="firstUseTitle">第一次使用？先看合成範例</h2></div><p>不需要匯出帳戶資料</p></div>
+        <p>點一次就能看到備份體檢、兩次匯出差異與對話搜尋的實際畫面。<strong>所有範例均為原創假資料，不代表你的帳戶已通過檢查。</strong></p>
+        <button type="button" class="primary" id="tryDemo">試用合成示範</button>
+        <p class="small-note">想直接檢查自己的資料，可使用下方「選擇本機檔案」。<a href="docs/FIRST_RESULT_PILOT.md">第一次使用與自願試用指引</a></p>
+      </section>
+      <section class="panel import-panel" aria-labelledby="importTitle">
+        <div class="section-heading"><div><span class="step">01</span><h2 id="importTitle">選擇你的備份</h2></div><p>官方匯出 · ZIP / JSON</p></div>
+        <div class="upload-zone">
+          <div class="upload-icon" aria-hidden="true">⇧</div>
+          <label class="primary" for="archiveFile" tabindex="0" role="button">選擇本機檔案</label>
+          <input id="archiveFile" tabindex="-1" type="file" accept=".zip,.json,application/zip,application/json" aria-describedby="uploadHint">
+          <p id="uploadHint">支援 ZIP 128 MiB 以下、單一 JSON 64 MiB 以下。支援 ChatGPT <code>conversations.json</code>，及 ZIP 內連續編號的 <code>conversations-000.json</code> 等分片；單一編號 JSON 只能視為局部資料。</p>
+        </div>
+        <div class="actions"><button id="clearBtn" type="button" class="quiet" disabled>清除本頁資料</button><a href="https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data" target="_blank" rel="noopener noreferrer">如何取得官方匯出檔？</a></div>
+        <p id="status" class="status" role="status" aria-live="polite">尚未載入任何檔案。</p>
+      </section>
+      <section id="results" class="results" hidden aria-label="備份檢查結果">
+        <nav class="panel quick-nav" aria-label="第一次使用：結果導覽">
+          <strong>第一次看結果，先完成這三件事</strong>
+          <p>以下是導覽捷徑，不會自動記錄你是否完成。示範結果不是你的帳戶。</p>
+          <div class="actions"><a href="#auditTitle">① 先看備份健康指引</a><a href="#compareTitle">② 查看新舊備份差異</a><a href="#browseTitle">③ 搜尋並閱讀一則對話</a></div>
+          <p class="small-note">需要保存簡明結論時，可在健康指引下載「純文字摘要」。此導覽不會傳送或儲存操作紀錄。</p>
+        </nav>
+        <p id="demoBanner" class="demo-banner" role="status" hidden><strong>示範資料</strong>：這是合成的兩份假備份，不是你的帳戶。所有結果只用來熟悉操作；若要檢查個人備份，請重新選擇自己的官方匯出檔。</p>
+        <section class="panel audit-panel" aria-labelledby="auditTitle">
+          <div class="section-heading"><div><span class="step">02</span><h2 id="auditTitle">備份體檢</h2></div><button class="secondary" id="downloadAudit" type="button">下載檢查報告 JSON</button></div>
+          <div class="metrics" id="metrics"></div>
+          <div class="health-intro"><h3>下一步怎麼做？</h3><p id="healthSummary" class="health-summary" aria-live="polite"></p></div>
+          <div id="healthCards" class="health-cards"></div>
+          <div class="actions"><button id="downloadHealth" type="button" class="secondary">下載不含聊天內容的健康指引 JSON</button><button id="downloadFirstResult" type="button" class="secondary">下載可閱讀的純文字摘要 TXT</button></div>
+          <p id="archiveAssessment" class="archive-assessment" hidden></p>
+          <div class="byte-check">
+            <h3>進階：有限的附件位元組檢查（選用）</h3>
+            <p class="small-note">只針對 ZIP 中明確且唯一對應的小型附件項目驗證 CRC32；每個最多 4 MiB、總計最多 16 MiB、最多 24 項。不解壓到磁碟、不宣稱原始附件或全部帳戶資料完整。</p>
+            <button id="verifyAttachments" type="button" class="secondary" disabled>檢查可比對的 ZIP 附件</button>
+            <p id="attachmentVerifyStatus" class="status" role="status" aria-live="polite">請先載入 ZIP，才能進行選用檢查。</p>
+          </div>
+          <div class="notice"><strong>檢查範圍有限</strong><p>只核對這份匯出檔內可讀的結構與目前分支。無法證明帳戶所有資料或附件已完整匯出，亦無法把對話還原至另一個 AI 帳戶。</p></div>
+          <details id="warningsPanel"><summary>已知限制與檢查提醒 <span id="warningCount"></span></summary><ul id="warningList"></ul></details>
+        </section>
+        <section class="panel compare-import" aria-labelledby="compareTitle">
+          <div class="section-heading"><div><span class="step">03</span><h2 id="compareTitle">比較兩次匯出（選用）</h2></div><p>不需要帳戶密碼</p></div>
+          <p class="small-note">先載入上方<strong>較新</strong>的匯出，再選擇<strong>較舊</strong>的官方 ZIP／JSON。只比較已匯出的可讀分支、部分欄位和計數；「新版未見」不代表帳戶中已刪除。</p>
+          <label class="field-label" for="olderFile">選擇較早的備份</label>
+          <input id="olderFile" type="file" accept=".zip,.json,application/zip,application/json" disabled>
+          <p id="olderStatus" class="status" role="status">請先載入最新版匯出檔。</p>
+          <div id="comparePanel" hidden>
+            <div class="metrics" id="compareCounts"></div>
+            <p class="note">不比較非目前分支的文字內容，也無法辨認兩份匯出是否屬於同一個帳戶。以下名稱只在本機畫面呈現，不會進入摘要報告。</p>
+            <ul id="compareList" class="compare-list"></ul>
+            <button id="downloadComparison" type="button" class="secondary">下載不含對話名稱的差異摘要 JSON</button>
+          </div>
+        </section>
+        <section class="panel browse-panel" aria-labelledby="browseTitle">
+          <div class="section-heading"><div><span class="step">04</span><h2 id="browseTitle">離線閱讀與搜尋</h2></div><p id="resultCount"></p></div>
+          <label for="searchBox" class="field-label">搜尋目前分支的標題與文字</label>
+          <input id="searchBox" type="search" placeholder="搜尋關鍵字或對話標題…" autocomplete="off">
+          <div class="reader">
+            <nav class="conversation-list" id="conversationList" aria-label="對話清單"></nav>
+            <article class="conversation-detail" id="conversationDetail" aria-live="polite"><p class="placeholder">從左側選一則對話開始閱讀。</p></article>
+          </div>
+          <div class="actions"><button id="downloadHtml" type="button" class="secondary" disabled>下載目前對話 HTML</button><span class="small-note">下載的 HTML 僅包含所選對話的目前分支，原始 ZIP 請自行妥善保存。</span></div>
+        </section>
+        <section class="panel pilot-panel" id="pilotPanel" aria-labelledby="pilotTitle" hidden>
+          <div class="section-heading"><div><span class="step">05</span><h2 id="pilotTitle">願意分享使用感受嗎？（完全自願）</h2></div><p>先在本機產生，不會自動送出</p></div>
+          <p>五個選項可以跳過；其中「是否完成」與「是否理解限制」都只代表你自己選的答案，程式不會把操作行為推論成成功。
+          不必提供名稱、Email、檔案或聊天內容。產生的 JSON 只有固定答案代碼；如果要分享，請先自行檢查內容，再決定是否送給維護者。</p>
+          <div class="pilot-grid">
+            <label>這次操作容易嗎？<select id="pilotEase"><option value="NOT_TESTED">不填寫</option><option value="EASY">容易</option><option value="NEEDED_HELP">需要協助</option><option value="COULD_NOT_FINISH">無法完成</option></select></label>
+            <label>檢查結果好理解嗎？<select id="pilotClarity"><option value="NOT_TESTED">不填寫</option><option value="CLEAR">清楚</option><option value="NEEDS_EXPLANATION">需要額外說明</option><option value="CONFUSING">不易理解</option></select></label>
+            <label>之後會再使用嗎？<select id="pilotReuse"><option value="NOT_TESTED">不填寫</option><option value="YES">會</option><option value="MAYBE">不確定</option><option value="NO">不會</option></select></label>
+            <label>這次有完成第一個任務嗎？（自行回報）<select id="pilotTask"><option value="NOT_TESTED">不填寫</option><option value="COMPLETED_ALONE">自己完成</option><option value="COMPLETED_WITH_HELP">有人協助才完成</option><option value="COULD_NOT_FINISH">沒有完成</option></select></label>
+            <label>你理解「本工具無法證明帳戶完整」嗎？<select id="pilotScope"><option value="NOT_TESTED">不填寫</option><option value="YES">理解</option><option value="UNSURE">不確定</option><option value="NO">尚未理解</option></select></label>
+          </div>
+          <div class="actions"><button class="secondary" type="button" id="downloadPilot">下載不含對話內容的試用回饋 JSON</button><a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat/issues/new?template=pilot-feedback.yml" target="_blank" rel="noopener noreferrer">自願到 GitHub 留下回饋</a></div>
+          <p id="pilotStatus" class="small-note" role="status" aria-live="polite">沒有背景傳送或追蹤；不需要登入 GitHub 才能使用本工具。</p>
+        </section>
+      </section>
+    </main>
+    <footer><p>AI Memory Lifeboat · MIT Open Source · 無追蹤 SDK、無使用者內容後端。若使用瀏覽器擴充功能，請自行確認其讀取權限。</p><p>目前為 Preview，僅提供局部匯出檔檢查，不是備份完整性或平台移轉保證。</p></footer>
+  </div>
+<script>
+/* AI Memory Lifeboat v0.4.0 — pure, offline, dependency-free parser.
+ * Copyright (c) 2026 MAX67-gif. MIT.
+ * Never equate an export with a complete account backup.
+ */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  if (root) root.AMLCore = api;
+})(typeof globalThis === 'object' ? globalThis : null, function () {
+  'use strict';
+  const SCHEMA = 'aml.audit.v1';
+  const VERSION = '0.4.0';
+  const MAX_CONVERSATIONS = 30000;
+  const MAX_NODES = 350000;
+  const MAX_TEXT = 2_000_000;
+  const MAX_ISSUES = 150;
+  const object = x => x !== null && typeof x === 'object' && !Array.isArray(x);
+  const safeString = (x, fallback = '') => typeof x === 'string' ? x : fallback;
+  const nonNegNumber = x => Number.isFinite(x) && x >= 0 ? x : null;
+  const textLimit = s => s.length > MAX_TEXT ? s.slice(0, MAX_TEXT) : s;
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
+  }
+  function createIssues() {
+    const items = []; let suppressed = 0;
+    return {
+      add(code, detail) { if (items.length < MAX_ISSUES) items.push({code, detail}); else suppressed++; },
+      result() { return {items, suppressed}; }
+    };
+  }
+  function normalizeText(message) {
+    const content = object(message?.content) ? message.content : {};
+    const parts = Array.isArray(content.parts) ? content.parts : [];
+    let nonText = 0;
+    const result = [];
+    for (const part of parts) {
+      if (typeof part === 'string') result.push(part);
+      else if (object(part) && typeof part.text === 'string') result.push(part.text);
+      else if (part !== null && part !== undefined) nonText++;
+    }
+    if (!parts.length && typeof content.text === 'string') result.push(content.text);
+    if (!result.length && content.content_type && content.content_type !== 'text') nonText++;
+    return {text: textLimit(result.join('\n')), nonText};
+  }
+  function countReferences(message) {
+    // Count possible attachment references ONLY. Do not infer uploaded file presence.
+    let count = 0;
+    const attachments = message?.metadata?.attachments;
+    if (Array.isArray(attachments)) count += attachments.length;
+    for (const part of (Array.isArray(message?.content?.parts) ? message.content.parts : [])) {
+      if (!object(part)) continue;
+      if (typeof part.asset_pointer === 'string' ||
+          typeof part.image_asset_pointer === 'string' ||
+          typeof part.audio_asset_pointer === 'string' ||
+          typeof part.file_id === 'string') count++;
+    }
+    return count;
+  }
+  function parseChatGPTExport(raw, opts = {}) {
+    if (!Array.isArray(raw)) throw new Error('EXPECTED_CHATGPT_CONVERSATIONS_ARRAY');
+    if (raw.length > MAX_CONVERSATIONS) throw new Error('TOO_MANY_CONVERSATIONS');
+    const issues = createIssues();
+    const conversations = [];
+    let totalNodes = 0, totalMessageNodes = 0, branchExcluded = 0;
+    let nonTextParts = 0, attachmentReferences = 0, missingPaths = 0, invalidRecords = 0;
+    let missingParent = 0;
+    const seenConversationIds = new Set();
+    for (let i = 0; i < raw.length; i++) {
+      const row = raw[i];
+      if (!object(row) || !object(row.mapping)) {
+        invalidRecords++;
+        issues.add('INVALID_RECORD', `index=${i}; no valid mapping`);
+        continue;
+      }
+      const mapping = row.mapping;
+      const ids = Object.keys(mapping);
+      totalNodes += ids.length;
+      if (totalNodes > MAX_NODES) throw new Error('TOO_MANY_MESSAGE_NODES');
+      const validSourceId = typeof row.id === 'string' && row.id.trim().length > 0;
+      const id = validSourceId ? row.id : `index-${i}`;
+      if (seenConversationIds.has(id)) issues.add('DUPLICATE_CONVERSATION_ID', `index=${i}`);
+      seenConversationIds.add(id);
+      let messageCount = 0, refs = 0, opaque = 0;
+      for (const node of Object.values(mapping)) {
+        if (!object(node) || !object(node.message)) continue;
+        messageCount++;
+        refs += countReferences(node.message);
+        opaque += normalizeText(node.message).nonText;
+      }
+      totalMessageNodes += messageCount;
+      attachmentReferences += refs;
+      nonTextParts += opaque;
+      const path = [];
+      const visited = new Set();
+      let cursor = typeof row.current_node === 'string' ? row.current_node : '';
+      let pathValid = !!cursor;
+      if (!cursor) issues.add('NO_CURRENT_NODE', `index=${i}`);
+      while (cursor) {
+        if (visited.has(cursor)) {
+          pathValid = false;
+          issues.add('PARENT_CYCLE', `index=${i}`);
+          break;
+        }
+        visited.add(cursor);
+        const node = Object.prototype.hasOwnProperty.call(mapping,cursor) ? mapping[cursor] : null;
+        if (!object(node)) {
+          pathValid = false;
+          missingParent++;
+          issues.add('MISSING_PARENT_OR_NODE', `index=${i}`);
+          break;
+        }
+        path.push(node);
+        cursor = typeof node.parent === 'string' ? node.parent : '';
+        if (visited.size > ids.length + 1) {
+          pathValid = false; issues.add('PATH_LIMIT', `index=${i}`); break;
+        }
+      }
+      const active = [];
+      if (pathValid) {
+        for (const node of path.reverse()) {
+          const msg = node.message;
+          if (!object(msg)) continue;
+          const role = safeString(msg.author?.role, 'unknown');
+          const payload = normalizeText(msg);
+          if (role === 'user' || role === 'assistant') {
+            active.push({role, text: payload.text, nonText: payload.nonText,
+              created: nonNegNumber(msg.create_time)});
+          }
+        }
+      } else missingPaths++;
+      const activeNodes = pathValid ? path.filter(n => object(n.message)).length : 0;
+      const excluded = Math.max(0, messageCount - activeNodes);
+      branchExcluded += excluded;
+      const title = textLimit(safeString(row.title, 'Untitled conversation')).slice(0, 500);
+      const createTime = nonNegNumber(row.create_time);
+      const updateTime = nonNegNumber(row.update_time);
+      conversations.push({id, identityStatus:validSourceId?'STABLE_ID_PROVIDED':'SYNTHETIC_INDEX_ONLY', title, created:createTime, updated:updateTime,
+        messageNodes:messageCount, visibleMessages:active.length, excludedNodes:excluded,
+        pathStatus:pathValid?'CURRENT_PATH_PRESENT':'CURRENT_PATH_UNAVAILABLE',
+        referenceCount:refs, nonTextCount:opaque, messages:active});
+    }
+    const warnings = [];
+    if (invalidRecords) warnings.push('INVALID_RECORDS_SKIPPED');
+    if (missingPaths) warnings.push('SOME_CURRENT_PATHS_UNAVAILABLE');
+    if (missingParent) warnings.push('BROKEN_PARENT_CHAIN');
+    if (branchExcluded) warnings.push('OFF_PATH_NODES_NOT_IN_READING_VIEW');
+    if (attachmentReferences) warnings.push('ATTACHMENT_REFERENCES_NOT_PROOF_OF_SAVED_FILES');
+    if (nonTextParts) warnings.push('NON_TEXT_PARTS_NOT_RENDERED');
+    const audit = {
+      schema: SCHEMA, tool_version: VERSION, source_type:'CHATGPT_CONVERSATIONS_JSON',
+      account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
+      extraction_scope:'CONVERSATIONS_MAPPING_CURRENT_PATH_ONLY',
+      input_records:raw.length, parsed_records:conversations.length, invalid_records:invalidRecords,
+      total_message_nodes:totalMessageNodes, active_visible_messages:conversations.reduce((n,c)=>n+c.visibleMessages,0),
+      off_path_message_nodes:branchExcluded, missing_current_paths:missingPaths,
+      attachment_reference_observations:attachmentReferences, non_text_parts_not_rendered:nonTextParts,
+      warnings, issues:issues.result().items, additional_issues_suppressed:issues.result().suppressed,
+      zip_entry_count: Number.isInteger(opts.zipEntryCount) ? opts.zipEntryCount : null,
+      zip_entry_bytes_not_extracted: opts.zipEntryCount !== undefined,
+      claims_not_made:['all_account_data_exported','all_attachments_present','all_conversation_branches_rendered','platform_restore_possible']
+    };
+    return {audit, conversations};
+  }
+
+  function visitAttachmentReferences(raw, visit) {
+    if(!Array.isArray(raw))throw new TypeError('INVALID_ARCHIVE_REFERENCE_SOURCE');
+    for(const row of raw){
+      if(!object(row)||!object(row.mapping))continue;
+      for(const node of Object.values(row.mapping)){
+        const msg=node?.message;
+        if(!object(msg))continue;
+        const attachments=msg.metadata?.attachments;
+        if(Array.isArray(attachments))for(const a of attachments)visit(a);
+        const parts=msg.content?.parts;
+        if(Array.isArray(parts))for(const part of parts){
+          if(!object(part))continue;
+          if(['asset_pointer','image_asset_pointer','audio_asset_pointer','file_id'].some(k=>typeof part[k]==='string'))visit(part);
+        }
+      }
+    }
+  }
+  const safeArchivePath=s=>typeof s==='string'&&s.length>0&&s.length<=4096&&
+      !s.startsWith('/')&&!s.includes('\\')&&!s.includes('\0')&&!/^[a-zA-Z]:/.test(s)&&
+      !/^[a-z][a-z0-9+.-]*:/i.test(s)&&!s.split('/').some(x=>x==='..'||x==='.'||x==='');
+  const relativePath=v=>object(v)?(typeof v.relative_path==='string'?v.relative_path:
+    typeof v.path==='string'?v.path:null):null;
+  function listUniqueExactAttachmentPaths(raw, entries) {
+    if(!Array.isArray(entries))throw new TypeError('INVALID_ARCHIVE_REFERENCE_ENTRIES');
+    const counts=new Map();
+    for(const e of entries)if(e&&typeof e.name==='string'&&!e.name.endsWith('/'))counts.set(e.name,(counts.get(e.name)||0)+1);
+    const paths=new Set();
+    visitAttachmentReferences(raw,v=>{
+      const p=relativePath(v);
+      if(safeArchivePath(p)&&counts.get(p)===1)paths.add(p);
+    });
+    return [...paths];  // Source paths remain private in-memory; never include in downloaded reports.
+  }
+  function assessArchiveReferences(raw, entries) {
+    // Conservative metadata-only relationship. A matching archive path does NOT prove bytes are valid.
+    if (!Array.isArray(raw) || !Array.isArray(entries)) throw new TypeError('INVALID_ARCHIVE_ASSESSMENT');
+    const counts=new Map();
+    let files=0,duplicates=0,declaredNonJson=0;
+    for(const e of entries){
+      if(!e||typeof e.name!=='string') continue;
+      if(e.name.endsWith('/'))continue;
+      files++;
+      counts.set(e.name,(counts.get(e.name)||0)+1);
+      if(!/(^|\/)conversations(?:-\d{3})?\.json$/.test(e.name))declaredNonJson++;
+    }
+    for(const v of counts.values())if(v>1)duplicates+=v-1;
+    const result={schema:'aml.archive-path-assessment.v1',verification:'ARCHIVE_METADATA_ONLY',
+      entries_total:entries.length,files_total:files,non_conversations_file_entries:declaredNonJson,
+      duplicate_entry_paths:duplicates,attachment_references_observed:0,
+      exact_path_candidates:0,matched_unique_paths:0,missing_explicit_paths:0,
+      ambiguous_paths:0,unverifiable_references:0,unsafe_path_references:0,
+      file_bytes_verified:false,attachment_bytes_extracted:false};
+    const observe=v=>{
+      result.attachment_references_observed++;
+      const p=relativePath(v);
+      if(p===null){result.unverifiable_references++;return;}
+      if(!safeArchivePath(p)){result.unsafe_path_references++;return;}
+      result.exact_path_candidates++;
+      const match=counts.get(p)||0;
+      if(match===1)result.matched_unique_paths++;
+      else if(match===0)result.missing_explicit_paths++;
+      else result.ambiguous_paths++;
+    };
+    visitAttachmentReferences(raw,observe);
+    return result;
+  }
+  function searchConversations(items, query) {
+    const q = String(query||'').trim().toLocaleLowerCase();
+    if (!q) return items;
+    return items.filter(c => c.title.toLocaleLowerCase().includes(q) ||
+      c.messages.some(m => m.text.toLocaleLowerCase().includes(q)));
+  }
+  function formatTime(s) {
+    if (!Number.isFinite(s) || s < 0 || s > 1e12) return 'Unknown';
+    const date = new Date(s * 1000);
+    return Number.isNaN(date.getTime()) ? 'Unknown' : date.toISOString().replace('T',' ').slice(0,16)+' UTC';
+  }
+  function exportConversationHtml(c) {
+    if (!c || !Array.isArray(c.messages)) throw new TypeError('INVALID_CONVERSATION');
+    const messages = c.messages.map(m => `<section><h2>${escapeHtml(m.role)}</h2><pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`).join('\n');
+    return '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+      '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'">'+
+      `<title>${escapeHtml(c.title)}</title><style>body{font:16px/1.6 system-ui;max-width:800px;margin:36px auto;padding:0 20px;color:#222}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;background:#f5f5f5;padding:16px;border-radius:8px}section{border-top:1px solid #ddd}small{color:#555}</style></head><body><h1>${escapeHtml(c.title)}</h1>`+
+      `<p><small>AI Memory Lifeboat ${VERSION} · ${escapeHtml(c.pathStatus)} · ${escapeHtml(formatTime(c.updated))}</small></p>`+
+      '<p><strong>Partial reading view:</strong> only the exported current path is shown. Off-path branches, non-text data and unexported account content are NOT certified as preserved.</p>'+messages+'</body></html>';
+  }
+  return Object.freeze({VERSION,SCHEMA,parseChatGPTExport,assessArchiveReferences,listUniqueExactAttachmentPaths,searchConversations,exportConversationHtml,formatTime,escapeHtml});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.6.0 ZIP reader. Minimal central-directory reader.
+ * No file extraction; bounded decompression; CRC check for target JSON.
+ * Copyright (c) 2026 MAX67-gif. MIT.
+ */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  if (root) root.AMLZip = api;
+})(typeof globalThis === 'object' ? globalThis : null, function () {
+  'use strict';
+  const MAX_ARCHIVE = 128 * 1024 * 1024;
+  const MAX_UNPACKED_JSON = 64 * 1024 * 1024;
+  const MAX_FILES = 25000;
+  const MAX_JSON_SHARDS = 32; // bounded list of numbered JSON parts, not full-account certification
+  const MAX_NAME_BYTES = 4096;
+  const decoder = new TextDecoder('utf-8', {fatal:true});
+  function fail(code) { throw new Error('ZIP_'+code); }
+  function uint32(view, offset) { return view.getUint32(offset, true); }
+  function crc32(bytes) {
+    let crc = -1;
+    for (const byte of bytes) {
+      crc ^= byte;
+      for (let i=0;i<8;i++) crc = (crc >>> 1) ^ (crc & 1 ? 0xEDB88320 : 0);
+    }
+    return (crc ^ -1) >>> 0;
+  }
+  function decodeName(bytes, flags) {
+    if (bytes.length > MAX_NAME_BYTES) fail('NAME_TOO_LONG');
+    if (!(flags & 0x800) && bytes.some(b => b > 127)) fail('NON_UTF8_NAME_UNSUPPORTED');
+    try { return decoder.decode(bytes); } catch (_) { fail('INVALID_UTF8_NAME'); }
+  }
+  function safeName(name) {
+    return !!name && !name.includes('\\') && !name.includes('\0') &&
+      !name.startsWith('/') && !/^[A-Za-z]:/.test(name) &&
+      !name.split('/').some(x => x === '..' || x === '.');
+  }
+  function readEntries(bytes) {
+    if (!(bytes instanceof Uint8Array)) throw new TypeError('Expected Uint8Array');
+    if (bytes.byteLength > MAX_ARCHIVE) fail('ARCHIVE_TOO_LARGE');
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    let end = -1;
+    for (let pos=bytes.length-22;pos>=Math.max(0,bytes.length-22-65535);pos--) {
+      if (uint32(view,pos) === 0x06054b50 && pos + 22 + view.getUint16(pos+20,true) === bytes.length) {end=pos;break;}
+    }
+    if (end < 0) fail('END_RECORD_MISSING');
+    const disk = view.getUint16(end+4,true);
+    const diskCentral = view.getUint16(end+6,true);
+    const countDisk = view.getUint16(end+8,true);
+    const count = view.getUint16(end+10,true);
+    const size = uint32(view,end+12), offset=uint32(view,end+16);
+    if (disk || diskCentral || countDisk !== count) fail('MULTI_DISK_UNSUPPORTED');
+    if (count === 65535 || size === 0xffffffff || offset === 0xffffffff) fail('ZIP64_UNSUPPORTED');
+    if (count > MAX_FILES) fail('TOO_MANY_ENTRIES');
+    if (offset + size > end) fail('INVALID_CENTRAL_DIRECTORY');
+    let p = offset;
+    const entries=[];
+    for (let i=0;i<count;i++) {
+      if (p+46 > offset+size || uint32(view,p)!==0x02014b50) fail('INVALID_ENTRY_HEADER');
+      const flags=view.getUint16(p+8,true), method=view.getUint16(p+10,true);
+      const crc=uint32(view,p+16), compressed=uint32(view,p+20), unpacked=uint32(view,p+24);
+      const nameLen=view.getUint16(p+28,true), extraLen=view.getUint16(p+30,true), commentLen=view.getUint16(p+32,true);
+      const localOffset=uint32(view,p+42);
+      const next=p+46+nameLen+extraLen+commentLen;
+      if (next>offset+size) fail('ENTRY_OUT_OF_BOUNDS');
+      const name=decodeName(bytes.subarray(p+46,p+46+nameLen),flags);
+      if (!safeName(name)) fail('UNSAFE_ENTRY_PATH');
+      if (compressed===0xffffffff||unpacked===0xffffffff||localOffset===0xffffffff) fail('ZIP64_ENTRY_UNSUPPORTED');
+      entries.push({name, flags, method, crc, compressed, unpacked, localOffset});
+      p=next;
+    }
+    if (p!==offset+size) fail('CENTRAL_DIRECTORY_TRAILING_BYTES');
+    return entries;
+  }
+  async function inflateRawLimited(data, claimedSize, limit = MAX_UNPACKED_JSON) {
+    if (typeof DecompressionStream !== 'function') fail('BROWSER_DEFLATE_UNAVAILABLE');
+    let stream;
+    try { stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw')); }
+    catch (_) { fail('BROWSER_DEFLATE_UNAVAILABLE'); }
+    const reader=stream.getReader();
+    const chunks=[];
+    let total=0;
+    try {
+      for (;;) {
+        const {done,value}=await reader.read();
+        if (done) break;
+        total+=value.byteLength;
+        if (total>limit||total>claimedSize) { await reader.cancel().catch(()=>{}); fail('EXPANSION_LIMIT'); }
+        chunks.push(value);
+      }
+    } catch(e) { if (String(e.message).startsWith('ZIP_')) throw e; fail('DEFLATE_FAILED'); }
+    const out=new Uint8Array(total);let cursor=0;
+    for (const c of chunks) {out.set(c,cursor); cursor+=c.byteLength;}
+    return out;
+  }
+  function selectConversationEntries(entries) {
+    const full=entries.filter(e => /(^|\/)conversations\.json$/.test(e.name));
+    const shards=entries.map(e => {
+      const m=/^(.*\/)?conversations-(\d{3})\.json$/.exec(e.name);
+      return m?{entry:e, prefix:m[1]||'', number:Number(m[2])}:null;
+    }).filter(Boolean);
+    const possible=entries.filter(e => /(^|\/)conversations-\d+\.json$/.test(e.name));
+    if(possible.length>shards.length)fail('UNSUPPORTED_SHARD_NAME');
+    if(full.length && (full.length!==1 || shards.length))fail('AMBIGUOUS_JSON_SOURCES');
+    if(full.length===1)return {kind:'SINGLE_JSON',selected:[full[0]]};
+    if(!shards.length)fail('CONVERSATIONS_JSON_MISSING');
+    if(shards.length>MAX_JSON_SHARDS)fail('TOO_MANY_JSON_SHARDS');
+    const prefix=shards[0].prefix;
+    if(shards.some(s=>s.prefix!==prefix))fail('MULTIPLE_SHARD_DIRECTORIES');
+    shards.sort((a,b)=>a.number-b.number);
+    for(let i=0;i<shards.length;i++)if(shards[i].number!==i)
+      fail(shards[i].number<i?'DUPLICATE_JSON_SHARD':'MISSING_JSON_SHARD');
+    const combined=shards.reduce((size,s)=>size+s.entry.unpacked,0);
+    if(combined>MAX_UNPACKED_JSON)fail('JSON_SHARDS_TOO_LARGE');
+    return {kind:'NUMBERED_JSON_SHARDS',selected:shards.map(s=>s.entry)};
+  }
+  async function readJsonEntry(bytes, view, e) {
+    if(e.flags&1)fail('ENCRYPTED_UNSUPPORTED');
+    if(e.method!==0&&e.method!==8)fail('COMPRESSION_UNSUPPORTED');
+    if(e.unpacked>MAX_UNPACKED_JSON||e.compressed>MAX_ARCHIVE)fail('JSON_TOO_LARGE');
+    const at=e.localOffset;
+    if(at+30>bytes.length||uint32(view,at)!==0x04034b50)fail('LOCAL_HEADER_INVALID');
+    const nameLen=view.getUint16(at+26,true),extraLen=view.getUint16(at+28,true);
+    const method=view.getUint16(at+8,true),flags=view.getUint16(at+6,true);
+    if(method!==e.method||flags!==e.flags)fail('HEADER_MISMATCH');
+    const nameEnd=at+30+nameLen;
+    if(nameEnd>bytes.length)fail('LOCAL_NAME_OUT_OF_BOUNDS');
+    const localName=decodeName(bytes.subarray(at+30,nameEnd),flags);
+    if(localName!==e.name)fail('LOCAL_CENTRAL_NAME_MISMATCH');
+    const dataStart=nameEnd+extraLen;
+    if(dataStart>bytes.length||dataStart+e.compressed>bytes.length)fail('DATA_OUT_OF_BOUNDS');
+    const compressed=bytes.subarray(dataStart,dataStart+e.compressed);
+    const unpacked=e.method===0?compressed:await inflateRawLimited(compressed,e.unpacked);
+    if(unpacked.length!==e.unpacked)fail('UNCOMPRESSED_SIZE_MISMATCH');
+    if(crc32(unpacked)!==e.crc)fail('CRC_MISMATCH');
+    let txt;
+    try{txt=decoder.decode(unpacked);}catch(_){fail('INVALID_UTF8_JSON');}
+    try{return JSON.parse(txt.replace(/^\uFEFF/,''));}catch(_){fail('INVALID_JSON');}
+  }
+  async function getConversationsJson(bytes) {
+    const entries=readEntries(bytes);
+    const selection=selectConversationEntries(entries);
+    const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+    const all=[];
+    let total=0;
+    for(const e of selection.selected){
+      const parsed=await readJsonEntry(bytes,view,e);
+      if(!Array.isArray(parsed))fail('EXPECTED_CONVERSATIONS_ARRAY');
+      total+=parsed.length;
+      if(total>30000)fail('TOO_MANY_CONVERSATIONS');
+      for(const row of parsed)all.push(row);
+    }
+    return {parsed:all,entryCount:entries.length,
+      targetPath:selection.kind==='SINGLE_JSON'?selection.selected[0].name:null,
+      sourceKind:selection.kind,sourceFileCount:selection.selected.length,entries};
+  }
+  const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024;
+  const MAX_ATTACHMENT_TOTAL = 16 * 1024 * 1024;
+  const MAX_ATTACHMENT_ENTRIES = 24;
+  async function verifyMatchedAttachments(bytes, paths) {
+    if (!(bytes instanceof Uint8Array) || !Array.isArray(paths)) throw new TypeError('INVALID_ATTACHMENT_VERIFY_INPUT');
+    const entries = readEntries(bytes);
+    const result={schema:'aml.attachment-bytes.v1',tool_version:'0.4.0',
+      verification:'LIMITED_ZIP_ENTRY_CRC32_ONLY',account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
+      requested_unique_paths:0,unique_matching_entries:0,bytes_crc32_verified:0,
+      failed_integrity:0,skipped_size:0,skipped_budget:0,skipped_method:0,skipped_unsafe:0,
+      checked_uncompressed_bytes:0,checked_entries:0,
+      content_matches_original_source:'NOT_PROVEN',file_paths_in_report:false,
+      notes:['CRC32_CHECKS_ARCHIVE_INTERNAL_CONSISTENCY_NOT_AUTHENTICITY',
+        'NO_PROOF_OF_ORIGINAL_UPLOADS_OR_ALL_ACCOUNT_ATTACHMENTS',
+        'OVERSIZE_UNSUPPORTED_AND_UNMATCHED_FILES_NOT_VERIFIED']};
+    // No paths are returned or logged. Only distinct, explicit safe paths may enter the bounded scanner.
+    const unique=new Set(paths);
+    result.requested_unique_paths=unique.size;
+    const matched=new Map();
+    for(const entry of entries){
+      if(unique.has(entry.name)){
+        if(!matched.has(entry.name))matched.set(entry.name,[]);
+        matched.get(entry.name).push(entry);
+      }
+    }
+    const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+    let budget=0,seen=0;
+    for(const name of unique){
+      if(typeof name!=='string'||!safeName(name)||name.endsWith('/')){result.skipped_unsafe++;continue;}
+      const group=matched.get(name)||[];
+      if(group.length!==1){result.skipped_unsafe++;continue;}
+      const entry=group[0];result.unique_matching_entries++;
+      if(seen++>=MAX_ATTACHMENT_ENTRIES){result.skipped_budget++;continue;}
+      if(entry.flags&1 || ![0,8].includes(entry.method)){result.skipped_method++;continue;}
+      if(entry.unpacked>MAX_ATTACHMENT_BYTES){result.skipped_size++;continue;}
+      if(budget+entry.unpacked>MAX_ATTACHMENT_TOTAL){result.skipped_budget++;continue;}
+      budget+=entry.unpacked;
+      result.checked_entries++;
+      try{
+        const p=entry.localOffset;
+        if(p+30>bytes.length||uint32(view,p)!==0x04034b50)fail('LOCAL_HEADER_INVALID');
+        const localFlags=view.getUint16(p+6,true),method=view.getUint16(p+8,true);
+        const nameLen=view.getUint16(p+26,true),extraLen=view.getUint16(p+28,true);
+        if(method!==entry.method||localFlags!==entry.flags)fail('HEADER_MISMATCH');
+        const nameEnd=p+30+nameLen;
+        if(nameEnd>bytes.length)fail('LOCAL_NAME_OUT_OF_BOUNDS');
+        const localName=decodeName(bytes.subarray(p+30,nameEnd),localFlags);
+        if(localName!==entry.name)fail('LOCAL_CENTRAL_NAME_MISMATCH');
+        const dataStart=nameEnd+extraLen;
+        if(dataStart>bytes.length||dataStart+entry.compressed>bytes.length)fail('DATA_OUT_OF_BOUNDS');
+        const compressed=bytes.subarray(dataStart,dataStart+entry.compressed);
+        const output=entry.method===0?compressed:await inflateRawLimited(compressed,entry.unpacked,MAX_ATTACHMENT_BYTES);
+        if(output.length!==entry.unpacked || crc32(output)!==entry.crc)fail('CRC_OR_SIZE_MISMATCH');
+        result.bytes_crc32_verified++;
+        result.checked_uncompressed_bytes+=output.length;
+      }catch(_){
+        result.failed_integrity++;
+      }
+    }
+    return result;
+  }
+  return Object.freeze({readEntries,getConversationsJson,verifyMatchedAttachments,crc32,
+    MAX_ARCHIVE,MAX_UNPACKED_JSON,MAX_JSON_SHARDS,MAX_ATTACHMENT_BYTES,MAX_ATTACHMENT_TOTAL,MAX_ATTACHMENT_ENTRIES});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.4.0 — bounded, title-free snapshot comparison summary.
+ * Difference of visible exported current paths only. NOT account deletion detection.
+ * MIT (c) 2026 MAX67-gif.
+ */
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+  if(root)root.AMLCompare=api;
+})(typeof globalThis==='object'?globalThis:null,function(){'use strict';
+  const SCHEMA='aml.snapshot-diff.v1';
+  const STATUSES=Object.freeze(['ONLY_IN_NEW_EXPORT','NOT_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED',
+    'METADATA_ONLY_CHANGED','NO_DETECTED_CURRENT_VIEW_CHANGE','INCONCLUSIVE_PATH','INCONCLUSIVE_ID']);
+  const validId=c=>c&&c.identityStatus==='STABLE_ID_PROVIDED'&&typeof c.id==='string'&&c.id.trim().length>0;
+  function indexRows(rows){
+    const map=new Map(),unknown=[];
+    for(const row of rows){
+      if(!validId(row)){unknown.push(row);continue;}
+      const group=map.get(row.id)||[];group.push(row);map.set(row.id,group);
+    }
+    return {map,unknown};
+  }
+  function sameMessages(a,b){
+    if(a.length!==b.length)return false;
+    for(let i=0;i<a.length;i++){
+      if(a[i].role!==b[i].role||a[i].text!==b[i].text||a[i].nonText!==b[i].nonText||
+         a[i].created!==b[i].created)return false;
+    }
+    return true;
+  }
+  function compareSnapshots(older,newer){
+    if(!older||!newer||!Array.isArray(older.conversations)||!Array.isArray(newer.conversations)||
+      older.audit?.schema!=='aml.audit.v1'||newer.audit?.schema!=='aml.audit.v1')throw Error('INVALID_SNAPSHOT_PAIR');
+    const o=indexRows(older.conversations),n=indexRows(newer.conversations),items=[];
+    const counts=Object.fromEntries(STATUSES.map(s=>[s,0]));
+    const add=(status,row)=>{counts[status]++;items.push({status,title:row?.title||'Unknown conversation'});};
+    for(const row of [...o.unknown,...n.unknown]) add('INCONCLUSIVE_ID',row);
+    const ids=new Set([...o.map.keys(),...n.map.keys()]);
+    for(const id of ids){
+      const a=o.map.get(id)||[],b=n.map.get(id)||[];
+      if(a.length>1||b.length>1){add('INCONCLUSIVE_ID',b[0]||a[0]);continue;}
+      const olderRow=a[0],newerRow=b[0];
+      if(!olderRow){add('ONLY_IN_NEW_EXPORT',newerRow);continue;}
+      if(!newerRow){add('NOT_IN_NEW_EXPORT',olderRow);continue;}
+      if(olderRow.pathStatus!=='CURRENT_PATH_PRESENT'||newerRow.pathStatus!=='CURRENT_PATH_PRESENT'){
+        add('INCONCLUSIVE_PATH',newerRow);continue;
+      }
+      const viewChanged=!sameMessages(olderRow.messages,newerRow.messages)||
+        olderRow.messageNodes!==newerRow.messageNodes||
+        olderRow.excludedNodes!==newerRow.excludedNodes||
+        olderRow.referenceCount!==newerRow.referenceCount||
+        olderRow.nonTextCount!==newerRow.nonTextCount;
+      if(viewChanged){add('CURRENT_VIEW_CHANGED',newerRow);continue;}
+      const metadataChanged=olderRow.title!==newerRow.title||olderRow.created!==newerRow.created||olderRow.updated!==newerRow.updated;
+      add(metadataChanged?'METADATA_ONLY_CHANGED':'NO_DETECTED_CURRENT_VIEW_CHANGE',newerRow);
+    }
+    const summary={schema:SCHEMA,tool_version:'0.4.0',
+      inputs:'USER_SELECTED_ORDER_NOT_VERIFIED',
+      identity_scope:'ONLY_RECORDS_WITH_UNIQUE_EXPLICIT_CONVERSATION_ID',
+      comparison_scope:'EXPORTED_CURRENT_PATH_TEXT_AND_COUNTS_PLUS_SELECTED_METADATA',
+      account_completeness:'NOT_VERIFIABLE_FROM_EITHER_EXPORT',
+      counts,total_display_items:items.length,
+      input_summary:{older:{records:older.audit.input_records,invalid_records:older.audit.invalid_records,missing_paths:older.audit.missing_current_paths},
+        newer:{records:newer.audit.input_records,invalid_records:newer.audit.invalid_records,missing_paths:newer.audit.missing_current_paths}},
+      warnings:['NOT_IN_NEW_EXPORT_IS_NOT_PROOF_OF_ACCOUNT_DELETION',
+        'EQUAL_CURRENT_VIEWS_DO_NOT_PROVE_OFF_PATH_OR_ATTACHMENT_EQUALITY',
+        'DIFFERENT_ACCOUNTS_CANNOT_BE_DETECTED_RELIABLY',
+        'EXPORT_CHRONOLOGY_IS_USER_ASSUMED_NOT_AUTHENTICATED'],
+      contains_chat_text:false,contains_conversation_ids:false,contains_titles:false};
+    return {summary,items};
+  }
+  return Object.freeze({SCHEMA,STATUSES,compareSnapshots});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.4.0 — evidence-limited, content-free health guidance.
+ * MIT (c) 2026 MAX67-gif. Never certify full-account completeness.
+ */
+(function(root, factory){
+  const api = factory();
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  if (root) root.AMLHealth = api;
+})(typeof globalThis === 'object' ? globalThis : null, function(){ 'use strict';
+  const SCHEMA='aml.health.v1';
+  const VERSION='0.4.0';
+  const levels=Object.freeze(['ATTENTION','REVIEW','LIMITED_CHECK_OK']);
+  const nonneg=x=>Number.isSafeInteger(x)&&x>=0?x:0;
+  // Every heading and action comes from code. Never reflect source/filename/ID/title in a shareable report.
+  const labels=Object.freeze({
+    PRESERVE_SOURCE:['保留官方原始匯出','請把原始官方 ZIP／JSON 妥善備份。閱讀用 HTML 和檢查報告不能還原帳戶。'],
+    INVALID_RECORDS:['部分對話紀錄無法解析','本次有紀錄被略過。請保留原檔，並用官方匯出重新取得或向開發者回報不含私密資料的合成案例。'],
+    CURRENT_PATHS:['部分對話的目前分支無法閱讀','部分父節點路徑缺漏或不完整；不能猜測訊息順序，請檢查原始匯出並保留所有版本。'],
+    ZIP_PATH_MISSING:['ZIP 內有明確附件路徑未找到','此結果僅適用已認得的明確路徑。先保留原始 ZIP，不要將本工具輸出的閱讀檔當成附件備份。'],
+    ZIP_PATH_AMBIGUOUS:['附件路徑不唯一或不安全','相同名稱可能對應多個項目，或參照路徑不安全；沒有把它們算成找到的檔案。'],
+    BYTE_FAILURE:['部分 ZIP 項目位元組驗證未通過','檢查到 CRC 或檔案結構不一致；不要直接把該項目視為可用，建議向來源重新匯出。'],
+    OFF_PATH:['其他對話分支未納入閱讀內容','閱讀畫面只顯示目前分支，其他訊息節點仍可能存在於原始匯出資料中。'],
+    NON_TEXT:['部分非文字內容無法呈現','圖片、音訊或其他資料未完整轉成文字。請保留原始官方匯出檔。'],
+    REFERENCE_LIMIT:['附件參照不等於附件已備份','即使找得到路徑或 CRC 正確，也無法證明上傳的原始附件、完整內容或帳戶資料已保存。'],
+    BYTE_LIMIT:['位元組驗證只有部分覆蓋','僅檢查明確且唯一的 ZIP 路徑中符合容量與格式限制的項目；跳過項目保持未知。'],
+    JSON_LIMIT:['JSON 無法核對 ZIP 內附件','目前載入的是 JSON 單檔。要檢查 ZIP 的附件路徑與位元組，請選擇自己的官方 ZIP。'],
+    DIFF_LIMIT:['兩次匯出出現差異或無法比對','新版未見不等於帳戶已刪除；匯出先後與帳戶是否相同仍需自行確認。'],
+    SINGLE_NUMBERED_JSON:['只載入一個編號 JSON 分片','這不是完整分片集合；請選擇包含所有分片的官方 ZIP，並妥善保留來源檔。'],
+    MULTIPLE_NUMBERED_JSON:['已讀取連續編號的 JSON 分片','只代表此 ZIP 中識別到的分片已解析，不代表帳戶完整或附件已保存。'],
+    NO_DETECTED_PROBLEMS:['已支援範圍暫無明顯結構異常','這只是局部檢查沒有發現上述問題，不代表完整備份、安全認證或平台可還原。'],
+  });
+  function evaluate(audit, options={}){
+    if (!audit || audit.schema!=='aml.audit.v1') throw new TypeError('HEALTH_INVALID_AUDIT');
+    const a=audit;
+    const z=a.archive_path_assessment && a.archive_path_assessment.schema==='aml.archive-path-assessment.v1'?a.archive_path_assessment:null;
+    const b=options.bytes && options.bytes.schema==='aml.attachment-bytes.v1'?options.bytes:null;
+    const d=options.diff && options.diff.schema==='aml.snapshot-diff.v1'?options.diff:null;
+    const checks=[];
+    const add=(code,priority,count=null)=>{const [title,action]=labels[code];checks.push({code,priority,title,action,...(count===null?{}:{count})});};
+    add('PRESERVE_SOURCE','ESSENTIAL');
+    if(a.source_container==='SINGLE_NUMBERED_JSON')add('SINGLE_NUMBERED_JSON','REVIEW',1);
+    if(a.source_container==='NUMBERED_JSON_SHARDS')add('MULTIPLE_NUMBERED_JSON','INFORMATION',nonneg(a.numbered_json_parts));
+    if (nonneg(a.invalid_records))add('INVALID_RECORDS','ATTENTION',nonneg(a.invalid_records));
+    if (nonneg(a.missing_current_paths))add('CURRENT_PATHS','ATTENTION',nonneg(a.missing_current_paths));
+    if (z && nonneg(z.missing_explicit_paths))add('ZIP_PATH_MISSING','ATTENTION',nonneg(z.missing_explicit_paths));
+    if (z && (nonneg(z.ambiguous_paths)+nonneg(z.unsafe_path_references)))add('ZIP_PATH_AMBIGUOUS','REVIEW',nonneg(z.ambiguous_paths)+nonneg(z.unsafe_path_references));
+    if (b && nonneg(b.failed_integrity))add('BYTE_FAILURE','ATTENTION',nonneg(b.failed_integrity));
+    if (nonneg(a.off_path_message_nodes))add('OFF_PATH','REVIEW',nonneg(a.off_path_message_nodes));
+    if (nonneg(a.non_text_parts_not_rendered))add('NON_TEXT','REVIEW',nonneg(a.non_text_parts_not_rendered));
+    if (nonneg(a.attachment_reference_observations))add('REFERENCE_LIMIT','REVIEW',nonneg(a.attachment_reference_observations));
+    if (b && (nonneg(b.skipped_size)+nonneg(b.skipped_budget)+nonneg(b.skipped_method)+nonneg(b.skipped_unsafe)))
+      add('BYTE_LIMIT','REVIEW',nonneg(b.skipped_size)+nonneg(b.skipped_budget)+nonneg(b.skipped_method)+nonneg(b.skipped_unsafe));
+    if (!z)add('JSON_LIMIT','INFORMATION');
+    if (d) {
+      const c=d.counts||{};
+      const total=['NOT_IN_NEW_EXPORT','ONLY_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED','METADATA_ONLY_CHANGED','INCONCLUSIVE_PATH','INCONCLUSIVE_ID'].reduce((sum,k)=>sum+nonneg(c[k]),0);
+      if(total)add('DIFF_LIMIT','REVIEW',total);
+    }
+    const serious=checks.some(c=>c.priority==='ATTENTION');
+    const review=checks.some(c=>c.priority==='REVIEW');
+    const overall=serious?'ATTENTION':review?'REVIEW':'LIMITED_CHECK_OK';
+    if(overall==='LIMITED_CHECK_OK')add('NO_DETECTED_PROBLEMS','INFORMATION');
+    return {
+      schema:SCHEMA,tool_version:VERSION,overall,
+      overall_meaning:overall==='ATTENTION'?'EXPORTED_DATA_HAS_DETECTED_PROBLEMS':overall==='REVIEW'?'KNOWN_GAPS_REQUIRE_HUMAN_REVIEW':'NO_KNOWN_PROBLEM_IN_SUPPORTED_CHECKS_ONLY',
+      coverage:'EXPORTED_KNOWN_CHATGPT_CONVERSATIONS_CURRENT_PATH_AND_OPTIONAL_ZIP_CHECKS',
+      account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
+      privacy:{contains_chat_text:false,contains_conversation_ids:false,contains_titles:false,contains_file_paths:false},
+      checks,limitations:['NOT_FULL_ACCOUNT_BACKUP_CERTIFICATION','NOT_PLATFORM_RESTORATION','CRC32_IS_NOT_SOURCE_AUTHENTICITY'],
+      byte_check_performed:!!b,comparison_performed:!!d
+    };
+  }
+  return Object.freeze({SCHEMA,VERSION,levels,evaluate});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.4.0 — wholly synthetic local first-use demo. MIT. */
+(function(root, factory){
+  const api=factory();
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+  if(root)root.AMLDemo=api;
+})(typeof globalThis==='object'?globalThis:null,function(){'use strict';
+  const NEWER=[{"id":"synthetic-demo-001","title":"Weekend weather plan (updated)","create_time":1730000000,"update_time":1730000120,"current_node":"reply","mapping":{"prompt":{"id":"prompt","parent":null,"children":["reply"],"message":{"author":{"role":"user"},"content":{"content_type":"text","parts":["What should I do if the weather is rainy?"]},"create_time":1730000000}},"reply":{"id":"reply","parent":"prompt","children":[],"message":{"author":{"role":"assistant"},"content":{"content_type":"text","parts":["Bring an umbrella and choose an indoor activity. (updated plan)"]},"create_time":1730000120}}}},{"id":"sample-new-only","title":"New example reminder","mapping":{"a":{"parent":null,"message":{"author":{"role":"user"},"content":{"content_type":"text","parts":["This is a synthetic demonstration item."]}}}},"current_node":"a"}];
+  const OLDER=[{"id":"synthetic-demo-001","title":"Weekend weather plan (original)","create_time":1730000000,"update_time":1730000120,"current_node":"reply","mapping":{"prompt":{"id":"prompt","parent":null,"children":["reply"],"message":{"author":{"role":"user"},"content":{"content_type":"text","parts":["What should I do if the weather is rainy?"]},"create_time":1730000000}},"reply":{"id":"reply","parent":"prompt","children":[],"message":{"author":{"role":"assistant"},"content":{"content_type":"text","parts":["Bring an umbrella and choose an indoor activity."]},"create_time":1730000120}}}},{"id":"sample-old-only","title":"Original lesson notes","mapping":{"a":{"parent":null,"message":{"author":{"role":"user"},"content":{"content_type":"text","parts":["These are fictional example notes."]}}}},"current_node":"a"}];
+  return Object.freeze({getSnapshots(){
+    return {newer:JSON.parse(JSON.stringify(NEWER)),older:JSON.parse(JSON.stringify(OLDER))};
+  }});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.4.0 — local opt-in, content-free pilot receipt. MIT.
+ * NEVER include a filename, conversation, timestamp, fingerprint, original text, account, path or arbitrary user-supplied string.
+ */
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+  if(root)root.AMLPilot=api;
+})(typeof globalThis==='object'?globalThis:null,function(){'use strict';
+  const SCHEMA='aml.pilot-feedback.v1',VERSION='0.4.0';
+  const choices=Object.freeze({
+    ease:Object.freeze(['NOT_TESTED','EASY','NEEDED_HELP','COULD_NOT_FINISH']),
+    clarity:Object.freeze(['NOT_TESTED','CLEAR','NEEDS_EXPLANATION','CONFUSING']),
+    reuse:Object.freeze(['NOT_TESTED','YES','MAYBE','NO'])
+  });
+  function createReceipt(input={},mode='PERSONAL_EXPORT'){
+    if(!input||typeof input!=='object'||Array.isArray(input))throw new TypeError('INVALID_FEEDBACK');
+    if(!['PERSONAL_EXPORT','SYNTHETIC_DEMO'].includes(mode))throw new TypeError('INVALID_FEEDBACK_MODE');
+    const out={};
+    for(const [key,valid] of Object.entries(choices)){
+      const value=input[key]===undefined?'NOT_TESTED':input[key];
+      if(typeof value!=='string'||!valid.includes(value))throw new TypeError('INVALID_FEEDBACK_CHOICE');
+      out[key]=value;
+    }
+    return {
+      schema:SCHEMA, tool_version:VERSION, source_mode:mode,
+      sharing:'USER_DOWNLOAD_ONLY_NOT_SUBMITTED',
+      account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
+      privacy:{contains_chat_text:false,contains_title:false,contains_id:false,contains_file_path:false,
+        contains_email:false,contains_timestamp:false,contains_device_info:false},
+      answers:out
+    };
+  }
+  return Object.freeze({SCHEMA,VERSION,choices,createReceipt});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.5.0 — separate, opt-in pilot v2. MIT.
+ * All fields are fixed enums. No location, timestamps, filenames, source content or automatic submission.
+ * The older v1 receipt remains available through src/pilot.js for backward compatibility.
+ */
+(function(root,factory){
+ const api=factory();
+ if(typeof module!=='undefined'&&module.exports)module.exports=api;
+ if(root)root.AMLPilotR5=api;
+})(typeof globalThis==='object'?globalThis:null,function(){'use strict';
+ const VERSION='0.5.0',SCHEMA='aml.pilot-feedback.v2';
+ const choices=Object.freeze({
+   ease:Object.freeze(['NOT_TESTED','EASY','NEEDED_HELP','COULD_NOT_FINISH']),
+   clarity:Object.freeze(['NOT_TESTED','CLEAR','NEEDS_EXPLANATION','CONFUSING']),
+   reuse:Object.freeze(['NOT_TESTED','YES','MAYBE','NO']),
+   firstTask:Object.freeze(['NOT_TESTED','COMPLETED_ALONE','COMPLETED_WITH_HELP','COULD_NOT_FINISH']),
+   understandsScope:Object.freeze(['NOT_TESTED','YES','UNSURE','NO'])
+ });
+ function createReceipt(input={},sourceMode='PERSONAL_EXPORT'){
+   if(input===null||typeof input!=='object'||Array.isArray(input))throw new TypeError('INVALID_FEEDBACK');
+   if(sourceMode!=='PERSONAL_EXPORT'&&sourceMode!=='SYNTHETIC_DEMO')throw new TypeError('INVALID_FEEDBACK_MODE');
+   const answers={};
+   for(const [name,allow] of Object.entries(choices)){
+     const choice=input[name]===undefined?'NOT_TESTED':input[name];
+     if(typeof choice!=='string'||!allow.includes(choice))throw new TypeError('INVALID_FEEDBACK_CHOICE');
+     answers[name]=choice;
+   }
+   return {
+     schema:SCHEMA,tool_version:VERSION,source_mode:sourceMode,
+     sharing:'USER_DOWNLOAD_ONLY_NOT_SUBMITTED',
+     evidence_status:'SELF_REPORTED_NOT_INDEPENDENT_HUMAN_VERIFICATION',
+     account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
+     privacy:{contains_chat_text:false,contains_title:false,contains_id:false,contains_file_path:false,
+       contains_email:false,contains_timestamp:false,contains_device_info:false},
+     answers
+   };
+ }
+ return Object.freeze({VERSION,SCHEMA,choices,createReceipt});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.6.0 — offline, content-free, human-readable first-result report. MIT.
+ * Never reflect exported titles, paths, text, IDs, filenames, unknown issue details or metadata.
+ */
+(function(root,factory){
+ const api=factory();
+ if(typeof module!=='undefined'&&module.exports)module.exports=api;
+ if(root)root.AMLFirstResult=api;
+})(typeof globalThis==='object'?globalThis:null,function(){'use strict';
+ const VERSION='0.6.0';
+ const SOURCE=Object.freeze({
+   SYNTHETIC_DEMO:'合成示範（不代表你的帳戶已被檢查）',
+   PERSONAL_EXPORT:'使用者自行選擇的匯出檔（不是帳戶完整性證明）'
+ });
+ const STATE=Object.freeze({
+   ATTENTION:'已發現需要處理的問題',
+   REVIEW:'有需要人工核對的範圍',
+   LIMITED_CHECK_OK:'僅限已支援項目，尚未發現明顯問題'
+ });
+ // Trusted, literal strings only: do not echo report.checks[].title/action from input.
+ const ACTIONS=Object.freeze({
+   PRESERVE_SOURCE:['保留原始官方匯出','不要只保存本工具的閱讀用檔案；妥善備份原始 ZIP／JSON。'],
+   INVALID_RECORDS:['部分紀錄無法解析','保留原始匯出，並查看本工具列出的格式限制。'],
+   CURRENT_PATHS:['部分目前分支不可閱讀','無法可靠排序的訊息不會被拼接成假對話。'],
+   ZIP_PATH_MISSING:['ZIP 有附件路徑缺漏','只核對明確路徑；請勿把缺漏視為完整附件備份。'],
+   ZIP_PATH_AMBIGUOUS:['附件路徑不明確','重複、不安全或無法唯一對應的路徑需要人工核對。'],
+   BYTE_FAILURE:['ZIP 位元組檢查失敗','已檢查的部分項目 CRC 或大小不一致，建議重新取得官方匯出。'],
+   OFF_PATH:['部分其他對話分支未呈現','主要閱讀頁只顯示目前分支，原始匯出仍應保留。'],
+   NON_TEXT:['部分非文字內容無法閱讀','圖片、音訊等不能保證轉為完整可閱讀內容。'],
+   REFERENCE_LIMIT:['附件參照不等於附件已保存','有參照或路徑不代表原始附件已完整匯出。'],
+   BYTE_LIMIT:['ZIP 位元組檢查範圍有限','大小、壓縮格式或安全限制以外的項目未驗證。'],
+   JSON_LIMIT:['JSON 單檔無法核對 ZIP 附件','如要進行限定 ZIP 附件檢查，應使用自己的官方 ZIP。'],
+   DIFF_LIMIT:['兩份匯出有差異或未知','新版匯出未出現某筆資料，不代表帳戶已刪除。'],
+   SINGLE_NUMBERED_JSON:['只載入一個編號 JSON 分片','可能還有其他分片尚未讀取，不能宣稱完整備份。'],
+   MULTIPLE_NUMBERED_JSON:['已辨識連續編號的 JSON 分片','這只確認目前 ZIP 中可讀分片，不是所有帳戶資料完整性的證明。'],
+   NO_DETECTED_PROBLEMS:['已支援範圍未見明顯問題','此結果不是完整性認證或平台可還原性保證。']
+ });
+ function safeCount(x){return Number.isSafeInteger(x)&&x>=0&&x<=100000000?x:null;}
+ function format(health,sourceMode){
+   if(!health||health.schema!=='aml.health.v1'||!Array.isArray(health.checks)||health.checks.length>50||!(health.overall in STATE))
+     throw new TypeError('INVALID_FIRST_RESULT_HEALTH');
+   if(!Object.hasOwn(SOURCE,sourceMode))throw new TypeError('INVALID_FIRST_RESULT_SOURCE');
+   const lines=[
+     'AI Memory Lifeboat｜第一次備份體檢結果（純文字）',
+     `工具版本：${VERSION}`,
+     `資料來源：${SOURCE[sourceMode]}`,
+     `檢查結論：${STATE[health.overall]}`,
+     '',
+     '請先知道：這只檢查匯出檔中已支援的結構與選用項目。',
+     '無法證明帳戶資料全部匯出、原始附件真實完整或能還原至任何 AI 平台。',
+     '請保存原始官方 ZIP／JSON。',
+     '',
+     '本次需要知道的事項：'
+   ];
+   let listed=0;
+   for(const x of health.checks){
+     if(!x||!Object.hasOwn(ACTIONS,x.code))continue;
+     const [label,action]=ACTIONS[x.code];
+     const n=safeCount(x.count);
+     lines.push(`${++listed}. ${label}${n===null?'':`（觀察 ${n} 項）`}`);
+     lines.push(`   ${action}`);
+   }
+   if(!listed)lines.push('沒有可列出的已支援項目；不能把結果當成完整性認證。');
+   lines.push('','額外檢查：',
+     `- 附件 CRC32：${health.byte_check_performed===true?'已進行有限檢查（不保證原附件真實）':'未進行或不適用'}`,
+     `- 兩份快照比較：${health.comparison_performed===true?'已比較有支援的欄位（不能證明刪除）':'未進行或不適用'}`,
+     '', '隱私：此純文字報告不含對話文字、標題、對話 ID、檔名、路徑或時間戳。',
+     '以上為程式產生的檢查說明，不代表獨立真人審核，也不是保證。','');
+   return lines.join('\n');
+ }
+ return Object.freeze({VERSION,format});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.7.0 — user-triggered browser application only. MIT. */
+(function(){'use strict';
+  const $=id=>document.getElementById(id);
+  const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
+    warnings:$('warningList'),warningCount:$('warningCount'),list:$('conversationList'),detail:$('conversationDetail'),
+    search:$('searchBox'),resultCount:$('resultCount'),audit:$('downloadAudit'),html:$('downloadHtml'),
+    olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
+    compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
+    archiveAssessment:$('archiveAssessment'),healthSummary:$('healthSummary'),healthCards:$('healthCards'),
+    downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus'),
+    tryDemo:$('tryDemo'),demoBanner:$('demoBanner'),pilotPanel:$('pilotPanel'),pilotEase:$('pilotEase'),
+    pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),pilotTask:$('pilotTask'),pilotScope:$('pilotScope'),
+    downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult')};
+  const core=window.AMLCore, zip=window.AMLZip;
+  let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
+  let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
+  let demoActive=false;
+  const MAX_JSON=64*1024*1024;
+  const comparisonLabels={
+    ONLY_IN_NEW_EXPORT:'只在新版匯出中出現',
+    NOT_IN_NEW_EXPORT:'新版匯出沒有此紀錄（不代表帳戶已刪除）',
+    CURRENT_VIEW_CHANGED:'目前分支或計數有差異',
+    METADATA_ONLY_CHANGED:'僅已檢查的標題／時間欄位不同',
+    NO_DETECTED_CURRENT_VIEW_CHANGE:'目前檢查範圍沒有發現差異',
+    INCONCLUSIVE_PATH:'目前分支不可比較',
+    INCONCLUSIVE_ID:'缺少可靠或唯一的對話 ID'
+  };
+  const explanations={
+    INVALID_RECORDS_SKIPPED:'部分紀錄不是支援的對話資料結構，已排除。',
+    SOME_CURRENT_PATHS_UNAVAILABLE:'部分對話缺少可核對的目前分支，無法閱讀其訊息。',
+    BROKEN_PARENT_CHAIN:'至少一段對話的父節點鏈不完整。',
+    OFF_PATH_NODES_NOT_IN_READING_VIEW:'分支以外的訊息節點不會顯示於主要閱讀頁面；請保留原始匯出檔。',
+    ATTACHMENT_REFERENCES_NOT_PROOF_OF_SAVED_FILES:'發現附件參照，但不能因此證明檔案實體存在或可以還原。',
+    NON_TEXT_PARTS_NOT_RENDERED:'部分圖片、語音或其他非文字內容沒有轉成可閱讀文字。',
+    NUMBERED_JSON_SHARDS_RECOGNIZED_NOT_FULL_ACCOUNT_PROOF:'已辨識連號的 JSON 分片；這不能證明帳戶完整。',
+    SINGLE_NUMBERED_JSON_MAY_OMIT_OTHER_PARTS:'只載入一個編號 JSON；可能尚有其他分片未讀取。'
+  };
+  const fileErrorHints=Object.freeze({
+    ZIP_MISSING_JSON_SHARD:'編號 ZIP 有缺號，請重新取得完整匯出，不要自行拼接。',
+    ZIP_DUPLICATE_JSON_SHARD:'編號 ZIP 內有重複分片，無法安全判定內容。',
+    ZIP_MULTIPLE_SHARD_DIRECTORIES:'對話分片分布在不同資料夾，無法安全合併。',
+    ZIP_AMBIGUOUS_JSON_SOURCES:'ZIP 同時出現單一與編號對話資料，無法安全選擇。',
+    ZIP_TOO_MANY_JSON_SHARDS:'分片數量超出目前支援上限。',
+    ZIP_JSON_SHARDS_TOO_LARGE:'分片解壓總量超出目前支援上限。',
+    ZIP_EXPECTED_CONVERSATIONS_ARRAY:'某個分片不是目前支援的對話陣列格式。',
+    ZIP_CRC_MISMATCH:'ZIP 內某個 JSON 的 CRC32 校驗不相符。',
+    ZIP_UNSUPPORTED_SHARD_NAME:'對話檔使用尚未支援的編號格式，未進行猜測。',
+    ZIP_CONVERSATIONS_JSON_MISSING:'ZIP 沒有找到目前支援的對話 JSON。'
+  });
+  function status(text,kind=''){e.status.textContent=text;e.status.className='status '+kind;}
+  function download(data,name,type){
+    const blob=new Blob([data],{type});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }
+  function reset(){
+    generation++;comparisonGeneration++;current=null;older=null;compared=null;selected=null;
+    currentFile=null;matchedAttachmentPaths=[];byteReport=null;healthReport=null;demoActive=false;
+    e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
+    for(const sel of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])sel.value='NOT_TESTED';
+    e.pilotStatus.textContent='沒有背景傳送或追蹤；不需要登入 GitHub 才能使用本工具。';
+    e.verifyAttachments.disabled=true;e.attachmentVerifyStatus.textContent='請先載入 ZIP，才能進行選用檢查。';
+    e.file.value='';e.olderFile.value='';e.olderFile.disabled=true;e.olderStatus.textContent='請先載入最新版匯出檔。';e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;e.search.value='';e.list.replaceChildren();
+    e.detail.textContent='';e.results.hidden=true;e.clear.disabled=true;e.html.disabled=true;
+    status('已清除本頁載入的資料。');
+  }
+  function metric(label,value){
+    const b=document.createElement('div');b.className='metric';
+    const strong=document.createElement('strong');strong.textContent=Number(value).toLocaleString();
+    const caption=document.createElement('span');caption.textContent=label;
+    b.append(strong,caption);return b;
+  }
+  function renderHealth(){
+    if(!current)return;
+    healthReport=window.AMLHealth.evaluate(current.audit,{diff:compared?.summary||null,bytes:byteReport});
+    const labels={ATTENTION:'已發現需要處理的問題',REVIEW:'需要人工核對的範圍',LIMITED_CHECK_OK:'已支援範圍未發現明顯問題'};
+    e.healthSummary.textContent=labels[healthReport.overall]+'。僅限本工具已支援的檢查，不能證明完整備份。';
+    e.healthSummary.dataset.state=healthReport.overall;
+    e.healthCards.replaceChildren();
+    for(const check of healthReport.checks){
+      const box=document.createElement('article');box.className='health-card';box.dataset.priority=check.priority;
+      const h=document.createElement('h4');h.textContent=check.title;
+      const p=document.createElement('p');p.textContent=check.action;
+      box.append(h,p);
+      if(check.count!==undefined){const c=document.createElement('small');c.textContent=`本次觀察：${check.count} 項`;box.append(c);}
+      e.healthCards.append(box);
+    }
+  }
+  function renderAudit(){
+    const a=current.audit;e.metrics.replaceChildren(
+      metric('可解析對話',a.parsed_records),metric('目前分支文字訊息',a.active_visible_messages),
+      metric('未顯示的分支節點',a.off_path_message_nodes),metric('可能的附件參照',a.attachment_reference_observations));
+    e.warnings.replaceChildren();
+    const items=[...a.warnings.map(x=>explanations[x]||x),
+      ...a.issues.slice(0,20).map(x=>`${x.code} (${x.detail})`)];
+    if (a.additional_issues_suppressed||a.issues.length>20) items.push('其他問題未全部顯示，請下載 JSON 檢查報告。');
+    if (!items.length) items.push('指定範圍內沒有發現警告。這不是帳戶備份完整性認證。');
+    for(const text of items){const li=document.createElement('li');li.textContent=text;e.warnings.append(li);}
+    e.warningCount.textContent=`(${a.warnings.length} 類)`;
+    renderHealth();
+    const z=a.archive_path_assessment;
+    e.archiveAssessment.hidden=!z;
+    if(z){
+      e.archiveAssessment.textContent=`ZIP 內非主對話 JSON 的檔案項目 ${z.non_conversations_file_entries} 個；附件參照 ${z.attachment_references_observed} 項，其中 ${z.matched_unique_paths} 項可精確對應到唯一 ZIP 路徑、${z.missing_explicit_paths} 項明確路徑不存在、${z.unverifiable_references} 項缺少可比對路徑、${z.unsafe_path_references} 項路徑不安全、${z.ambiguous_paths} 項路徑重複。僅比對 ZIP 目錄中宣告的檔名，未驗證其他檔案位元組、內容或可還原性。`;
+    }
+  }
+  function renderMessages(c){
+    e.detail.replaceChildren();
+    const title=document.createElement('h3');title.textContent=c.title;
+    const meta=document.createElement('p');meta.className='small-note';
+    meta.textContent=`${core.formatTime(c.updated)} · ${c.visibleMessages} 則目前分支訊息`;
+    e.detail.append(title,meta);
+    if(c.pathStatus!=='CURRENT_PATH_PRESENT'||c.excludedNodes){
+      const n=document.createElement('p');n.className='note';
+      n.textContent=c.pathStatus!=='CURRENT_PATH_PRESENT'?'目前分支資料不可用；不會猜測內容順序。':`另有 ${c.excludedNodes} 個訊息節點不屬於目前分支，請保留原始備份。`;
+      e.detail.append(n);
+    }
+    if(!c.messages.length){const p=document.createElement('p');p.textContent='此對話沒有可閱讀的目前分支文字訊息。';e.detail.append(p);}
+    for(const msg of c.messages.slice(0,700)){
+      const section=document.createElement('section');section.className='message';
+      const role=document.createElement('strong');role.textContent=msg.role;
+      const text=document.createElement('pre');text.textContent=msg.text||(msg.nonText?'[非文字內容尚未顯示]':'[空白訊息]');
+      section.append(role,text);e.detail.append(section);
+    }
+    if(c.messages.length>700){const p=document.createElement('p');p.className='note';p.textContent='畫面只顯示前 700 則訊息；下載目前分支 HTML 可閱讀其餘文字。';e.detail.append(p);}
+    e.html.disabled=false;
+  }
+  function selectConversation(i){selected=i;renderList();renderMessages(current.conversations[i]);}
+  function renderList(){
+    const query=e.search.value;const matched=core.searchConversations(current.conversations,query);
+    e.resultCount.textContent=`符合 ${matched.length} 則（最多顯示 200 則）`;
+    e.list.replaceChildren();
+    if(!matched.length){const p=document.createElement('p');p.className='placeholder';p.textContent='沒有符合條件的目前分支內容。';e.list.append(p);return;}
+    const idToIndex=new Map(current.conversations.map((c,i)=>[c,i]));
+    for (const c of matched.slice(0,200)) {
+      const i=idToIndex.get(c),button=document.createElement('button');button.type='button';
+      button.className=i===selected?'selected':'';button.textContent=c.title;
+      const sm=document.createElement('small');sm.textContent=`${c.visibleMessages} 則 · ${core.formatTime(c.updated)}`;
+      button.append(sm);button.setAttribute('aria-current',i===selected?'true':'false');
+      button.addEventListener('click',()=>selectConversation(i));e.list.append(button);
+    }
+  }
+  async function parseSource(file){
+    if(file.name.toLowerCase().endsWith('.json')){
+      if(file.size>MAX_JSON)throw Error('JSON_TOO_LARGE');
+      let raw;
+      try{raw=JSON.parse((await file.text()).replace(/^\uFEFF/,''));}
+      catch(_){throw Error('INVALID_JSON');}
+      const parsed=core.parseChatGPTExport(raw);
+      if(/^conversations-\d{3}\.json$/i.test(file.name)){
+        parsed.audit.source_container='SINGLE_NUMBERED_JSON';
+        parsed.audit.numbered_json_parts=1;
+        parsed.audit.warnings.push('SINGLE_NUMBERED_JSON_MAY_OMIT_OTHER_PARTS');
+      }
+      return parsed;
+    }
+    if(file.name.toLowerCase().endsWith('.zip')){
+      if(file.size>zip.MAX_ARCHIVE)throw Error('ZIP_ARCHIVE_TOO_LARGE');
+      const opened=await zip.getConversationsJson(new Uint8Array(await file.arrayBuffer()));
+      const parsed=core.parseChatGPTExport(opened.parsed,{zipEntryCount:opened.entryCount});
+      parsed.audit.source_container=opened.sourceKind;
+      parsed.audit.numbered_json_parts=opened.sourceFileCount;
+      if(opened.sourceKind==='NUMBERED_JSON_SHARDS')parsed.audit.warnings.push('NUMBERED_JSON_SHARDS_RECOGNIZED_NOT_FULL_ACCOUNT_PROOF');
+      parsed.audit.archive_path_assessment=core.assessArchiveReferences(opened.parsed,opened.entries);
+      parsed._exactAttachmentPaths=core.listUniqueExactAttachmentPaths(opened.parsed,opened.entries);
+      if(parsed.audit.archive_path_assessment.missing_explicit_paths)
+        parsed.audit.warnings.push('ARCHIVE_REFERENCES_WITHOUT_MATCHING_PATH');
+      return parsed;
+    }
+    throw Error('UNSUPPORTED_FILE_TYPE');
+  }
+  function renderComparison(){
+    e.comparePanel.hidden=!compared;
+    if(!compared)return;
+    const c=compared.summary.counts;
+    e.compareCounts.replaceChildren(
+      metric('只在新版匯出出現',c.ONLY_IN_NEW_EXPORT),
+      metric('新版匯出未見',c.NOT_IN_NEW_EXPORT),
+      metric('目前分支有差異',c.CURRENT_VIEW_CHANGED),
+      metric('無法確定',c.INCONCLUSIVE_PATH+c.INCONCLUSIVE_ID));
+    e.compareList.replaceChildren();
+    const relevant=compared.items.filter(x=>x.status!=='NO_DETECTED_CURRENT_VIEW_CHANGE');
+    const fragment=document.createDocumentFragment();
+    for(const item of relevant.slice(0,120)){
+      const li=document.createElement('li');
+      const label=document.createElement('strong');label.textContent=comparisonLabels[item.status]||item.status;
+      const title=document.createElement('span');title.textContent=' · '+item.title;
+      li.append(label,title);fragment.append(li);
+    }
+    if(relevant.length>120){const li=document.createElement('li');li.textContent=`僅顯示前 120 項，另有 ${relevant.length-120} 項未顯示。摘要報告不包含對話名稱。`;fragment.append(li);}
+    if(!relevant.length){const li=document.createElement('li');li.textContent='目前檢查範圍沒有發現差異，並非兩份備份完全相同。';fragment.append(li);}
+    e.compareList.append(fragment);renderHealth();
+  }
+  async function importFile(file){
+    if(!file)return;
+    demoActive=false;e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
+    // R5: never carry a demo/previous-export answer into a new source's optional feedback.
+    for(const select of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])select.value='NOT_TESTED';
+    const rev=++generation;comparisonGeneration++;
+    current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;
+    currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;
+    e.attachmentVerifyStatus.textContent='尚未進行位元組檢查。';e.results.hidden=true;
+    e.html.disabled=true;e.clear.disabled=false;e.olderFile.disabled=true;e.olderFile.value='';
+    e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;
+    e.olderStatus.textContent='請先載入最新版匯出檔。';
+    status('正在本機解析最新版匯出檔…');
+    try{
+      const parsed=await parseSource(file);
+      if(rev!==generation)return;
+      current=parsed;e.results.hidden=false;e.pilotPanel.hidden=false;e.search.value='';
+      currentFile=file.name.toLowerCase().endsWith('.zip')?file:null;
+      matchedAttachmentPaths=parsed._exactAttachmentPaths||[];delete parsed._exactAttachmentPaths;
+      e.verifyAttachments.disabled=!currentFile||matchedAttachmentPaths.length===0;
+      e.attachmentVerifyStatus.textContent=!currentFile?'JSON 單檔無法檢查 ZIP 附件。':!matchedAttachmentPaths.length?'沒有可安全且唯一比對的附件路徑；沒有自動猜測。':`找到 ${matchedAttachmentPaths.length} 個不同的明確附件路徑，可選擇執行限額 CRC32 檢查。`; 
+      e.olderFile.disabled=false;e.olderStatus.textContent='可選擇較早匯出的檔案進行比較。';
+      renderAudit();renderList();
+      const shardInfo=parsed.audit.source_container==='NUMBERED_JSON_SHARDS'?`，共讀取 ${parsed.audit.numbered_json_parts} 個連續編號 JSON 分片`:parsed.audit.source_container==='SINGLE_NUMBERED_JSON'?'；這只是單一編號分片，可能還有其他未載入資料':'';
+      status(`完成：已檢查 ${parsed.audit.input_records} 筆輸入紀錄${shardInfo}；僅驗證本次匯出內容的支援範圍。`,'ok');
+    }catch(err){
+      if(rev!==generation)return;
+      current=null;currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;e.results.hidden=true;
+      const code=String(err?.message||'UNKNOWN_ERROR').replace(/[^\w\s-]/g,'').slice(0,150);
+      status(`無法解析：${fileErrorHints[code]||'來源格式或檔案內容無法在目前版本安全辨識。'}（${code}）。請保留官方原始匯出檔；沒有將部分結果當作成功。`,'error');
+    }
+  }
+  async function importOlder(file){
+    if(!file||!current||demoActive)return;
+    const rev=++comparisonGeneration, sourceRev=generation;
+    e.olderStatus.textContent='正在本機比較兩份匯出…';
+    older=null;compared=null;e.comparePanel.hidden=true;
+    try{
+      const parsed=await parseSource(file);
+      if(rev!==comparisonGeneration||sourceRev!==generation)return;
+      older=parsed;compared=window.AMLCompare.compareSnapshots(parsed,current);
+      renderComparison();e.olderStatus.textContent='比對完成：匯出日期與帳戶是否相同，均由使用者自行確認。';
+    }catch(err){
+      if(rev!==comparisonGeneration||sourceRev!==generation)return;
+      e.comparePanel.hidden=true;compared=null;older=null;if(current)renderHealth();
+      const code=String(err?.message||'UNKNOWN_ERROR').replace(/[^\w\s-]/g,'').slice(0,150);
+      e.olderStatus.textContent=`舊版匯出無法解析：${code}。最新版閱讀不受影響。`;
+    }
+  }
+  async function verifyAttachments(){
+    if(!current||!currentFile||!matchedAttachmentPaths.length)return;
+    const rev=generation;
+    e.verifyAttachments.disabled=true;e.attachmentVerifyStatus.textContent='正在本機檢查有限的 ZIP 附件位元組…';
+    try{
+      const bytes=new Uint8Array(await currentFile.arrayBuffer());
+      if(rev!==generation)return;
+      const report=await zip.verifyMatchedAttachments(bytes,matchedAttachmentPaths);
+      if(rev!==generation)return;
+      byteReport=report;current.audit.attachment_byte_assessment=report;
+      e.attachmentVerifyStatus.textContent=`檢查 ${report.checked_entries} 項，其中 CRC32 符合 ${report.bytes_crc32_verified} 項、失敗 ${report.failed_integrity} 項；因大小／格式／總量等限制跳過 ${report.skipped_size+report.skipped_budget+report.skipped_method+report.skipped_unsafe} 項。CRC 正確不代表原始附件完整或可信。`;
+      renderHealth();
+    }catch(err){
+      if(rev!==generation)return;
+      byteReport=null;
+      const code=String(err?.message||'CHECK_UNAVAILABLE').replace(/[^A-Za-z0-9_-]/g,'').slice(0,90);
+      e.attachmentVerifyStatus.textContent=`附件位元組檢查無法完成（${code}）；不能視為已驗證。`;
+    }finally{if(rev===generation)e.verifyAttachments.disabled=false;}
+  }
+  function loadSyntheticDemo(){
+    reset();
+    const fixture=window.AMLDemo.getSnapshots();
+    current=core.parseChatGPTExport(fixture.newer);
+    older=core.parseChatGPTExport(fixture.older);
+    compared=window.AMLCompare.compareSnapshots(older,current);
+    current.audit.source_mode='SYNTHETIC_DEMO';
+    demoActive=true;e.demoBanner.hidden=false;e.pilotPanel.hidden=false;e.results.hidden=false;
+    e.clear.disabled=false;
+    e.verifyAttachments.disabled=true;e.olderFile.disabled=true;
+    e.attachmentVerifyStatus.textContent='示例為 JSON，沒有實際 ZIP 附件可檢查。';
+    e.olderStatus.textContent='合成新舊版本已自動載入，請勿與真實帳戶資料混合比較。';
+    renderAudit();renderList();renderComparison();
+    status('合成示例已載入：不是帳戶備份檢查。可選取對話、搜尋文字和閱讀差異。','ok');
+    e.results.scrollIntoView({block:'start',behavior:'auto'});
+  }
+  e.tryDemo.addEventListener('click',loadSyntheticDemo);
+  e.downloadPilot.addEventListener('click',()=>{
+    if(!current)return;
+    const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
+      firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.6.0.json','application/json;charset=utf-8');
+    e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
+  });
+  e.downloadFirstResult.addEventListener('click',()=>{
+    if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
+      'aml-first-result-v0.6.0.txt','text/plain;charset=utf-8');
+  });
+  e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.6.0.json','application/json;charset=utf-8');});
+  const picker=document.querySelector('label[for="archiveFile"]');
+  picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
+  e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
+  e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.6.0.json','application/json;charset=utf-8');});
+  e.clear.addEventListener('click',reset);
+  e.search.addEventListener('input',()=>{if(current)renderList();});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.6.0.json','application/json;charset=utf-8');});
+  e.html.addEventListener('click',()=>{if(current&&selected!==null){
+    const c=current.conversations[selected];download(core.exportConversationHtml(c),'aml-conversation.html','text/html;charset=utf-8');
+  }});
+})();
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.7.0 — bilingual first-task gateway, local UI only. MIT.
+ * Does not claim complete English coverage of advanced results.
+ * All sample results are derived from the existing synthetic demo parser.
+ */
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+  if(root)root.AMLGateway=api;
+})(typeof globalThis==='object'?globalThis:null,function(){'use strict';
+  const host=typeof globalThis==='object'?globalThis:null;
+  const translations=Object.freeze({
+    'zh-Hant':Object.freeze({
+      title:'先試一次，不必準備私人資料', language:'English', demoButton:'試用合成示範', demoTitle:'第一次使用？先看合成範例', description:'使用原創合成對話，在這台裝置體驗備份檢查。這不是你的帳戶，也不會證明任何真實備份完整。',
+      stepOne:'① 點選「試用合成示範」，不必下載帳戶資料。',
+      stepTwo:'② 檢查可讀對話與限制，試著找出範例內容。',
+      stepThree:'③ 真正要檢查自己的備份時，請使用下方本機檔案選擇器並保留原始 ZIP。',
+      honesty:'這份網頁的首次使用引導提供英文；進階體檢介面目前以繁體中文為主，並非完整英文版。',
+      find:'搜尋合成示範中的 umbrella',jump:'查看詳細體檢（繁體中文）',
+      success:n=>`已載入 ${n} 則原創合成對話。這不是你的帳戶資料，也不是完整備份認證。你可以搜尋 umbrella，或繼續閱讀繁體中文的詳細結果。`,
+      missing:'示範尚未成功載入，沒有宣稱已檢查任何資料。'
+    }),
+    en:Object.freeze({
+      title:'Try one task, with no personal data',language:'繁體中文',demoButton:'Try synthetic demo',demoTitle:'First time? Try fictional examples',
+      description:'Explore a local backup inspection using fictional conversations. This is NOT your account and does not prove any real backup is complete.',
+      stepOne:'① Press “Try synthetic demo” below. No account export is required.',
+      stepTwo:'② Find a sample conversation and read what the inspection can—and cannot—verify.',
+      stepThree:'③ To inspect your own official export, choose a local ZIP/JSON below and keep the original archive.',
+      honesty:'English is supported for this first-task guide only. The advanced inspector interface remains primarily in Traditional Chinese; this is not a fully translated English UI.',
+      find:'Find “umbrella” in sample',jump:'View detailed results (Traditional Chinese)',
+      success:n=>`${n} fictional conversations loaded using the existing inspector. This is NOT an inspection of your account or proof of full backup. Try “umbrella” below, or explore the advanced results (in Traditional Chinese).`,
+      missing:'The synthetic demo did not load; no inspection was claimed.'
+    })
+  });
+  function validLanguage(code){return code==='en'?'en':'zh-Hant';}
+  function describe(lang,count,loaded){const t=translations[validLanguage(lang)];return loaded?t.success(Math.max(0,Math.trunc(Number(count)||0))):t.missing;}
+  function wire(doc){
+    const by=id=>doc.getElementById(id);
+    const panel=by('firstTaskGateway'), toggle=by('gatewayLanguage'), demo=by('tryDemo'), outcome=by('gatewayOutcome');
+    if(!panel||!toggle||!demo||!outcome)return false;
+    let language='zh-Hant',last=null;
+    const nodes={title:by('gatewayTitle'),description:by('gatewayDescription'),stepOne:by('gatewayStepOne'),
+      stepTwo:by('gatewayStepTwo'),stepThree:by('gatewayStepThree'),honesty:by('gatewayHonesty'),
+      find:by('gatewayFindExample'),jump:by('gatewayJump'),outcome:by('gatewayOutcomeText')};
+    function render(){
+      const t=translations[language];panel.lang=language;toggle.textContent=t.language;
+      toggle.setAttribute('aria-pressed',String(language==='en'));
+      demo.textContent=t.demoButton;by('firstUseTitle').textContent=t.demoTitle;
+      for(const key of ['title','description','stepOne','stepTwo','stepThree','honesty','find','jump'])nodes[key].textContent=t[key];
+      if(last)nodes.outcome.textContent=describe(language,last.count,last.loaded);
+    }
+    toggle.addEventListener('click',()=>{language=language==='en'?'zh-Hant':'en';render();});
+    // The existing app handler is registered first, and loads the sample synchronously.
+    demo.addEventListener('click',()=>{
+      const loaded=by('results')&&!by('results').hidden&&by('demoBanner')&&!by('demoBanner').hidden;
+      let count=0;
+      if(loaded){
+        try{count=host.AMLCore.parseChatGPTExport(host.AMLDemo.getSnapshots().newer).audit.parsed_records;}
+        catch(_){count=0;}
+      }
+      last={loaded:Boolean(loaded&&count>0),count};
+      outcome.hidden=false;nodes.outcome.textContent=describe(language,count,last.loaded);
+      nodes.find.disabled=!last.loaded;
+    });
+    nodes.find.addEventListener('click',()=>{
+      if(!last?.loaded||by('results').hidden)return;
+      const search=by('searchBox');search.value='umbrella';
+      search.dispatchEvent(new host.Event('input',{bubbles:true}));
+      search.scrollIntoView({block:'center',behavior:'auto'});
+      search.focus({preventScroll:true});
+    });
+    function resetOutcome(){last=null;outcome.hidden=true;nodes.outcome.textContent='';}
+    by('archiveFile').addEventListener('change',resetOutcome);
+    by('clearBtn').addEventListener('click',resetOutcome);
+    render();return true;
+  }
+  return Object.freeze({translations,describe,wire});
+});
+if(typeof document!=='undefined'&&typeof window!=='undefined')window.AMLGateway.wire(document);
+
+</script>
+</body>
+</html>

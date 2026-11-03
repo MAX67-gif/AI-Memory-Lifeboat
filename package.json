@@ -1,12 +1,16 @@
 {
   "name": "ai-memory-lifeboat",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
-  "description": "Local-first ChatGPT export inspector with bounded numbered JSON shard support",
+  "description": "Local-first ChatGPT export inspector with single-file offline first-task gateway",
   "license": "MIT",
   "scripts": {
     "test": "node --test tests/*.js",
-    "check": "node --check src/core.js && node --check src/zip.js && node --check src/compare.js && node --check src/health.js && node --check src/pilot_r5.js && node --check src/first_result.js && node --check src/app.js && npm test"
+    "check": "node --check src/core.js && node --check src/zip.js && node --check src/compare.js && node --check src/health.js && node --check src/pilot_r5.js && node --check src/first_result.js && node --check src/gateway.js && node --check src/app.js && npm run build:check && npm run manifest:check && npm test",
+    "build:offline": "node tools/build_standalone.js",
+    "build:check": "node tools/build_standalone.js --check",
+    "build:manifest": "node tools/build_manifest.js",
+    "manifest:check": "node tools/build_manifest.js --check"
   },
   "engines": {
     "node": ">=20"

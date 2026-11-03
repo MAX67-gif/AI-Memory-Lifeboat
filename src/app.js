@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.6.0 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.7.0 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
