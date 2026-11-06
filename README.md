@@ -1,18 +1,25 @@
 # AI Memory Lifeboat｜AI 對話救生艇
 
-## 立即開始｜R7 離線單檔（不需安裝或解壓整個專案）
+## 最新版下載｜R8 v0.8.0 離線版
+
+**目標：只下載一個 HTML 就能試用。** GitHub 正式 Release 完成後，可從 [R8 離線下載頁](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0) 選擇 `AI_Memory_Lifeboat_Offline.html`，下載後在瀏覽器直接開啟；另附 `SHA256SUMS.txt` 校驗下載檔與公開完整原始碼 ZIP。**若上述 Release 頁尚未出現，表示發布流程尚未成功，請勿把它當作已上線**；請改從 [公開版本的單檔 HTML](dist/AI_Memory_Lifeboat_Offline.html) 使用 GitHub 的 **Download raw**。
+
+不需要帳號、API Token、Node.js、伺服器，先點選「試用合成示範」。進階介面目前主要為繁體中文，只有首次使用引導提供英文。工具不證明帳戶完整性，個人的官方匯出檔不會自動上傳；請保留來源 ZIP。沒有任何真人採用或 OpenAI Codex for Open Source 入選保證。
+
+
+## 前版里程碑｜R7 離線單檔（不需安裝或解壓整個專案）
 
 **[取得單一 HTML 工具：AI_Memory_Lifeboat_Offline.html](dist/AI_Memory_Lifeboat_Offline.html)**：開啟檔案頁後，選 **Download raw（下載原始檔）**，儲存後以瀏覽器開啟。這份約 100 KB 的完整工具已內嵌與本 Repo 同源的 JavaScript、CSS 與 SHA256 型 CSP，**不需 Node、帳號、API Token、伺服器或個人資料就能先體驗合成示範**。開啟後可切換英文／繁中「首次任務引導」。進階檢查畫面目前仍以繁中為主，並非完整英文版。
 
 如果無法下載單檔，既有 **Code → Download ZIP → 解壓 → index.html** 路徑仍保留。GitHub Pages 與正式 GitHub Release 尚未經核對啟用；本段不提供虛構的託管網址。**所有示範為原創假資料，備份檢查不能證明帳戶完整。**
 
-**最新工程預覽：v0.7.0（R7 B）**。已驗證的原始碼與測試以公開 GitHub Commit／CI 為準，不將使用者試用或 OpenAI 開源計畫申請結果視為已完成。
+**R7 歷史工程預覽：v0.7.0（R7 B）**。已驗證的原始碼與測試以公開 GitHub Commit／CI 為準，不將使用者試用或 OpenAI 開源計畫申請結果視為已完成。
 
 [English](README.en.md) · [使用說明](docs/QUICK_START.md) · [隱私](PRIVACY.md) · [安全](SECURITY.md) · [限制與資料契約](docs/FORMAT_SUPPORT.md)
 
 **匯入自己的 ChatGPT 官方資料匯出 ZIP、`conversations.json`，或 ZIP 中連續編號的 `conversations-000.json` 等分片，在瀏覽器本機檢查可讀的對話、搜尋目前分支、比較兩次匯出、檢查 ZIP 中明確附件路徑、選擇性檢查小型附件 CRC32、查看下一步健康指引，下載檢查報告及單篇 HTML。** 免費、MIT 開源、無帳號、無第三方模型與分析 SDK。
 
-> **v0.6.0 Preview（2026-11-03 首次完成沙盒測試）。** 這不是完整備份認證：無法證明帳戶所有資料或附件均已匯出、不能還原原平台的對話、記憶、檔案或工具狀態。保留原始官方 ZIP；不要只保留本工具輸出的 HTML。
+> **R6 歷史里程碑（v0.6.0；2026-11-03）。** 這不是完整備份認證：無法證明帳戶所有資料或附件均已匯出、不能還原原平台的對話、記憶、檔案或工具狀態。保留原始官方 ZIP；不要只保留本工具輸出的 HTML。
 
 ## 三步開始
 
@@ -24,7 +31,7 @@
 
 [用合成範例練習](examples/sample-conversations.json) · [新版合成資料](examples/sample-newer.json) · [舊版合成資料](examples/sample-older.json)：此檔全為專案原創假資料，無真實使用者對話。
 
-## v0.6.0 的功能範圍
+## 延續自 R6 的功能範圍
 
 | 內容 | 目前支持 | 未支持或限制 |
 | --- | --- | --- |
