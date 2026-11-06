@@ -1,3 +1,15 @@
+# Changelog
+
+## v0.9.0 — 2026-11-06
+
+- Scrub hidden DOM content and old result summaries on clear, source replacement, and invalid JSON/ZIP replacement.
+- Revoke stale comparison output as soon as a different older export is selected, including while the new comparison is pending.
+- Revoke previous ZIP CRC32 results before retry; a failed retry cannot leave the previous successful result in health JSON.
+- Fix `.git` worktree file inclusion in the generated package manifest without altering original release history.
+- Preserve ChatGPT parser/ZIP caps, R4/R5 pilot schema semantics, local-only CSP and R8 release immutability.
+- Add 7 browser-app public DOM regression tests plus a separately pinned v0.9.0 one-time release workflow.
+- Engineering success does **not** establish real-user adoption, a complete account backup, or selection by OpenAI.
+
 ## v0.7.0 Preview — 2026-11-03
 
 - Deliver deterministic, dependency-free single-file offline inspector (`dist/AI_Memory_Lifeboat_Offline.html`); users can download one HTML from GitHub without extracting the entire source repository.

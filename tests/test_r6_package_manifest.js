@@ -6,7 +6,7 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFES
 const excluded=new Set(['PUBLIC_PACKAGE_MANIFEST.json','FILE_SHA256SUMS.txt']);
 test('R6 package manifest only lists safe relative public file paths and correct bytes',()=>{
   assert.equal(manifest.schema,'aml.public-package.v1');
-  assert.equal(manifest.version,'0.8.0-preview-source');
+  assert.equal(manifest.version,'0.9.0-preview-source');
   assert.equal(manifest.github_publication,'EXTERNAL_VERIFICATION_REQUIRED');
   assert.equal(manifest.github_branch_merge,'EXTERNAL_VERIFICATION_REQUIRED');
   assert.ok(Array.isArray(manifest.files)&&manifest.files.length>=40);

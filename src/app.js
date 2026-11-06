@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.8.0 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.9.0 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -48,6 +48,18 @@
     ZIP_CONVERSATIONS_JSON_MISSING:'ZIP 沒有找到目前支援的對話 JSON。'
   });
   function status(text,kind=''){e.status.textContent=text;e.status.className='status '+kind;}
+  // R9: Hidden DOM still contains private titles and messages. Scrub it, don't only hide it.
+  function clearRenderedData(){
+    for(const element of [e.list,e.detail,e.compareList,e.compareCounts,e.metrics,e.warnings,e.healthCards])
+      element.replaceChildren();
+    for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment])
+      element.textContent='';
+    delete e.healthSummary.dataset.state;
+    e.archiveAssessment.hidden=true;e.comparePanel.hidden=true;
+  }
+  function clearComparisonView(){
+    e.comparePanel.hidden=true;e.compareList.replaceChildren();e.compareCounts.replaceChildren();
+  }
   function download(data,name,type){
     const blob=new Blob([data],{type});const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
@@ -60,8 +72,8 @@
     for(const sel of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])sel.value='NOT_TESTED';
     e.pilotStatus.textContent='沒有背景傳送或追蹤；不需要登入 GitHub 才能使用本工具。';
     e.verifyAttachments.disabled=true;e.attachmentVerifyStatus.textContent='請先載入 ZIP，才能進行選用檢查。';
-    e.file.value='';e.olderFile.value='';e.olderFile.disabled=true;e.olderStatus.textContent='請先載入最新版匯出檔。';e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;e.search.value='';e.list.replaceChildren();
-    e.detail.textContent='';e.results.hidden=true;e.clear.disabled=true;e.html.disabled=true;
+    e.file.value='';e.olderFile.value='';e.olderFile.disabled=true;e.olderStatus.textContent='請先載入最新版匯出檔。';
+    e.search.value='';clearRenderedData();e.results.hidden=true;e.clear.disabled=true;e.html.disabled=true;
     status('已清除本頁載入的資料。');
   }
   function metric(label,value){
@@ -201,7 +213,8 @@
     currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;
     e.attachmentVerifyStatus.textContent='尚未進行位元組檢查。';e.results.hidden=true;
     e.html.disabled=true;e.clear.disabled=false;e.olderFile.disabled=true;e.olderFile.value='';
-    e.comparePanel.hidden=true;e.archiveAssessment.hidden=true;
+    e.search.value='';clearRenderedData();
+    e.pilotStatus.textContent='沒有背景傳送或追蹤；不需要登入 GitHub 才能使用本工具。';
     e.olderStatus.textContent='請先載入最新版匯出檔。';
     status('正在本機解析最新版匯出檔…');
     try{
@@ -227,7 +240,7 @@
     if(!file||!current||demoActive)return;
     const rev=++comparisonGeneration, sourceRev=generation;
     e.olderStatus.textContent='正在本機比較兩份匯出…';
-    older=null;compared=null;e.comparePanel.hidden=true;
+    older=null;compared=null;clearComparisonView();renderHealth();
     try{
       const parsed=await parseSource(file);
       if(rev!==comparisonGeneration||sourceRev!==generation)return;
@@ -235,7 +248,7 @@
       renderComparison();e.olderStatus.textContent='比對完成：匯出日期與帳戶是否相同，均由使用者自行確認。';
     }catch(err){
       if(rev!==comparisonGeneration||sourceRev!==generation)return;
-      e.comparePanel.hidden=true;compared=null;older=null;if(current)renderHealth();
+      clearComparisonView();compared=null;older=null;if(current)renderHealth();
       const code=String(err?.message||'UNKNOWN_ERROR').replace(/[^\w\s-]/g,'').slice(0,150);
       e.olderStatus.textContent=`舊版匯出無法解析：${code}。最新版閱讀不受影響。`;
     }
@@ -243,6 +256,8 @@
   async function verifyAttachments(){
     if(!current||!currentFile||!matchedAttachmentPaths.length)return;
     const rev=generation;
+    // A retry must revoke the previous report before reading any new bytes.
+    byteReport=null;delete current.audit.attachment_byte_assessment;renderHealth();
     e.verifyAttachments.disabled=true;e.attachmentVerifyStatus.textContent='正在本機檢查有限的 ZIP 附件位元組…';
     try{
       const bytes=new Uint8Array(await currentFile.arrayBuffer());
@@ -254,7 +269,8 @@
       renderHealth();
     }catch(err){
       if(rev!==generation)return;
-      byteReport=null;
+      byteReport=null;delete current.audit.attachment_byte_assessment;
+      renderHealth();
       const code=String(err?.message||'CHECK_UNAVAILABLE').replace(/[^A-Za-z0-9_-]/g,'').slice(0,90);
       e.attachmentVerifyStatus.textContent=`附件位元組檢查無法完成（${code}）；不能視為已驗證。`;
     }finally{if(rev===generation)e.verifyAttachments.disabled=false;}
@@ -280,23 +296,23 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.8.0.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.9.0.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.8.0.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.9.0.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.8.0.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.9.0.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.8.0.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.9.0.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.8.0.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.9.0.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',()=>{if(current&&selected!==null){
     const c=current.conversations[selected];download(core.exportConversationHtml(c),'aml-conversation.html','text/html;charset=utf-8');
   }});

@@ -1,5 +1,15 @@
 # AI Memory Lifeboat｜AI 對話救生艇
 
+## 最新：R9 v0.9.0｜狀態安全修正與正式離線下載
+
+**主要修正：**清除或切換備份來源時，立即從隱藏畫面移除先前的對話標題、訊息、差異清單與健康結果；重新比較或重驗附件時，先撤銷前次結果，避免失敗後仍顯示過期結論。R6 ZIP／JSON 解析與資料格式契約沒有擴張。
+
+**正式下載入口（需以 GitHub Release 實際發布成功為準）：** [R9 v0.9.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.9.0) → `AI_Memory_Lifeboat_Offline.html`。如未出現，請繼續使用已確認的 [v0.8.0 正式 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0)，不要相信不存在的下載頁。兩個版本都不需登入或 API Token；下載後在自己的瀏覽器開啟，保留原始官方 ZIP。
+
+**安全邊界：**清除是移除本頁的程式引用與畫面內容，**不代表覆寫瀏覽器記憶體或刪除先前下載的檔案**。單篇 HTML 含對話原文，不能當成無敏感內容的報告。檢查通過不代表全部帳戶或附件已完整匯出。沒有真人採用或 Codex for Open Source 入選證據。詳見 [R9 修正驗收](docs/R9_UI_STATE_AND_PRIVACY.md)。
+
+---
+
 ## 最新版下載｜R8 v0.8.0 離線版
 
 **目標：只下載一個 HTML 就能試用。** GitHub 正式 Release 完成後，可從 [R8 離線下載頁](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0) 選擇 `AI_Memory_Lifeboat_Offline.html`，下載後在瀏覽器直接開啟；另附 `SHA256SUMS.txt` 校驗下載檔與公開完整原始碼 ZIP。**若上述 Release 頁尚未出現，表示發布流程尚未成功，請勿把它當作已上線**；請改從 [公開版本的單檔 HTML](dist/AI_Memory_Lifeboat_Offline.html) 使用 GitHub 的 **Download raw**。

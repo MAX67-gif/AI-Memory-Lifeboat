@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.8.0 — bilingual first-task gateway, local UI only. MIT.
+/* AI Memory Lifeboat v0.9.0 — bilingual first-task gateway, local UI only. MIT.
  * Does not claim complete English coverage of advanced results.
  * All sample results are derived from the existing synthetic demo parser.
  */

@@ -1,0 +1,76 @@
+name: R9 offline download release (one-time, pinned)
+on:
+  push:
+    branches: [main]
+    paths:
+      - package.json
+      - .github/workflows/release-offline-r9.yml
+permissions:
+  contents: read
+concurrency:
+  group: aml-r9-offline-release
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.repository == 'MAX67-gif/AI-Memory-Lifeboat' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout canonical main (never untrusted PR content)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Decide whether this exact R9 version should publish
+        id: gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          if [[ "$version" == "0.9.0" ]]; then
+            echo 'publish=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'publish=false' >> "$GITHUB_OUTPUT"
+            echo 'Other versions require a separate explicitly reviewed publisher.'
+          fi
+      - name: Verify tests, generated offline source and public manifest
+        if: steps.gate.outputs.publish == 'true'
+        run: npm run check
+      - name: Build exact release assets and verify SHA256 and ZIP CRC
+        if: steps.gate.outputs.publish == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          cp dist/AI_Memory_Lifeboat_Offline.html release/AI_Memory_Lifeboat_Offline.html
+          git archive --format=zip --output=release/AI_Memory_Lifeboat_Source_v0.9.0.zip HEAD
+          (cd release && sha256sum AI_Memory_Lifeboat_Offline.html AI_Memory_Lifeboat_Source_v0.9.0.zip > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
+          unzip -tq release/AI_Memory_Lifeboat_Source_v0.9.0.zip >/dev/null
+          test -s release/AI_Memory_Lifeboat_Offline.html
+          test -s release/AI_Memory_Lifeboat_Source_v0.9.0.zip
+      - name: Publish once; do not overwrite an existing tag or Release
+        if: steps.gate.outputs.publish == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag='v0.9.0'
+          # ls-remote without --exit-code exits 0 even when the tag is absent,
+          # but fails on network/auth errors: never treat transport failure as "tag free".
+          existing="$(git ls-remote --tags origin "refs/tags/$tag")"
+          if [[ -n "$existing" ]]; then
+            echo "REFUSE_EXISTING_TAG_OR_RELEASE: $tag" >&2
+            exit 1
+          fi
+          gh release create "$tag" \
+            release/AI_Memory_Lifeboat_Offline.html \
+            release/AI_Memory_Lifeboat_Source_v0.9.0.zip \
+            release/SHA256SUMS.txt \
+            --target "$GITHUB_SHA" \
+            --title 'AI Memory Lifeboat v0.9.0 — State-Safe Offline' \
+            --notes-file docs/R9_RELEASE_NOTES.md

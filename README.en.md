@@ -1,5 +1,15 @@
 # AI Memory Lifeboat
 
+## Latest: R9 v0.9.0 — State-Safe Offline
+
+**Fix:** Clearing or switching exports now scrubs previously rendered private chat titles, message text, comparison rows and prior health results from the hidden DOM. A new comparison or ZIP attachment CRC retry invalidates any earlier result before it begins. The existing bounded ChatGPT parsing and schema contracts remain unchanged.
+
+**Release gate:** Use the [official v0.9.0 Release page](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.9.0) *only after its release assets are present and verified*. Until then, use the already verified [v0.8.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0). Download the HTML and open it locally; no login, AI API or server upload is required.
+
+**Scope:** Clearing the page is not secure erasure of browser/OS memory or prior downloads. Exported single-chat HTML contains private text. No complete-account backup certification, verified real-user adoption or Codex for Open Source selection is claimed. [R9 test contract](docs/R9_UI_STATE_AND_PRIVACY.md).
+
+---
+
 ## Latest offline download — R8 v0.8.0
 
 **One HTML file, no installation.** Once the official GitHub Release succeeds, download `AI_Memory_Lifeboat_Offline.html` from the [v0.8.0 Release page](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0). `SHA256SUMS.txt` and an exact source ZIP are provided for verification. **If the Release page does not yet exist, the publication gate has not passed**; instead, open the [single-file source](dist/AI_Memory_Lifeboat_Offline.html) and choose **Download raw** on GitHub.

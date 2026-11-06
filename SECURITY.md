@@ -31,3 +31,7 @@ No nested ZIP extraction, no auto-repair, no partial ZIP success. A set of numbe
 `tools/build_standalone.js` 每次讀取原始碼與樣式，產生固定內容的單一 HTML；每個內嵌 JavaScript 與 CSS 各計算 **SHA256 CSP hash**。完整單檔仍用 `default-src 'none'`、`connect-src 'none'`、`form-action 'none'`，沒有 CDN、遠端模型、登入或任意 ZIP 程式碼執行。CI 必須比對所有來源檔與分發單檔的一致性（`npm run build:check`）；合成瀏覽器驗證非外部審計，也不等於部署網站 CSP 已測。
 
 English first-task guide 只保證首次任務文字，進階檢查仍主要是繁體中文。GitHub File 頁面與 raw 下載屬 GitHub 平台網路流程，不能寫成完全沒有任何網路請求。未經使用者同意，本版不開 GitHub Pages 設定。
+
+## R9｜狀態撤銷與測試邊界
+
+R9 新增真實程式 UI 事件序列測試：切換來源、載入失敗、清除、舊版本再次比較、附件 CRC 再檢查失敗及執行中取消。修正隱藏 DOM 留有先前內容及前次檢查結果錯誤沿用問題。不更動 ZIP 解壓規則、單一對話 HTML 的敏感內容性質或 CSP 禁止外連規則。合成測試不是完整帳戶證明。
