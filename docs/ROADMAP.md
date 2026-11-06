@@ -29,3 +29,7 @@ A：判斷主要障礙是新手從 GitHub 首次使用的繁瑣，而非缺乏�
 ## R8｜離線正式交付（2026-11-06）
 
 首要消除下載及信任門檻：限 R8 version change 的 main push 對應公開 Release；PR 先全套 npm check，Release job 再二次檢查、精準 git archive、SHA256SUMS 和 ZIP CRC。發行失敗時維持公開 source 並誠實標示，禁止跳過 Action 或覆寫 tag。核心 ZIP/parser 不變。接下來優先試用者 5 人與競品公平任務測試，而非增加另一個格式。
+
+## R9（2026-11-06）｜狀態可靠性，非新平台擴張
+
+R9 針對既有 UI 跨來源切換、清除及檢查重試，消除先前結果的殘留風險，增加真實應用事件測試。保留 R8 的正式 Release 不覆寫，R9 以獨立審閱的單次發布流程取得 PR/CI/Release 證據。下個關卡依然是自願真人首用與現有 Viewer 公平對照；沒有外部證據不增加 Claude/Gemini/ZIP64。

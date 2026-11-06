@@ -14,7 +14,7 @@ function collect(rel=''){
    if(['.git','node_modules','coverage'].includes(ent.name))continue;
    collect(r);continue;
   }
-  if(!ent.isFile())continue;
+  if(!ent.isFile()||ent.name==='.git')continue;
   if(excluded.has(r)||r.endsWith('.log')||r.endsWith('.bak')||r.endsWith('.tmp'))continue;
   if(!/^[a-zA-Z0-9_./-]+$/.test(r)||r.split('/').includes('..'))throw Error('UNSAFE_PUBLIC_PATH:'+r);
   if(/PRIVATE|Project-Brain|\.env$|\.sqlite$|\.db$/i.test(r)||r==='conversations.json')throw Error('PRIVATE_PATH:'+r);
@@ -26,11 +26,11 @@ function collect(rel=''){
 collect();files.sort((a,b)=>a.path.localeCompare(b.path,'en'));
 if(files.length<46)throw Error('TOO_FEW_PUBLIC_FILES');
 const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.json'),'utf8'));
-prior.version='0.8.0-preview-source';prior.date='2026-11-06';
-prior.base_public_main='49dfd792d4845220ddf26aef2e08b6af5f0059f5';
+prior.version='0.9.0-preview-source';prior.date='2026-11-06';
+prior.base_public_main='79d2298fbeca318d9ce84faa140251c33c325c98';
 prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_merge='EXTERNAL_VERIFICATION_REQUIRED';
-prior.source='R7 verified public main plus R8 checksum-backed offline release workflow and direct download documentation';
-prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 deterministic offline single-file + source release package with checksum'];
+prior.source='R8 verified release source plus R9 scoped UI state isolation, privacy regression tests and pinned release workflow';
+prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 pinned release preserved','R9 clear hidden DOM, revoke stale comparison/CRC results, isolated scope tests'];
 prior.evidence.node_test_target='npm run check';
 prior.evidence.browser='real Chromium synthetic offline and source parity, hosted Pages NOT_VERIFIED';
 prior.evidence.real_account_export_tested=false;prior.evidence.external_adoption_confirmed=false;
