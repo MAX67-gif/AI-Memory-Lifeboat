@@ -25,3 +25,7 @@ OpenAI's documented numbered ChatGPT export variant is supported in a **bounded 
 ## R7｜A/B First-Task Gateway
 
 A：判斷主要障礙是新手從 GitHub 首次使用的繁瑣，而非缺乏其他 AI 格式。B：先以單一可攜 HTML 與中英文首次任務引導完成可測能力；不擅自打開 GitHub Pages 設定或宣稱正式 Release。B 工程合成測試不能取代 5 位自願一般使用者的 T1／T2；真實完成、回訪、競品同任務對照依舊 `NOT_COLLECTED`。後續功能需由這些外部結果決定。
+
+## R8｜離線正式交付（2026-11-06）
+
+首要消除下載及信任門檻：限 R8 version change 的 main push 對應公開 Release；PR 先全套 npm check，Release job 再二次檢查、精準 git archive、SHA256SUMS 和 ZIP CRC。發行失敗時維持公開 source 並誠實標示，禁止跳過 Action 或覆寫 tag。核心 ZIP/parser 不變。接下來優先試用者 5 人與競品公平任務測試，而非增加另一個格式。

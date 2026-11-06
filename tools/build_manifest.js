@@ -26,11 +26,11 @@ function collect(rel=''){
 collect();files.sort((a,b)=>a.path.localeCompare(b.path,'en'));
 if(files.length<46)throw Error('TOO_FEW_PUBLIC_FILES');
 const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.json'),'utf8'));
-prior.version='0.7.0-preview-source';prior.date='2026-11-03';
-prior.base_public_main='ccfd324598a25f39c9159568aaf35ef1c0cf5d88';
+prior.version='0.8.0-preview-source';prior.date='2026-11-06';
+prior.base_public_main='49dfd792d4845220ddf26aef2e08b6af5f0059f5';
 prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_merge='EXTERNAL_VERIFICATION_REQUIRED';
-prior.source='R6 verified public main plus R7 first-task gateway and deterministic single-file offline distribution';
-prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','Bilingual first-task guide (not a full English UI)','Single-file offline HTML generated with strict CSP and no server'];
+prior.source='R7 verified public main plus R8 checksum-backed offline release workflow and direct download documentation';
+prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 deterministic offline single-file + source release package with checksum'];
 prior.evidence.node_test_target='npm run check';
 prior.evidence.browser='real Chromium synthetic offline and source parity, hosted Pages NOT_VERIFIED';
 prior.evidence.real_account_export_tested=false;prior.evidence.external_adoption_confirmed=false;

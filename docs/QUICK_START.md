@@ -26,3 +26,7 @@ R4 新增三題式選用回饋，下載 JSON 並不會自動送出。只有明�
 從 [單檔工具頁](../dist/AI_Memory_Lifeboat_Offline.html) 點選 GitHub「Download raw」，下載 `AI_Memory_Lifeboat_Offline.html` 並開啟，即可先以原創假資料體驗。點選「English」可以切換首次任務引導語言。**進階體檢仍主要是繁體中文**，目前無 Pages/Release 正式上線證據；不要誤認單檔通過測試等於整個帳戶已備份。
 
 若 GitHub 檔案下載按鈕不可用，使用 Code → Download ZIP 及內含的 `index.html`。單檔沒有自動上傳、遠端模型、註冊、CDN、遙測；離線 HTML 以 SHA256 CSP 限制內嵌程式執行。使用者如有自己的官方匯出，應自行在瀏覽器內選擇、保留原 ZIP；不要將真實內容提交到 Issue。
+
+## R8｜正式下載的驗收邊界
+
+若 [v0.8.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0) 已有離線 HTML 和 SHA256SUMS，即可只下載 HTML 直接使用；若仍 404，不得宣稱 Release 完成，先使用版本庫內的 [單檔 HTML](../dist/AI_Memory_Lifeboat_Offline.html) → Download raw。校驗 SHA256 代表下載位元組與該次發行一致，不能證明使用者的匯出內容或帳戶完整。專案仍未宣稱 GitHub Pages 已上線。

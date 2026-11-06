@@ -49,3 +49,10 @@
 Initial offline-first proof of concept: ChatGPT `conversations.json`/ZIP import, bounded ZIP decompression and CRC, current-path graph reading, off-branch/non-text/attachment-reference warnings, local search, JSON audit and single-conversation HTML export. Bilingual getting-started documentation; MIT; test suite and GitHub Actions verification.
 
 **Not a general backup solution:** no account completeness certification, non-text restoration, remote sync, model API, or live user-adoption evidence.
+
+## v0.8.0 Preview / R8 — 2026-11-06
+
+- New documented one-file offline Release channel, pinned main-only publisher, exact source ZIP and SHA256SUMS, refusal to overwrite any preexisting tag.
+- Kept R7 bilingual onboarding and R6 parser semantics unchanged, built from the same sources.
+- Additional synthetic checks for release workflow gates, assets, checksum references, and privacy/no external telemetry.
+- **Do not infer** the official Release exists until GitHub Actions and assets are independently verified. No real-user data or external adoption measured.

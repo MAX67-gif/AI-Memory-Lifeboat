@@ -1,8 +1,8 @@
 {
   "name": "ai-memory-lifeboat",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
-  "description": "Local-first ChatGPT export inspector with single-file offline first-task gateway",
+  "description": "Local-first ChatGPT export inspector with verified offline release distribution and first-task gateway",
   "license": "MIT",
   "scripts": {
     "test": "node --test tests/*.js",
