@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.10.0 — 2026-11-06
+
+- Add a keyboard-accessible, native HTML confirmation step before exporting single-conversation HTML containing chat text and titles.
+- Cancel, Escape, clear, source switch and selected-conversation changes revoke any pending sensitive export; previously direct content-free reports remain one click.
+- Preserve v0.9.0 source parsing, ZIP caps, comparison, user privacy, generated single-file CSP parity, and v1/v2 pilot schemas.
+- Add red/green public DOM behavior tests and real-browser synthetic checks. No evidence of full account backup or independent real-user adoption is claimed.
+- Publish only from canonical GitHub main using a separate pinned, non-overwriting R10 release workflow.
+
 ## v0.9.0 — 2026-11-06
 
 - Scrub hidden DOM content and old result summaries on clear, source replacement, and invalid JSON/ZIP replacement.

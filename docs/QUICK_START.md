@@ -30,3 +30,7 @@ R4 新增三題式選用回饋，下載 JSON 並不會自動送出。只有明�
 ## R8｜正式下載的驗收邊界
 
 若 [v0.8.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0) 已有離線 HTML 和 SHA256SUMS，即可只下載 HTML 直接使用；若仍 404，不得宣稱 Release 完成，先使用版本庫內的 [單檔 HTML](../dist/AI_Memory_Lifeboat_Offline.html) → Download raw。校驗 SHA256 代表下載位元組與該次發行一致，不能證明使用者的匯出內容或帳戶完整。專案仍未宣稱 GitHub Pages 已上線。
+
+## R10｜下載含對話文字的 HTML 前請確認
+
+「下載目前對話 HTML（含原文）」會另開本機確認視窗，清楚說明內容包含所選對話標題與文字；選取消或按 Esc 不會下載。更換備份或清除後，舊確認不再有效。與此不同，不含聊天原文的健康 JSON/TXT 不需要額外確認。下載的檔案仍可能保存在裝置上，應自行保護並保留官方原始 ZIP。

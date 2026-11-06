@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.9.0 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.0 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -10,11 +10,12 @@
     downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus'),
     tryDemo:$('tryDemo'),demoBanner:$('demoBanner'),pilotPanel:$('pilotPanel'),pilotEase:$('pilotEase'),
     pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),pilotTask:$('pilotTask'),pilotScope:$('pilotScope'),
-    downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult')};
+    downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult'),
+    htmlExportConfirm:$('htmlExportConfirm'),cancelHtmlExport:$('cancelHtmlExport'),confirmHtmlExport:$('confirmHtmlExport')};
   const core=window.AMLCore, zip=window.AMLZip;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
-  let demoActive=false;
+  let demoActive=false, pendingSensitiveExport=null;
   const MAX_JSON=64*1024*1024;
   const comparisonLabels={
     ONLY_IN_NEW_EXPORT:'只在新版匯出中出現',
@@ -60,13 +61,35 @@
   function clearComparisonView(){
     e.comparePanel.hidden=true;e.compareList.replaceChildren();e.compareCounts.replaceChildren();
   }
+  // Sensitive HTML must never be exported from a stale selection or source.
+  function revokeSensitiveExport(){
+    pendingSensitiveExport=null;
+    if(e.htmlExportConfirm.open)e.htmlExportConfirm.close();
+  }
+  function requestSensitiveExport(){
+    if(!current||selected===null||!current.conversations[selected])return;
+    if(typeof e.htmlExportConfirm.showModal!=='function'){
+      status('目前瀏覽器不支援安全下載確認視窗，已取消含原文匯出。','error');return;
+    }
+    pendingSensitiveExport={generation,selected};
+    e.htmlExportConfirm.showModal();
+  }
+  function confirmSensitiveExport(){
+    const pending=pendingSensitiveExport;
+    const allowed=pending && pending.generation===generation && pending.selected===selected &&
+      current && current.conversations[selected] && e.htmlExportConfirm.open;
+    revokeSensitiveExport();
+    if(!allowed)return;
+    const html=core.exportConversationHtml(current.conversations[selected]);
+    download(html,'aml-conversation.html','text/html;charset=utf-8');
+  }
   function download(data,name,type){
     const blob=new Blob([data],{type});const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
   function reset(){
-    generation++;comparisonGeneration++;current=null;older=null;compared=null;selected=null;
+    revokeSensitiveExport();generation++;comparisonGeneration++;current=null;older=null;compared=null;selected=null;
     currentFile=null;matchedAttachmentPaths=[];byteReport=null;healthReport=null;demoActive=false;
     e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
     for(const sel of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])sel.value='NOT_TESTED';
@@ -137,7 +160,7 @@
     if(c.messages.length>700){const p=document.createElement('p');p.className='note';p.textContent='畫面只顯示前 700 則訊息；下載目前分支 HTML 可閱讀其餘文字。';e.detail.append(p);}
     e.html.disabled=false;
   }
-  function selectConversation(i){selected=i;renderList();renderMessages(current.conversations[i]);}
+  function selectConversation(i){revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);}
   function renderList(){
     const query=e.search.value;const matched=core.searchConversations(current.conversations,query);
     e.resultCount.textContent=`符合 ${matched.length} 則（最多顯示 200 則）`;
@@ -205,6 +228,7 @@
   }
   async function importFile(file){
     if(!file)return;
+    revokeSensitiveExport();
     demoActive=false;e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
     // R5: never carry a demo/previous-export answer into a new source's optional feedback.
     for(const select of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])select.value='NOT_TESTED';
@@ -296,24 +320,25 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.9.0.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.0.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.9.0.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.0.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.9.0.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.0.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.9.0.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.0.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.9.0.json','application/json;charset=utf-8');});
-  e.html.addEventListener('click',()=>{if(current&&selected!==null){
-    const c=current.conversations[selected];download(core.exportConversationHtml(c),'aml-conversation.html','text/html;charset=utf-8');
-  }});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.0.json','application/json;charset=utf-8');});
+  e.html.addEventListener('click',requestSensitiveExport);
+  e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
+  e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});
+  e.confirmHtmlExport.addEventListener('click',confirmSensitiveExport);
 })();
