@@ -25,6 +25,8 @@ class FakeElement {
   append(...nodes){this.children.push(...nodes);}
   setAttribute(k,v){this.attributes[k]=String(v);}
   scrollIntoView(){}
+  showModal(){this.open=true;}
+  close(){this.open=false;this.fire('close');}
   focus(){}
   click(){this.fire('click');}
   remove(){}
@@ -34,14 +36,14 @@ function harness(zipOverrides={}){
   const ids=[...src.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
   const elements=new Map(ids.map(id=>[id,new FakeElement()]));
   const by=id=>{if(!elements.has(id))throw Error('UNKNOWN_ELEMENT_'+id);return elements.get(id);};
-  const picker=new FakeElement(),body=new FakeElement();
+  const picker=new FakeElement(),body=new FakeElement(),downloads=[];
   const document={getElementById:by,querySelector:s=>s==='label[for="archiveFile"]'?picker:null,
-    createElement:()=>new FakeElement(),createDocumentFragment:()=>new FakeElement(),body};
+    createElement:tag=>{const el=new FakeElement();if(tag==='a'){el.click=()=>downloads.push({name:el.download,url:el.href});}return el;},createDocumentFragment:()=>new FakeElement(),body};
   const zip={MAX_ARCHIVE:128*1024*1024,...zipOverrides};
   const window={AMLCore:CORE,AMLCompare:COMPARE,AMLHealth:HEALTH,AMLDemo:DEMO,AMLPilotR5:PILOT,AMLFirstResult:FIRST,AMLZip:zip};
   const context={window,document,Blob,URL:{createObjectURL:()=> 'blob:test',revokeObjectURL(){}},setTimeout(){},Uint8Array};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8'),context,{filename:'src/app.js'});
-  return {by,document,zip};
+  return {by,document,zip,downloads};
 }
 const newer=JSON.parse(fs.readFileSync(path.join(__dirname,'../examples/sample-newer.json'),'utf8'));
 const older=JSON.parse(fs.readFileSync(path.join(__dirname,'../examples/sample-older.json'),'utf8'));
@@ -131,4 +133,59 @@ test('R9: clearing while a check is pending revokes the check and keeps the UI c
   assert.equal(ui.by('results').hidden,true);
   assert.equal(ui.by('verifyAttachments').disabled,true);
   assert.doesNotMatch(privateSurface(ui),/Clear while checking/);
+});
+
+// R10: content-bearing HTML requires a deliberate confirmation; audits remain one-click.
+test('R10: selected private HTML must not download until explicit confirmation',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',newer);
+  ui.by('conversationList').children[0].click();
+  ui.by('downloadHtml').click();
+  assert.equal(ui.downloads.length,0,'HTML must not download on first click');
+  assert.equal(ui.by('htmlExportConfirm').open,true);
+  ui.by('confirmHtmlExport').click();
+  assert.equal(ui.downloads.length,1);
+  assert.equal(ui.downloads[0].name,'aml-conversation.html');
+  assert.equal(ui.by('htmlExportConfirm').open,false);
+});
+
+test('R10: cancelling HTML export must not download a private transcript',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',newer);
+  ui.by('conversationList').children[0].click();
+  ui.by('downloadHtml').click();
+  ui.by('cancelHtmlExport').click();
+  assert.equal(ui.downloads.length,0);
+  assert.equal(ui.by('htmlExportConfirm').open,false);
+});
+
+test('R10: switching source and clearing must revoke a pending HTML export',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',newer);
+  ui.by('conversationList').children[0].click();
+  ui.by('downloadHtml').click();
+  ui.by('clearBtn').click();
+  assert.equal(ui.by('htmlExportConfirm').open,false);
+  ui.by('confirmHtmlExport').click();
+  assert.equal(ui.downloads.length,0);
+  await importJson(ui,'conversations.json',newer);
+  ui.by('conversationList').children[0].click();
+  ui.by('downloadHtml').click();
+  const start=ui.downloads.length;
+  let release;const pending=new Promise(r=>release=r);
+  ui.by('archiveFile').files=[{name:'conversations.json',size:100,text:()=>pending}];
+  ui.by('archiveFile').fire('change');
+  assert.equal(ui.by('htmlExportConfirm').open,false);
+  ui.by('confirmHtmlExport').click();
+  assert.equal(ui.downloads.length,start);
+  release(JSON.stringify(older));await flush();
+});
+
+test('R10: escaping the dialog revokes pending export; content-free audit stays direct',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',newer);
+  ui.by('conversationList').children[0].click();
+  ui.by('downloadHtml').click();
+  ui.by('htmlExportConfirm').close();
+  ui.by('confirmHtmlExport').click();
+  assert.equal(ui.downloads.length,0);
+  ui.by('downloadAudit').click();
+  assert.equal(ui.downloads.length,1);
+  assert.match(ui.downloads[0].name,/aml-audit-/);
 });

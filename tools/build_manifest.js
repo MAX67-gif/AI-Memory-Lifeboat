@@ -26,11 +26,11 @@ function collect(rel=''){
 collect();files.sort((a,b)=>a.path.localeCompare(b.path,'en'));
 if(files.length<46)throw Error('TOO_FEW_PUBLIC_FILES');
 const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.json'),'utf8'));
-prior.version='0.9.0-preview-source';prior.date='2026-11-06';
-prior.base_public_main='79d2298fbeca318d9ce84faa140251c33c325c98';
+prior.version='0.10.0-preview-source';prior.date='2026-11-06';
+prior.base_public_main='e85e097e06ff97260588dc3f5427326c34fec674';
 prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_merge='EXTERNAL_VERIFICATION_REQUIRED';
-prior.source='R8 verified release source plus R9 scoped UI state isolation, privacy regression tests and pinned release workflow';
-prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 pinned release preserved','R9 clear hidden DOM, revoke stale comparison/CRC results, isolated scope tests'];
+prior.source='R9 verified release source plus R10 explicit content-bearing HTML export confirmation and pinned release workflow';
+prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 pinned release preserved','R9 clear hidden DOM and revoke stale comparison/CRC results preserved', 'R10 explicit local-only content-bearing HTML export confirmation; no new parser formats'];
 prior.evidence.node_test_target='npm run check';
 prior.evidence.browser='real Chromium synthetic offline and source parity, hosted Pages NOT_VERIFIED';
 prior.evidence.real_account_export_tested=false;prior.evidence.external_adoption_confirmed=false;

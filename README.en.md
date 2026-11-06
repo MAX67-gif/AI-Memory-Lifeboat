@@ -1,5 +1,13 @@
 # AI Memory Lifeboat
 
+## Latest: R10 v0.10.0 — deliberate consent for chat-text HTML exports
+
+**Privacy change:** Content-free health and audit reports remain direct downloads. A **single-conversation HTML containing real chat text** now requires a deliberate in-app confirmation. Cancel, Escape, clear, or switching to another source revokes the pending export. This is a safeguard against accidental download, not a promise of full backup or secure deletion.
+
+The [v0.10.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.0) is authoritative only after the GitHub job succeeds and assets are verified. Until then, use the existing [v0.9.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.9.0). Advanced UI is still primarily Traditional Chinese; external user adoption remains unverified. Read the [R10 privacy contract](docs/R10_SENSITIVE_EXPORT_CONSENT.md).
+
+---
+
 ## Latest: R9 v0.9.0 — State-Safe Offline
 
 **Fix:** Clearing or switching exports now scrubs previously rendered private chat titles, message text, comparison rows and prior health results from the hidden DOM. A new comparison or ZIP attachment CRC retry invalidates any earlier result before it begins. The existing bounded ChatGPT parsing and schema contracts remain unchanged.

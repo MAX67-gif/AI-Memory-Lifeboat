@@ -7,7 +7,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.9.0 Preview</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.0 Preview</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="src/core.js"></script>
   <script defer src="src/zip.js"></script>
@@ -23,7 +23,7 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.9.0 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.0 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -113,7 +113,7 @@
             <nav class="conversation-list" id="conversationList" aria-label="對話清單"></nav>
             <article class="conversation-detail" id="conversationDetail" aria-live="polite"><p class="placeholder">從左側選一則對話開始閱讀。</p></article>
           </div>
-          <div class="actions"><button id="downloadHtml" type="button" class="secondary" disabled>下載目前對話 HTML</button><span class="small-note">下載的 HTML 僅包含所選對話的目前分支，原始 ZIP 請自行妥善保存。</span></div>
+          <div class="actions"><button id="downloadHtml" type="button" class="secondary" disabled>下載目前對話 HTML（含原文）</button><span class="small-note">注意：這份檔案包含目前所選對話的文字，與不含聊天原文的健康摘要不同。下載前須確認；請妥善保管並保留原始 ZIP。</span></div>
         </section>
         <section class="panel pilot-panel" id="pilotPanel" aria-labelledby="pilotTitle" hidden>
           <div class="section-heading"><div><span class="step">05</span><h2 id="pilotTitle">願意分享使用感受嗎？（完全自願）</h2></div><p>先在本機產生，不會自動送出</p></div>
@@ -133,5 +133,14 @@
     </main>
     <footer><p>AI Memory Lifeboat · MIT Open Source · 無追蹤 SDK、無使用者內容後端。若使用瀏覽器擴充功能，請自行確認其讀取權限。</p><p>目前為 Preview，僅提供局部匯出檔檢查，不是備份完整性或平台移轉保證。</p></footer>
   </div>
+  <dialog id="htmlExportConfirm" class="sensitive-export-dialog" aria-labelledby="htmlExportConfirmTitle" aria-describedby="htmlExportConfirmDesc">
+    <h2 id="htmlExportConfirmTitle">確認下載含聊天原文的檔案</h2>
+    <p id="htmlExportConfirmDesc">即將下載的 HTML 會包含目前所選對話的文字與標題，可能涉及個人資料。它只提供目前分支的局部閱讀，不是完整備份，也不會自動傳送到伺服器。</p>
+    <p class="small-note">請只保存在可信任的裝置，分享或上傳前先檢查內容；如果不確定，請選擇「取消」。</p>
+    <div class="actions">
+      <button id="cancelHtmlExport" type="button" class="secondary" autofocus>取消</button>
+      <button id="confirmHtmlExport" type="button" class="primary">了解，下載含原文 HTML</button>
+    </div>
+  </dialog>
 </body>
 </html>

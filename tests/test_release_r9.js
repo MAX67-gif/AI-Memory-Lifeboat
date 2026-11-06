@@ -45,13 +45,13 @@ test('README is explicit about download unavailability, scope and independent ad
 });
 test('single-file remains generated from exact source with CSP no connect-src',()=>{
  const d=rd('dist/AI_Memory_Lifeboat_Offline.html');
- assert.match(d,/v0\.9\.0/);
+ assert.match(d,/v0\.10\.0/);
  assert.match(d,/connect-src 'none'/);
  assert.doesNotMatch(d,/\bfetch\s*\(|\bXMLHttpRequest\b|\bWebSocket\s*\(/);
  const m=d.match(/<script>([\s\S]*?)<\/script>/g)||[];
  assert.equal(m.length,10);
  assert.ok(d.length>90000);
- assert.match(rd('src/app.js'),/aml-first-result-v0\.9\.0\.txt/);
+ assert.match(rd('src/app.js'),/aml-first-result-v0\.10\.0\.txt/);
  assert.doesNotMatch(rd('src/app.js'),/aml-first-result-v0\.6\.0\.txt/);
 });
 

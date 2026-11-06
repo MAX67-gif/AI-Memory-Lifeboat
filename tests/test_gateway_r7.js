@@ -29,7 +29,7 @@ test('single-file HTML contains exact current scripts once and a hash-only CSP',
  for(const code of tags){const hash=crypto.createHash('sha256').update(code).digest('base64');assert.ok(hashes.includes(hash),'script missing CSP hash');}
  const style=single.match(/<style>([\s\S]*?)<\/style>/);
  assert.ok(style);assert.ok(hashes.includes(crypto.createHash('sha256').update(style[1]).digest('base64')));
- assert.match(single,/AI Memory Lifeboat v0\.9\.0/);
+ assert.match(single,/AI Memory Lifeboat v0\.10\.0/);
 });
 test('standalone builder uses source files, not independently maintained runtime',()=>{
  const scripts=['core','zip','compare','health','demo','pilot','pilot_r5','first_result','app','gateway'];
