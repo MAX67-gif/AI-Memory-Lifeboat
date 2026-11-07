@@ -1,5 +1,7 @@
 # AI Memory Lifeboat
 
+**Reviewers and contributors:** [Verifiable maintenance, tests, releases and evidence boundaries](docs/OPEN_SOURCE_MAINTENANCE_EVIDENCE.md). v0.10.0 is released; independent adoption is not yet verified, and tests cannot certify complete account backups.
+
 ## Latest: R10 v0.10.0 — deliberate consent for chat-text HTML exports
 
 **Privacy change:** Content-free health and audit reports remain direct downloads. A **single-conversation HTML containing real chat text** now requires a deliberate in-app confirmation. Cancel, Escape, clear, or switching to another source revokes the pending export. This is a safeguard against accidental download, not a promise of full backup or secure deletion.

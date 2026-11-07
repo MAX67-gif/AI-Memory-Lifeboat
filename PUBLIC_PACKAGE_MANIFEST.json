@@ -114,6 +114,12 @@
       "bytes": 2917
     },
     {
+      "path": "docs/OPEN_SOURCE_MAINTENANCE_EVIDENCE.md",
+      "sha256": "02dc47162514940968ff2336f489ed77ab089e089d22c81cfd9fab7c52129327",
+      "git_blob_sha1": "d1d9c574b9a082daf38ca48d5b8dd6ea3425e506",
+      "bytes": 5321
+    },
+    {
       "path": "docs/PILOT_PRIVACY_CONTRACT.md",
       "sha256": "a6e71cd9c67bbd095fe9c456ef939c07df2983c9e08b3daa161ef2bba2a594ad",
       "git_blob_sha1": "1ff619ebfe6ef047cfee6683846538b676616749",
@@ -241,15 +247,15 @@
     },
     {
       "path": "README.en.md",
-      "sha256": "fbd6160594bab9008d23358e4c24202188958b4b8a92e7f8e1eac58b66123630",
-      "git_blob_sha1": "e3cde9fcd53d75659e1065eb67648b83f01facac",
-      "bytes": 8272
+      "sha256": "4d352f70321a4db88ae4dadaf53e70114e25a12797588bc55b6656dfb4e7bca0",
+      "git_blob_sha1": "2a659e9f931695b551b7cfcb1b650c35f3a6725e",
+      "bytes": 8528
     },
     {
       "path": "README.md",
-      "sha256": "53fe4118db1f9cd040f2b49a12f6cf9d6977bd9ec2477b73493e791d0958883a",
-      "git_blob_sha1": "3401fd982ad6834e3076f416a07a7c5a1c96314b",
-      "bytes": 11701
+      "sha256": "28952098b32535d00d574dd88ffbbdafabc17dcc7d438619703ef96b440d8363",
+      "git_blob_sha1": "f822c41a01f526591aec8805ef2a27bce638c48b",
+      "bytes": 11957
     },
     {
       "path": "SECURITY.md",
