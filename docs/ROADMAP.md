@@ -37,3 +37,5 @@ R9 針對既有 UI 跨來源切換、清除及檢查重試，消除先前結果�
 ## R10｜敏感檔案匯出確認
 
 在一鍵離線工具已有可用下載的基礎上，R10 收斂於避免把含聊天內容的 HTML 誤認為安全摘要：加入本機確認、取消與來源切換撤銷，使用合成資料測試。此功能與使用者自行分享決定無關；無真人試用證據前不應把 R10 當 Codex for Open Source 競爭力提升證明。下一優先仍是五名知情同意的真實使用者首用測試與同任務競品對照；使用者原文不得上傳 GitHub。
+
+R12 (2026-11-07): Prioritize a bounded, privacy-safe single-conversation HTML export to avoid oversized browser output. Verified synthetic RED-before-GREEN tests; actual cross-device volunteer work remains postponed. Future research candidate: report existing parser per-message text normalization truncation clearly without implying complete archive restoration. Do not expand AI providers or silent background upload.

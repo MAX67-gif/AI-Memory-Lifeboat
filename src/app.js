@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.0 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.1 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -80,8 +80,15 @@
       current && current.conversations[selected] && e.htmlExportConfirm.open;
     revokeSensitiveExport();
     if(!allowed)return;
-    const html=core.exportConversationHtml(current.conversations[selected]);
-    download(html,'aml-conversation.html','text/html;charset=utf-8');
+    try{
+      const html=core.exportConversationHtml(current.conversations[selected]);
+      download(html,'aml-conversation.html','text/html;charset=utf-8');
+    }catch(err){
+      // Never reflect imported content or arbitrary exception text into UI.
+      status(err?.message==='HTML_EXPORT_TOO_LARGE'
+        ? '此單篇 HTML 超過 16 MiB 安全輸出上限，已取消下載；未產生截斷版。請保留官方原始 ZIP。'
+        : '目前無法安全產生單篇 HTML，已取消下載。請保留官方原始 ZIP。','error');
+    }
   }
   function download(data,name,type){
     const blob=new Blob([data],{type});const url=URL.createObjectURL(blob);
@@ -320,23 +327,23 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.0.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.1.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.0.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.1.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.0.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.1.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.0.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.1.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.0.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.1.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});

@@ -1,8 +1,14 @@
 # AI Memory Lifeboat｜AI 對話救生艇
 
+## R12 安全修正｜v0.10.1 離線版（正式發布須查 GitHub Release）
+
+**大型對話匯出防呆：**單篇含原文 HTML 超過 **16 MiB 的實際 UTF-8 輸出**時，工具明確取消下載，不會暗中只匯出一部分；既有分享前確認與無原文報告不變。這不是帳戶完整備份認證，也不代表原始訊息在其他讀取階段不會被截長。
+
+最新正式版本請查 [GitHub Releases](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases)，在 v0.10.1 確實存在且附件經驗收前，仍應以 **v0.10.0** 為正式下載版。細節：[R12 上限與防呆契約](docs/R12_BOUNDED_HTML_EXPORT.md)。外部真人使用驗證依維護規劃延期；未確認 Codex for Open Source 核准狀態。
+
 **開源審查者與貢獻者：** [可重現的維護、測試、發版與證據範圍](docs/OPEN_SOURCE_MAINTENANCE_EVIDENCE.md)（公開、無個資）。R10 已正式發布；尚未取得獨立真人採用證據，測試不代表帳戶完整備份。
 
-## 最新：R10 v0.10.0｜分享前確認（正式發布以 GitHub Release 為準）
+## 歷史：R10 v0.10.0｜分享前確認（正式發布以 GitHub Release 為準）
 
 **這版新增的保護：** 健康摘要／無原文報告依舊可直接下載，但下載**含聊天文字的單篇 HTML**前，會顯示清楚的本機確認視窗；選擇「取消」、按 Esc、清除或更換備份後，不會沿用先前的確認來下載舊資料。這只是避免誤操作，**不是防止使用者主動對外分享的安全保證**。
 
@@ -10,7 +16,7 @@
 
 ---
 
-## 最新：R9 v0.9.0｜狀態安全修正與正式離線下載
+## 歷史：R9 v0.9.0｜狀態安全修正與正式離線下載
 
 **主要修正：**清除或切換備份來源時，立即從隱藏畫面移除先前的對話標題、訊息、差異清單與健康結果；重新比較或重驗附件時，先撤銷前次結果，避免失敗後仍顯示過期結論。R6 ZIP／JSON 解析與資料格式契約沒有擴張。
 
@@ -20,7 +26,7 @@
 
 ---
 
-## 最新版下載｜R8 v0.8.0 離線版
+## 歷史下載｜R8 v0.8.0 離線版
 
 **目標：只下載一個 HTML 就能試用。** GitHub 正式 Release 完成後，可從 [R8 離線下載頁](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0) 選擇 `AI_Memory_Lifeboat_Offline.html`，下載後在瀏覽器直接開啟；另附 `SHA256SUMS.txt` 校驗下載檔與公開完整原始碼 ZIP。**若上述 Release 頁尚未出現，表示發布流程尚未成功，請勿把它當作已上線**；請改從 [公開版本的單檔 HTML](dist/AI_Memory_Lifeboat_Offline.html) 使用 GitHub 的 **Download raw**。
 

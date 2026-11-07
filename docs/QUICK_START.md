@@ -34,3 +34,5 @@ R4 新增三題式選用回饋，下載 JSON 並不會自動送出。只有明�
 ## R10｜下載含對話文字的 HTML 前請確認
 
 「下載目前對話 HTML（含原文）」會另開本機確認視窗，清楚說明內容包含所選對話標題與文字；選取消或按 Esc 不會下載。更換備份或清除後，舊確認不再有效。與此不同，不含聊天原文的健康 JSON/TXT 不需要額外確認。下載的檔案仍可能保存在裝置上，應自行保護並保留官方原始 ZIP。
+
+R12 v0.10.1: If a single-chat HTML export would exceed 16 MiB after escaping, the tool cancels the download with a clear message. It does not produce a truncated HTML file. Keep the official ZIP, and note this additional output limit does not prove all original messages were retained in the reader.

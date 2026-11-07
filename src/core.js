@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.4.0 — pure, offline, dependency-free parser.
+/* AI Memory Lifeboat parser (audit schema 0.4.0, R12 output guard) — pure, offline, dependency-free.
  * Copyright (c) 2026 MAX67-gif. MIT.
  * Never equate an export with a complete account backup.
  */
@@ -240,14 +240,30 @@
     const date = new Date(s * 1000);
     return Number.isNaN(date.getTime()) ? 'Unknown' : date.toISOString().replace('T',' ').slice(0,16)+' UTC';
   }
+  // Keep HTML export bounded even when many individually valid messages are present.
+  // This does not enlarge or silently truncate the existing current-path reading scope.
+  const MAX_HTML_EXPORT_BYTES = 16 * 1024 * 1024;
   function exportConversationHtml(c) {
     if (!c || !Array.isArray(c.messages)) throw new TypeError('INVALID_CONVERSATION');
-    const messages = c.messages.map(m => `<section><h2>${escapeHtml(m.role)}</h2><pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`).join('\n');
-    return '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+    const prefix='<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
       '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'">'+
       `<title>${escapeHtml(c.title)}</title><style>body{font:16px/1.6 system-ui;max-width:800px;margin:36px auto;padding:0 20px;color:#222}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;background:#f5f5f5;padding:16px;border-radius:8px}section{border-top:1px solid #ddd}small{color:#555}</style></head><body><h1>${escapeHtml(c.title)}</h1>`+
       `<p><small>AI Memory Lifeboat ${VERSION} · ${escapeHtml(c.pathStatus)} · ${escapeHtml(formatTime(c.updated))}</small></p>`+
-      '<p><strong>Partial reading view:</strong> only the exported current path is shown. Off-path branches, non-text data and unexported account content are NOT certified as preserved.</p>'+messages+'</body></html>';
+      '<p><strong>Partial reading view:</strong> only the exported current path is shown. Off-path branches, non-text data and unexported account content are NOT certified as preserved.</p>';
+    const suffix='</body></html>';
+    const encoder=new TextEncoder();
+    let size=encoder.encode(prefix).length+encoder.encode(suffix).length;
+    if(size>MAX_HTML_EXPORT_BYTES)throw Error('HTML_EXPORT_TOO_LARGE');
+    const blocks=[];
+    for(const m of c.messages){
+      const block=`<section><h2>${escapeHtml(m.role)}</h2><pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`;
+      // Count the actual escaped UTF-8 output, not just source string length.
+      // The joining newline also counts toward the limit.
+      size+=encoder.encode(block).length+(blocks.length?1:0);
+      if(size>MAX_HTML_EXPORT_BYTES)throw Error('HTML_EXPORT_TOO_LARGE');
+      blocks.push(block);
+    }
+    return prefix+blocks.join('\n')+suffix;
   }
   return Object.freeze({VERSION,SCHEMA,parseChatGPTExport,assessArchiveReferences,listUniqueExactAttachmentPaths,searchConversations,exportConversationHtml,formatTime,escapeHtml});
 });

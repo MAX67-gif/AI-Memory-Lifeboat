@@ -39,3 +39,5 @@ R9 新增真實程式 UI 事件序列測試：切換來源、載入失敗、清�
 ## R10｜含原文的單篇 HTML 匯出確認
 
 從離線閱讀器下載單篇 HTML 前，瀏覽器會顯示原文敏感提醒，必須再次明確按下確認；取消、Esc、清除及來源切換均撤銷先前的確認。這是減少意外匯出的操作安全防護，**不能阻止使用者主動分享**；下載後的 HTML 含所選對話文字及標題，仍需個人妥善管理。既有健康 JSON/TXT 與稽核報告不含聊天原文，仍可直接下載；無網路 API、模型或遙測。
+
+R12: protect against oversized content-bearing HTML generation (max 16 MiB actual UTF-8 escaped output, no partial export). Keep consent, CSP, local-only processing and bounded ZIP parsing unchanged. This is not a guarantee of memory safety under every browser or that every original message has been rendered.
