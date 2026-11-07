@@ -31,3 +31,5 @@ R5 純文字摘要只從固定白名單檢查碼和有限計數構成，不會�
 ## R10｜有內容檔案的下載提醒與明確同意
 
 單篇對話 HTML 仍包含標題、所選目前分支文字，是敏感檔案。按下載後須於本機確認視窗再次選擇；取消、Esc、清除資料與更換匯出檔都不會允許過期確認繼續下載。僅減少誤操作，**不能保證檔案安全、回收已下載內容或抹除 RAM**。不含聊天原文的健康報告、稽核 JSON/TXT 維持原本的直接本機下載。沒有背景傳輸或同意事件的自動記錄。
+
+R12 (v0.10.1): A single-conversation HTML larger than 16 MiB after UTF-8 encoding and HTML escaping is refused before download. The failure message is fixed text only; no conversation content is logged or transmitted. This does not securely erase memory or downloaded files, and existing single-message normalization limits are unchanged.

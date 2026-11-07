@@ -96,3 +96,15 @@ test('prototype property cannot act as real path node',()=>{
   assert.equal(x.audit.missing_current_paths,1);
   assert.equal(x.conversations[0].messages.length,0);
 });
+
+// R12: privacy-safe HTML exports must not silently truncate or lock up the browser.
+test('R12 rejects excessive standalone HTML instead of creating a partial export',()=>{
+  const huge={title:'Synthetic long conversation',pathStatus:'CURRENT_PATH_PRESENT',updated:null,
+    messages:Array.from({length:18},(_,i)=>({role:'assistant',text:'A'.repeat(1024*1024)}))};
+  assert.throws(()=>core.exportConversationHtml(huge),/HTML_EXPORT_TOO_LARGE/);
+});
+test('R12 HTML size guard counts expanded HTML entities and UTF-8 bytes',()=>{
+  const huge={title:'Synthetic special characters',pathStatus:'CURRENT_PATH_PRESENT',updated:null,
+    messages:Array.from({length:3},()=>({role:'user',text:'<'.repeat(2*1024*1024)}))};
+  assert.throws(()=>core.exportConversationHtml(huge),/HTML_EXPORT_TOO_LARGE/);
+});

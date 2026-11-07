@@ -1,3 +1,11 @@
+## R12 hotfix / v0.10.1 — 2026-11-07
+
+- Bounded single-conversation HTML generation to 16 MiB actual escaped UTF-8 output; fail closed with a local, content-free error and no partial download.
+- Preserve R10 explicit confirmation and R1–R11 import/audit/ZIP and content-free reporting semantics.
+- Add red/green tests for oversized messages, entity expansion and the real export confirmation flow.
+- Update deterministic standalone HTML, manifest, checksum and separately gated one-time release workflow.
+- Human test results and Codex for Open Source approval are not claimed.
+
 # Changelog
 
 ## v0.10.0 — 2026-11-06

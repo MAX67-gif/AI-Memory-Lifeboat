@@ -189,3 +189,24 @@ test('R10: escaping the dialog revokes pending export; content-free audit stays 
   assert.equal(ui.downloads.length,1);
   assert.match(ui.downloads[0].name,/aml-audit-/);
 });
+
+
+test('R12: oversized HTML export closes confirmation, downloads nothing, and shows a safe error',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',newer);
+  ui.by('conversationList').children[0].click();
+  const many=Array.from({length:18},()=>({role:'assistant',text:'A'.repeat(1024*1024),created:0}));
+  // This test exercises the same public selected-conversation export through the UI.
+  const selected=ui.by('conversationList').children[0];
+  // Reimport a source whose current path contains sufficient synthetic text to exceed the bounded export.
+  const chain={};let last=null;
+  for(let i=0;i<many.length;i++){
+    const id='n'+i;chain[id]={parent:last,message:{author:{role:'assistant'},content:{parts:[many[i].text]}}};last=id;
+  }
+  await importJson(ui,'conversations.json',[{id:'synthetic-large',title:'Large fictional note',mapping:chain,current_node:last}]);
+  ui.by('conversationList').children[0].click();ui.by('downloadHtml').click();
+  assert.equal(ui.downloads.length,0);
+  ui.by('confirmHtmlExport').click();
+  assert.equal(ui.downloads.length,0);
+  assert.equal(ui.by('htmlExportConfirm').open,false);
+  assert.match(ui.by('status').textContent,/超過|上限|過大/);
+});

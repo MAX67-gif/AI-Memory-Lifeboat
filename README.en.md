@@ -1,8 +1,14 @@
 # AI Memory Lifeboat
 
+## R12 safety hotfix — v0.10.1 (verify the GitHub Release)
+
+An individual conversation HTML export exceeding **16 MiB of actual UTF-8 output** now fails closed and downloads nothing, rather than risk generating an oversized file. The existing private-text consent dialog and content-free reports remain unchanged. This is not full-account backup certification, and earlier per-message preview limits remain documented.
+
+Verify v0.10.1 on [GitHub Releases](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases) before treating it as published; otherwise v0.10.0 remains the last verified release. [R12 engineering contract](docs/R12_BOUNDED_HTML_EXPORT.md). Real-person usability testing is deferred; no Codex for Open Source approval is claimed.
+
 **Reviewers and contributors:** [Verifiable maintenance, tests, releases and evidence boundaries](docs/OPEN_SOURCE_MAINTENANCE_EVIDENCE.md). v0.10.0 is released; independent adoption is not yet verified, and tests cannot certify complete account backups.
 
-## Latest: R10 v0.10.0 — deliberate consent for chat-text HTML exports
+## History: R10 v0.10.0 — deliberate consent for chat-text HTML exports
 
 **Privacy change:** Content-free health and audit reports remain direct downloads. A **single-conversation HTML containing real chat text** now requires a deliberate in-app confirmation. Cancel, Escape, clear, or switching to another source revokes the pending export. This is a safeguard against accidental download, not a promise of full backup or secure deletion.
 
@@ -10,7 +16,7 @@ The [v0.10.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/t
 
 ---
 
-## Latest: R9 v0.9.0 — State-Safe Offline
+## History: R9 v0.9.0 — State-Safe Offline
 
 **Fix:** Clearing or switching exports now scrubs previously rendered private chat titles, message text, comparison rows and prior health results from the hidden DOM. A new comparison or ZIP attachment CRC retry invalidates any earlier result before it begins. The existing bounded ChatGPT parsing and schema contracts remain unchanged.
 
@@ -20,7 +26,7 @@ The [v0.10.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/t
 
 ---
 
-## Latest offline download — R8 v0.8.0
+## Previous offline download — R8 v0.8.0
 
 **One HTML file, no installation.** Once the official GitHub Release succeeds, download `AI_Memory_Lifeboat_Offline.html` from the [v0.8.0 Release page](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.8.0). `SHA256SUMS.txt` and an exact source ZIP are provided for verification. **If the Release page does not yet exist, the publication gate has not passed**; instead, open the [single-file source](dist/AI_Memory_Lifeboat_Offline.html) and choose **Download raw** on GitHub.
 
