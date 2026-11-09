@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.1 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.2 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -24,7 +24,8 @@
     METADATA_ONLY_CHANGED:'僅已檢查的標題／時間欄位不同',
     NO_DETECTED_CURRENT_VIEW_CHANGE:'目前檢查範圍沒有發現差異',
     INCONCLUSIVE_PATH:'目前分支不可比較',
-    INCONCLUSIVE_ID:'缺少可靠或唯一的對話 ID'
+    INCONCLUSIVE_ID:'缺少可靠或唯一的對話 ID',
+    INCONCLUSIVE_TEXT:'訊息已截短，無法完整比較省略的文字'
   };
   const explanations={
     INVALID_RECORDS_SKIPPED:'部分紀錄不是支援的對話資料結構，已排除。',
@@ -32,6 +33,7 @@
     BROKEN_PARENT_CHAIN:'至少一段對話的父節點鏈不完整。',
     OFF_PATH_NODES_NOT_IN_READING_VIEW:'分支以外的訊息節點不會顯示於主要閱讀頁面；請保留原始匯出檔。',
     ATTACHMENT_REFERENCES_NOT_PROOF_OF_SAVED_FILES:'發現附件參照，但不能因此證明檔案實體存在或可以還原。',
+    VISIBLE_MESSAGE_TEXT_TRUNCATED:'部分超長訊息已截短；閱讀、搜尋與匯出僅包含保留部分，請保留原始 ZIP／JSON。',
     NON_TEXT_PARTS_NOT_RENDERED:'部分圖片、語音或其他非文字內容沒有轉成可閱讀文字。',
     NUMBERED_JSON_SHARDS_RECOGNIZED_NOT_FULL_ACCOUNT_PROOF:'已辨識連號的 JSON 分片；這不能證明帳戶完整。',
     SINGLE_NUMBERED_JSON_MAY_OMIT_OTHER_PARTS:'只載入一個編號 JSON；可能尚有其他分片未讀取。'
@@ -162,9 +164,15 @@
       const section=document.createElement('section');section.className='message';
       const role=document.createElement('strong');role.textContent=msg.role;
       const text=document.createElement('pre');text.textContent=msg.text||(msg.nonText?'[非文字內容尚未顯示]':'[空白訊息]');
-      section.append(role,text);e.detail.append(section);
+      section.append(role);
+      if(msg.textTruncated===true){
+        const note=document.createElement('p');note.className='notice';
+        note.textContent='這則訊息已截短。閱讀、搜尋及 HTML 匯出只含保留部分；省略的尾段請查原始 ZIP／JSON。';
+        section.append(note);
+      }
+      section.append(text);e.detail.append(section);
     }
-    if(c.messages.length>700){const p=document.createElement('p');p.className='note';p.textContent='畫面只顯示前 700 則訊息；下載目前分支 HTML 可閱讀其餘文字。';e.detail.append(p);}
+    if(c.messages.length>700){const p=document.createElement('p');p.className='note';p.textContent='畫面只顯示前 700 則訊息；下載目前分支 HTML 可閱讀其餘保留文字；超長訊息被截短的尾段仍不包含在內。';e.detail.append(p);}
     e.html.disabled=false;
   }
   function selectConversation(i){revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);}
@@ -327,23 +335,23 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.1.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.2.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.1.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.2.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.1.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.2.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.1.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.2.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.1.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.2.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});

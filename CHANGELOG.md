@@ -1,3 +1,10 @@
+## v0.10.2 — R13 (2026-11-09; release subject to CI)
+
+- Declare retained/omitted UTF-16 text coverage without increasing message or archive limits.
+- Warn in reading, content-free reports and chat-text HTML; preserve surrogate pairs at the cutoff.
+- Treat truncated current-path comparisons as inconclusive; retain existing IDs, schema fields, consent and 16 MiB HTML guard.
+- Synthetic regressions only; no adoption or account-completeness claims.
+
 ## R12 hotfix / v0.10.1 — 2026-11-07
 
 - Bounded single-conversation HTML generation to 16 MiB actual escaped UTF-8 output; fail closed with a local, content-free error and no partial download.

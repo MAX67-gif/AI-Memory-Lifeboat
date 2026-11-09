@@ -1,5 +1,11 @@
 # AI Memory Lifeboat
 
+## R13 v0.10.2 candidate: explicit retained-text coverage
+
+A message longer than the existing **2,000,000 UTF-16 code-unit** limit is marked as shortened. Reading, health JSON/TXT and exported conversation HTML disclose omitted text; search only covers the retained prefix. Comparisons involving shortened messages are explicitly inconclusive, even when retained prefixes match. The boundary avoids splitting valid surrogate pairs; it is not a grapheme-count guarantee.
+
+The [v0.10.2 release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.2) is authoritative only after successful CI and asset verification; until then use [v0.10.1](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.1). See [R13 contract](docs/R13_TEXT_TRUNCATION.md). No account-completeness, memory-erasure or human-adoption claim.
+
 ## R12 safety hotfix — v0.10.1 (verify the GitHub Release)
 
 An individual conversation HTML export exceeding **16 MiB of actual UTF-8 output** now fails closed and downloads nothing, rather than risk generating an oversized file. The existing private-text consent dialog and content-free reports remain unchanged. This is not full-account backup certification, and earlier per-message preview limits remain documented.

@@ -33,3 +33,8 @@ R5 純文字摘要只從固定白名單檢查碼和有限計數構成，不會�
 單篇對話 HTML 仍包含標題、所選目前分支文字，是敏感檔案。按下載後須於本機確認視窗再次選擇；取消、Esc、清除資料與更換匯出檔都不會允許過期確認繼續下載。僅減少誤操作，**不能保證檔案安全、回收已下載內容或抹除 RAM**。不含聊天原文的健康報告、稽核 JSON/TXT 維持原本的直接本機下載。沒有背景傳輸或同意事件的自動記錄。
 
 R12 (v0.10.1): A single-conversation HTML larger than 16 MiB after UTF-8 encoding and HTML escaping is refused before download. The failure message is fixed text only; no conversation content is logged or transmitted. This does not securely erase memory or downloaded files, and existing single-message normalization limits are unchanged.
+
+
+## R13｜超長文字範圍（2026-11-09）
+
+截短訊息會明確提示；搜尋與 HTML 只含保留文字，不把前綴相同當成來源完整相同。原始 ZIP/JSON、容量界線、內容匯出確認與本機處理原則不變。詳細加法欄位、未知比較狀態與測試邊界見 [R13_TEXT_TRUNCATION](docs/R13_TEXT_TRUNCATION.md)。

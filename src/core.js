@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat parser (audit schema 0.4.0, R12 output guard) — pure, offline, dependency-free.
+/* AI Memory Lifeboat parser (audit schema v1, R13 truncation visibility) — pure, offline, dependency-free.
  * Copyright (c) 2026 MAX67-gif. MIT.
  * Never equate an export with a complete account backup.
  */
@@ -9,7 +9,7 @@
 })(typeof globalThis === 'object' ? globalThis : null, function () {
   'use strict';
   const SCHEMA = 'aml.audit.v1';
-  const VERSION = '0.4.0';
+  const VERSION = '0.10.2';
   const MAX_CONVERSATIONS = 30000;
   const MAX_NODES = 350000;
   const MAX_TEXT = 2_000_000;
@@ -41,7 +41,23 @@
     }
     if (!parts.length && typeof content.text === 'string') result.push(content.text);
     if (!result.length && content.content_type && content.content_type !== 'text') nonText++;
-    return {text: textLimit(result.join('\n')), nonText};
+    // Build only the bounded prefix plus one look-ahead code unit. Source text
+    // already exists in the user's input; do not allocate another unbounded join.
+    const sourceTextCodeUnits = result.reduce((n, s) => n + s.length, 0) + Math.max(0, result.length - 1);
+    let prefix = '';
+    for (let i = 0; i < result.length && prefix.length < MAX_TEXT + 1; i++) {
+      if (i) prefix += '\n';
+      prefix += result[i].slice(0, Math.max(0, MAX_TEXT + 1 - prefix.length));
+    }
+    let end = Math.min(MAX_TEXT, prefix.length);
+    // Do not manufacture an unpaired surrogate by cutting a valid emoji in half.
+    if (sourceTextCodeUnits > end && end > 0 &&
+        prefix.charCodeAt(end - 1) >= 0xD800 && prefix.charCodeAt(end - 1) <= 0xDBFF &&
+        prefix.charCodeAt(end) >= 0xDC00 && prefix.charCodeAt(end) <= 0xDFFF) end--;
+    const text = prefix.slice(0, end);
+    return {text, nonText, textTruncated: sourceTextCodeUnits > text.length,
+      sourceTextCodeUnits, retainedTextCodeUnits: text.length,
+      omittedTextCodeUnits: sourceTextCodeUnits - text.length};
   }
   function countReferences(message) {
     // Count possible attachment references ONLY. Do not infer uploaded file presence.
@@ -64,7 +80,7 @@
     const conversations = [];
     let totalNodes = 0, totalMessageNodes = 0, branchExcluded = 0;
     let nonTextParts = 0, attachmentReferences = 0, missingPaths = 0, invalidRecords = 0;
-    let missingParent = 0;
+    let missingParent = 0, truncatedVisibleMessages = 0, truncatedConversations = 0, omittedTextCodeUnits = 0;
     const seenConversationIds = new Set();
     for (let i = 0; i < raw.length; i++) {
       const row = raw[i];
@@ -125,10 +141,17 @@
           const payload = normalizeText(msg);
           if (role === 'user' || role === 'assistant') {
             active.push({role, text: payload.text, nonText: payload.nonText,
+              textTruncated: payload.textTruncated, sourceTextCodeUnits: payload.sourceTextCodeUnits,
+              retainedTextCodeUnits: payload.retainedTextCodeUnits, omittedTextCodeUnits: payload.omittedTextCodeUnits,
               created: nonNegNumber(msg.create_time)});
           }
         }
       } else missingPaths++;
+      const shortened = active.filter(m => m.textTruncated);
+      const omitted = shortened.reduce((n, m) => n + m.omittedTextCodeUnits, 0);
+      truncatedVisibleMessages += shortened.length;
+      if (shortened.length) truncatedConversations++;
+      omittedTextCodeUnits += omitted;
       const activeNodes = pathValid ? path.filter(n => object(n.message)).length : 0;
       const excluded = Math.max(0, messageCount - activeNodes);
       branchExcluded += excluded;
@@ -138,7 +161,8 @@
       conversations.push({id, identityStatus:validSourceId?'STABLE_ID_PROVIDED':'SYNTHETIC_INDEX_ONLY', title, created:createTime, updated:updateTime,
         messageNodes:messageCount, visibleMessages:active.length, excludedNodes:excluded,
         pathStatus:pathValid?'CURRENT_PATH_PRESENT':'CURRENT_PATH_UNAVAILABLE',
-        referenceCount:refs, nonTextCount:opaque, messages:active});
+        referenceCount:refs, nonTextCount:opaque, messages:active,
+        truncatedVisibleMessages:shortened.length, omittedTextCodeUnits:omitted});
     }
     const warnings = [];
     if (invalidRecords) warnings.push('INVALID_RECORDS_SKIPPED');
@@ -147,11 +171,16 @@
     if (branchExcluded) warnings.push('OFF_PATH_NODES_NOT_IN_READING_VIEW');
     if (attachmentReferences) warnings.push('ATTACHMENT_REFERENCES_NOT_PROOF_OF_SAVED_FILES');
     if (nonTextParts) warnings.push('NON_TEXT_PARTS_NOT_RENDERED');
+    if (truncatedVisibleMessages) warnings.push('VISIBLE_MESSAGE_TEXT_TRUNCATED');
     const audit = {
       schema: SCHEMA, tool_version: VERSION, source_type:'CHATGPT_CONVERSATIONS_JSON',
       account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
       extraction_scope:'CONVERSATIONS_MAPPING_CURRENT_PATH_ONLY',
       input_records:raw.length, parsed_records:conversations.length, invalid_records:invalidRecords,
+      text_limit_code_units:MAX_TEXT, text_length_unit:'UTF16_CODE_UNITS',
+      text_truncation_scope:'VISIBLE_USER_ASSISTANT_CURRENT_PATH_ONLY',
+      truncated_visible_messages:truncatedVisibleMessages, truncated_conversations:truncatedConversations,
+      omitted_text_code_units:omittedTextCodeUnits,
       total_message_nodes:totalMessageNodes, active_visible_messages:conversations.reduce((n,c)=>n+c.visibleMessages,0),
       off_path_message_nodes:branchExcluded, missing_current_paths:missingPaths,
       attachment_reference_observations:attachmentReferences, non_text_parts_not_rendered:nonTextParts,
@@ -256,7 +285,9 @@
     if(size>MAX_HTML_EXPORT_BYTES)throw Error('HTML_EXPORT_TOO_LARGE');
     const blocks=[];
     for(const m of c.messages){
-      const block=`<section><h2>${escapeHtml(m.role)}</h2><pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`;
+      const notice=m.textTruncated===true
+        ? '<p data-text-truncated="true"><strong>Text shortened / 文字已截短。</strong> Only the retained prefix is included. Search and this HTML omit the remaining text. Keep and inspect the original ZIP/JSON.</p>' : '';
+      const block=`<section><h2>${escapeHtml(m.role)}</h2>${notice}<pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`;
       // Count the actual escaped UTF-8 output, not just source string length.
       // The joining newline also counts toward the limit.
       size+=encoder.encode(block).length+(blocks.length?1:0);

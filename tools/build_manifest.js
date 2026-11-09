@@ -26,11 +26,12 @@ function collect(rel=''){
 collect();files.sort((a,b)=>a.path.localeCompare(b.path,'en'));
 if(files.length<46)throw Error('TOO_FEW_PUBLIC_FILES');
 const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.json'),'utf8'));
-prior.version='0.10.1-preview-source';prior.date='2026-11-07';
-prior.base_public_main='0451cd319aaddef040764d938a84559489d91b7e';
+prior.version='0.10.2-preview-source';prior.date='2026-11-09';
+prior.base_public_main='224e51eca02f8c5595edf69b3bd87dd247901ed3';
 prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_merge='EXTERNAL_VERIFICATION_REQUIRED';
-prior.source='R11 verified maintainer evidence plus R12 bounded HTML export safety hotfix with a separately pinned release';
+prior.source='R12 verified release plus explicit retained-text coverage, bounded Unicode-safe truncation metadata and inconclusive snapshot comparisons';
 prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 pinned release preserved','R9 clear hidden DOM and revoke stale comparison/CRC results preserved', 'R10 explicit local-only content-bearing HTML export confirmation preserved', 'R12 deliberate 16 MiB output cap fails closed without producing oversized HTML'];
+prior.scope.push('R13 explicit current-path text truncation metadata, warnings and conservative comparison');
 prior.evidence.node_test_target='npm run check';
 prior.evidence.browser='real Chromium synthetic offline and source parity, hosted Pages NOT_VERIFIED';
 prior.evidence.real_account_export_tested=false;prior.evidence.external_adoption_confirmed=false;

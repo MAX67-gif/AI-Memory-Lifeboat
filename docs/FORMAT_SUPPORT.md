@@ -22,3 +22,8 @@ R6 optional audit additions: `source_container` = `SINGLE_JSON` / `NUMBERED_JSON
 ## R7 檔案分發與格式相容
 
 R7 新增的是**分發形式**而不是新的匯入格式；單檔 HTML 與原多檔 `index.html` 共用相同 `AMLCore`／`AMLZip`／`AMLCompare`／`AMLHealth`。R6 既有 JSON/ZIP、連號分片、容量、安全拒絕、附件 CRC 與 v1/v2 回饋資料契約保持不變。單一 HTML 內建 hash-based CSP，可在本機使用，仍不能證明全部帳戶資料完整。
+
+
+## R13｜超長文字範圍（2026-11-09）
+
+截短訊息會明確提示；搜尋與 HTML 只含保留文字，不把前綴相同當成來源完整相同。原始 ZIP/JSON、容量界線、內容匯出確認與本機處理原則不變。詳細加法欄位、未知比較狀態與測試邊界見 [R13_TEXT_TRUNCATION](R13_TEXT_TRUNCATION.md)。

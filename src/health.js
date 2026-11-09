@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.4.0 — evidence-limited, content-free health guidance.
+/* AI Memory Lifeboat v0.10.2 — evidence-limited, content-free health guidance.
  * MIT (c) 2026 MAX67-gif. Never certify full-account completeness.
  */
 (function(root, factory){
@@ -7,7 +7,7 @@
   if (root) root.AMLHealth = api;
 })(typeof globalThis === 'object' ? globalThis : null, function(){ 'use strict';
   const SCHEMA='aml.health.v1';
-  const VERSION='0.4.0';
+  const VERSION='0.10.2';
   const levels=Object.freeze(['ATTENTION','REVIEW','LIMITED_CHECK_OK']);
   const nonneg=x=>Number.isSafeInteger(x)&&x>=0?x:0;
   // Every heading and action comes from code. Never reflect source/filename/ID/title in a shareable report.
@@ -19,6 +19,7 @@
     ZIP_PATH_AMBIGUOUS:['附件路徑不唯一或不安全','相同名稱可能對應多個項目，或參照路徑不安全；沒有把它們算成找到的檔案。'],
     BYTE_FAILURE:['部分 ZIP 項目位元組驗證未通過','檢查到 CRC 或檔案結構不一致；不要直接把該項目視為可用，建議向來源重新匯出。'],
     OFF_PATH:['其他對話分支未納入閱讀內容','閱讀畫面只顯示目前分支，其他訊息節點仍可能存在於原始匯出資料中。'],
+    TEXT_TRUNCATED:['部分超長訊息已截短','閱讀、搜尋與 HTML 匯出只含保留的文字；省略的尾段仍需查看原始 ZIP／JSON，不要只保存閱讀檔。'],
     NON_TEXT:['部分非文字內容無法呈現','圖片、音訊或其他資料未完整轉成文字。請保留原始官方匯出檔。'],
     REFERENCE_LIMIT:['附件參照不等於附件已備份','即使找得到路徑或 CRC 正確，也無法證明上傳的原始附件、完整內容或帳戶資料已保存。'],
     BYTE_LIMIT:['位元組驗證只有部分覆蓋','僅檢查明確且唯一的 ZIP 路徑中符合容量與格式限制的項目；跳過項目保持未知。'],
@@ -44,6 +45,7 @@
     if (z && nonneg(z.missing_explicit_paths))add('ZIP_PATH_MISSING','ATTENTION',nonneg(z.missing_explicit_paths));
     if (z && (nonneg(z.ambiguous_paths)+nonneg(z.unsafe_path_references)))add('ZIP_PATH_AMBIGUOUS','REVIEW',nonneg(z.ambiguous_paths)+nonneg(z.unsafe_path_references));
     if (b && nonneg(b.failed_integrity))add('BYTE_FAILURE','ATTENTION',nonneg(b.failed_integrity));
+    if (nonneg(a.truncated_visible_messages))add('TEXT_TRUNCATED','REVIEW',nonneg(a.truncated_visible_messages));
     if (nonneg(a.off_path_message_nodes))add('OFF_PATH','REVIEW',nonneg(a.off_path_message_nodes));
     if (nonneg(a.non_text_parts_not_rendered))add('NON_TEXT','REVIEW',nonneg(a.non_text_parts_not_rendered));
     if (nonneg(a.attachment_reference_observations))add('REFERENCE_LIMIT','REVIEW',nonneg(a.attachment_reference_observations));
@@ -52,7 +54,7 @@
     if (!z)add('JSON_LIMIT','INFORMATION');
     if (d) {
       const c=d.counts||{};
-      const total=['NOT_IN_NEW_EXPORT','ONLY_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED','METADATA_ONLY_CHANGED','INCONCLUSIVE_PATH','INCONCLUSIVE_ID'].reduce((sum,k)=>sum+nonneg(c[k]),0);
+      const total=['NOT_IN_NEW_EXPORT','ONLY_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED','METADATA_ONLY_CHANGED','INCONCLUSIVE_PATH','INCONCLUSIVE_ID','INCONCLUSIVE_TEXT'].reduce((sum,k)=>sum+nonneg(c[k]),0);
       if(total)add('DIFF_LIMIT','REVIEW',total);
     }
     const serious=checks.some(c=>c.priority==='ATTENTION');
