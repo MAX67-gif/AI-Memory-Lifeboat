@@ -1,0 +1,388 @@
+diff --git a/src/core.js b/src/core.js
+index ae9229a..3a4452c 100644
+--- a/src/core.js
++++ b/src/core.js
+@@ -1 +1 @@
+-/* AI Memory Lifeboat parser (audit schema 0.4.0, R12 output guard) — pure, offline, dependency-free.
++/* AI Memory Lifeboat parser (audit schema v1, R13 truncation visibility) — pure, offline, dependency-free.
+@@ -12 +12 @@
+-  const VERSION = '0.4.0';
++  const VERSION = '0.10.2';
+@@ -44 +44,17 @@
+-    return {text: textLimit(result.join('\n')), nonText};
++    // Build only the bounded prefix plus one look-ahead code unit. Source text
++    // already exists in the user's input; do not allocate another unbounded join.
++    const sourceTextCodeUnits = result.reduce((n, s) => n + s.length, 0) + Math.max(0, result.length - 1);
++    let prefix = '';
++    for (let i = 0; i < result.length && prefix.length < MAX_TEXT + 1; i++) {
++      if (i) prefix += '\n';
++      prefix += result[i].slice(0, Math.max(0, MAX_TEXT + 1 - prefix.length));
++    }
++    let end = Math.min(MAX_TEXT, prefix.length);
++    // Do not manufacture an unpaired surrogate by cutting a valid emoji in half.
++    if (sourceTextCodeUnits > end && end > 0 &&
++        prefix.charCodeAt(end - 1) >= 0xD800 && prefix.charCodeAt(end - 1) <= 0xDBFF &&
++        prefix.charCodeAt(end) >= 0xDC00 && prefix.charCodeAt(end) <= 0xDFFF) end--;
++    const text = prefix.slice(0, end);
++    return {text, nonText, textTruncated: sourceTextCodeUnits > text.length,
++      sourceTextCodeUnits, retainedTextCodeUnits: text.length,
++      omittedTextCodeUnits: sourceTextCodeUnits - text.length};
+@@ -67 +83 @@
+-    let missingParent = 0;
++    let missingParent = 0, truncatedVisibleMessages = 0, truncatedConversations = 0, omittedTextCodeUnits = 0;
+@@ -127,0 +144,2 @@
++              textTruncated: payload.textTruncated, sourceTextCodeUnits: payload.sourceTextCodeUnits,
++              retainedTextCodeUnits: payload.retainedTextCodeUnits, omittedTextCodeUnits: payload.omittedTextCodeUnits,
+@@ -131,0 +150,5 @@
++      const shortened = active.filter(m => m.textTruncated);
++      const omitted = shortened.reduce((n, m) => n + m.omittedTextCodeUnits, 0);
++      truncatedVisibleMessages += shortened.length;
++      if (shortened.length) truncatedConversations++;
++      omittedTextCodeUnits += omitted;
+@@ -141 +164,2 @@
+-        referenceCount:refs, nonTextCount:opaque, messages:active});
++        referenceCount:refs, nonTextCount:opaque, messages:active,
++        truncatedVisibleMessages:shortened.length, omittedTextCodeUnits:omitted});
+@@ -149,0 +174 @@
++    if (truncatedVisibleMessages) warnings.push('VISIBLE_MESSAGE_TEXT_TRUNCATED');
+@@ -154,0 +180,4 @@
++      text_limit_code_units:MAX_TEXT, text_length_unit:'UTF16_CODE_UNITS',
++      text_truncation_scope:'VISIBLE_USER_ASSISTANT_CURRENT_PATH_ONLY',
++      truncated_visible_messages:truncatedVisibleMessages, truncated_conversations:truncatedConversations,
++      omitted_text_code_units:omittedTextCodeUnits,
+@@ -259 +288,3 @@
+-      const block=`<section><h2>${escapeHtml(m.role)}</h2><pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`;
++      const notice=m.textTruncated===true
++        ? '<p data-text-truncated="true"><strong>Text shortened / 文字已截短。</strong> Only the retained prefix is included. Search and this HTML omit the remaining text. Keep and inspect the original ZIP/JSON.</p>' : '';
++      const block=`<section><h2>${escapeHtml(m.role)}</h2>${notice}<pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`;
+diff --git a/src/first_result.js b/src/first_result.js
+index 4f7e7ff..4ec190d 100644
+--- a/src/first_result.js
++++ b/src/first_result.js
+@@ -1 +1 @@
+-/* AI Memory Lifeboat v0.6.0 — offline, content-free, human-readable first-result report. MIT.
++/* AI Memory Lifeboat v0.10.2 — offline, content-free, human-readable first-result report. MIT.
+@@ -9 +9 @@
+- const VERSION='0.6.0';
++ const VERSION='0.10.2';
+@@ -27,0 +28 @@
++   TEXT_TRUNCATED:['部分超長訊息已截短','閱讀、搜尋及 HTML 匯出只含保留部分；省略的尾段請查原始 ZIP／JSON。'],
+diff --git a/src/gateway.js b/src/gateway.js
+index aca7098..449ebad 100644
+--- a/src/gateway.js
++++ b/src/gateway.js
+@@ -1 +1 @@
+-/* AI Memory Lifeboat v0.10.1 — bilingual first-task gateway, local UI only. MIT.
++/* AI Memory Lifeboat v0.10.2 — bilingual first-task gateway, local UI only. MIT.
+diff --git a/src/health.js b/src/health.js
+index 41c3186..296295f 100644
+--- a/src/health.js
++++ b/src/health.js
+@@ -1 +1 @@
+-/* AI Memory Lifeboat v0.4.0 — evidence-limited, content-free health guidance.
++/* AI Memory Lifeboat v0.10.2 — evidence-limited, content-free health guidance.
+@@ -10 +10 @@
+-  const VERSION='0.4.0';
++  const VERSION='0.10.2';
+@@ -21,0 +22 @@
++    TEXT_TRUNCATED:['部分超長訊息已截短','閱讀、搜尋與 HTML 匯出只含保留的文字；省略的尾段仍需查看原始 ZIP／JSON，不要只保存閱讀檔。'],
+@@ -46,0 +48 @@
++    if (nonneg(a.truncated_visible_messages))add('TEXT_TRUNCATED','REVIEW',nonneg(a.truncated_visible_messages));
+@@ -55 +57 @@
+-      const total=['NOT_IN_NEW_EXPORT','ONLY_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED','METADATA_ONLY_CHANGED','INCONCLUSIVE_PATH','INCONCLUSIVE_ID'].reduce((sum,k)=>sum+nonneg(c[k]),0);
++      const total=['NOT_IN_NEW_EXPORT','ONLY_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED','METADATA_ONLY_CHANGED','INCONCLUSIVE_PATH','INCONCLUSIVE_ID','INCONCLUSIVE_TEXT'].reduce((sum,k)=>sum+nonneg(c[k]),0);
+diff --git a/tests/test_gateway_r7.js b/tests/test_gateway_r7.js
+index eb7543f..e9d237d 100644
+--- a/tests/test_gateway_r7.js
++++ b/tests/test_gateway_r7.js
+@@ -32 +32 @@ test('single-file HTML contains exact current scripts once and a hash-only CSP',
+- assert.match(single,/AI Memory Lifeboat v0\.10\.1/);
++ assert.match(single,/AI Memory Lifeboat v0\.10\.2/);
+diff --git a/tests/test_publication.js b/tests/test_publication.js
+index 0ae17fa..d142e48 100644
+--- a/tests/test_publication.js
++++ b/tests/test_publication.js
+@@ -5,2 +5,2 @@ test('file version and copyright policy synchronized',()=>{
+-  for(const p of ['src/app.js','src/gateway.js','index.html','package.json','README.md','README.en.md'])assert.match(read(p),/0\.10\.1/);
+-  assert.match(read('src/first_result.js'),/0\.6\.0/);
++  for(const p of ['src/app.js','src/gateway.js','index.html','package.json','README.md','README.en.md'])assert.match(read(p),/0\.10\.2/);
++  for(const p of ['src/core.js','src/health.js','src/compare.js','src/first_result.js'])assert.match(read(p),/0\.10\.2/);
+diff --git a/tests/test_r5_first_result.js b/tests/test_r5_first_result.js
+index 5eab177..2a258cb 100644
+--- a/tests/test_r5_first_result.js
++++ b/tests/test_r5_first_result.js
+@@ -12 +12 @@ test('R5 first-result human-readable summary is fully fixed and scoped to known
+- assert.match(txt,/僅限/);assert.match(txt,/工具版本：0\.6\.0/);
++ assert.match(txt,/僅限/);assert.match(txt,/工具版本：0\.10\.2/);
+diff --git a/tests/test_r6_package_manifest.js b/tests/test_r6_package_manifest.js
+index 4ec18b7..214b2cb 100644
+--- a/tests/test_r6_package_manifest.js
++++ b/tests/test_r6_package_manifest.js
+@@ -9 +9 @@ test('R6 package manifest only lists safe relative public file paths and correct
+-  assert.equal(manifest.version,'0.10.1-preview-source');
++  assert.equal(manifest.version,'0.10.2-preview-source');
+diff --git a/tests/test_r9_state.js b/tests/test_r9_state.js
+index f375504..2794f89 100644
+--- a/tests/test_r9_state.js
++++ b/tests/test_r9_state.js
+@@ -212,0 +213,21 @@ test('R12: oversized HTML export closes confirmation, downloads nothing, and sho
++
++// R13: truncation follows the source from parsing through reading, reports and clear.
++test('R13: shortened messages warn in the reading DOM and warnings clear on source change',async()=>{
++ const ui=harness();
++ const sample=[{id:'r13-ui-synthetic',title:'R13 synthetic long text',current_node:'a',mapping:{a:{parent:null,message:{author:{role:'user'},content:{parts:['A'.repeat(2_000_000)+'UNSEEN_TAIL']}}}}}];
++ await importJson(ui,'conversations.json',sample);
++ ui.by('conversationList').children[0].click();
++ assert.match(ui.by('conversationDetail').textContent,/截短/);
++ assert.match(ui.by('healthCards').textContent,/截短/);
++ assert.doesNotMatch(ui.by('conversationDetail').textContent,/UNSEEN_TAIL/);
++ await importOlder(ui,'older.json',sample);
++ assert.match(ui.by('compareList').textContent,/截短|無法完整比較/);
++ assert.doesNotMatch(ui.by('compareList').textContent,/undefined/);
++ ui.by('clearBtn').click();
++ assert.equal(ui.by('conversationDetail').textContent,'');
++ assert.equal(ui.by('healthCards').textContent,'');
++ assert.equal(ui.by('compareList').textContent,'');
++ await importJson(ui,'conversations.json',newer);
++ ui.by('conversationList').children[0].click();
++ assert.doesNotMatch(ui.by('conversationDetail').textContent,/截短/);
++});
+diff --git a/tests/test_release_r13.js b/tests/test_release_r13.js
+new file mode 100644
+index 0000000..655da62
+--- /dev/null
++++ b/tests/test_release_r13.js
+@@ -0,0 +1,51 @@
++/* R13 explicit one-time official Release and consent boundary — synthetic tests only. */
++'use strict';
++const test=require('node:test'),assert=require('node:assert/strict');
++const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),crypto=require('node:crypto');
++const root=path.resolve(__dirname,'..');const rd=x=>fs.readFileSync(path.join(root,x),'utf8');
++const flow=rd('.github/workflows/release-offline-r13.yml');
++const scripts=[...flow.matchAll(/^        run: \|\n((?:(?:^          .*\n)|(?:^\n))*)/gm)].map(x=>x[1].split('\n').map(y=>y.startsWith('          ')?y.slice(10):y).join('\n'));
++test('R13 Release workflow only publishes canonical v0.10.2 main, without overwrites',()=>{
++ assert.match(flow,/^  push:\n    branches: \[main\]/m);
++ assert.doesNotMatch(flow,/\bpull_request:\s*\n/);
++ assert.match(flow,/github\.repository == 'MAX67-gif\/AI-Memory-Lifeboat'/);
++ assert.match(flow,/version.*0\.10\.2/);
++ assert.match(flow,/permissions:\n  contents: read/);
++ assert.match(flow,/    permissions:\n      contents: write/);
++ assert.match(flow,/cancel-in-progress: false/);
++ assert.match(flow,/existing="\$\(git ls-remote --tags origin/);
++ assert.match(flow,/\[\[ -n "\$existing" \]\]/);
++ assert.doesNotMatch(flow,/--clobber|--force|\bforce: true|release upload/);
++ for(const s of scripts){const r=cp.spawnSync('bash',['-n'],{input:s,encoding:'utf8'});assert.equal(r.status,0,r.stderr);}
++});
++test('R13 release requires check and exact-source artifact checksums',()=>{
++ assert.match(flow,/npm run check/);
++ assert.match(flow,/git archive --format=zip --output=release\/AI_Memory_Lifeboat_Source_v0\.10\.2\.zip HEAD/);
++ assert.match(flow,/sha256sum -c SHA256SUMS\.txt/);
++ assert.match(flow,/unzip -tq/);
++ assert.match(flow,/--target "\$GITHUB_SHA"/);
++ assert.match(flow,/--notes-file docs\/R13_RELEASE_NOTES\.md/);
++ assert.ok(flow.indexOf('npm run check')<flow.indexOf('gh release create'));
++});
++test('R13 source and single-file contain an accessible bounded, consent-protected HTML export',()=>{
++ for(const h of ['index.html','dist/AI_Memory_Lifeboat_Offline.html']){
++  const html=rd(h);assert.match(html,/<dialog id="htmlExportConfirm"/);
++  assert.match(html,/aria-labelledby="htmlExportConfirmTitle"/);
++  assert.match(html,/id="confirmHtmlExport"/);
++  assert.match(html,/id="cancelHtmlExport"/);
++  assert.match(html,/聊天原文/);
++ }
++ const s=rd('src/app.js');assert.match(s,/function requestSensitiveExport\(/);assert.match(s,/function confirmSensitiveExport\(/);assert.match(s,/function revokeSensitiveExport\(/);
++ assert.match(s,/e\.html\.addEventListener\('click',requestSensitiveExport\)/);
++ assert.doesNotMatch(s,/\bfetch\s*\(|\bXMLHttpRequest\b|\bWebSocket\s*\(/);
++ assert.match(rd('dist/AI_Memory_Lifeboat_Offline.html'),/connect-src 'none'/);
++});
++
++test('R13 bounded content exports fail closed without changing parser data contracts',()=>{
++  const source=rd('src/core.js'),app=rd('src/app.js');
++  assert.match(source,/MAX_HTML_EXPORT_BYTES = 16 \* 1024 \* 1024/);
++  assert.match(source,/HTML_EXPORT_TOO_LARGE/);
++  assert.match(app,/已取消下載/);
++  assert.match(app,/HTML_EXPORT_TOO_LARGE/);
++  assert.doesNotMatch(app,/\bfetch\s*\(|\bXMLHttpRequest\b/);
++});
+diff --git a/tests/test_release_r8.js b/tests/test_release_r8.js
+index aa10c87..3ebcedd 100644
+--- a/tests/test_release_r8.js
++++ b/tests/test_release_r8.js
+@@ -48 +48 @@ test('single-file remains generated from exact source with CSP no connect-src',(
+- assert.match(d,/v0\.10\.1/);
++ assert.match(d,/v0\.10\.2/);
+@@ -54 +54 @@ test('single-file remains generated from exact source with CSP no connect-src',(
+- assert.match(rd('src/app.js'),/aml-first-result-v0\.10\.1\.txt/);
++ assert.match(rd('src/app.js'),/aml-first-result-v0\.10\.2\.txt/);
+diff --git a/tests/test_release_r9.js b/tests/test_release_r9.js
+index 7c67d7b..71107ff 100644
+--- a/tests/test_release_r9.js
++++ b/tests/test_release_r9.js
+@@ -48 +48 @@ test('single-file remains generated from exact source with CSP no connect-src',(
+- assert.match(d,/v0\.10\.1/);
++ assert.match(d,/v0\.10\.2/);
+@@ -54 +54 @@ test('single-file remains generated from exact source with CSP no connect-src',(
+- assert.match(rd('src/app.js'),/aml-first-result-v0\.10\.1\.txt/);
++ assert.match(rd('src/app.js'),/aml-first-result-v0\.10\.2\.txt/);
+diff --git a/tests/test_truncation_r13.js b/tests/test_truncation_r13.js
+new file mode 100644
+index 0000000..20672d8
+--- /dev/null
++++ b/tests/test_truncation_r13.js
+@@ -0,0 +1,135 @@
++'use strict';
++const test=require('node:test');
++const assert=require('node:assert/strict');
++const core=require('../src/core.js');
++const health=require('../src/health.js');
++const first=require('../src/first_result.js');
++const compare=require('../src/compare.js');
++const LIMIT=2_000_000;
++const row=(parts)=>[{id:'synthetic-r13-id',title:'Synthetic R13 example',current_node:'n',mapping:{n:{parent:null,message:{author:{role:'user'},content:{parts}}}}}];
++const parse=parts=>core.parseChatGPTExport(row(parts));
++
++test('R13: a shortened current-path message declares omitted UTF-16 units without leaking text',()=>{
++ const p=parse(['A'.repeat(LIMIT)+'PRIVATE_TAIL']);
++ const m=p.conversations[0].messages[0];
++ assert.equal(m.textTruncated,true);
++ assert.equal(m.sourceTextCodeUnits,LIMIT+12);
++ assert.equal(m.retainedTextCodeUnits,LIMIT);
++ assert.equal(m.omittedTextCodeUnits,12);
++ assert.equal(p.audit.truncated_visible_messages,1);
++ assert.equal(p.audit.truncated_conversations,1);
++ assert.equal(p.audit.omitted_text_code_units,12);
++ assert.equal(p.audit.text_length_unit,'UTF16_CODE_UNITS');
++ assert.ok(p.audit.warnings.includes('VISIBLE_MESSAGE_TEXT_TRUNCATED'));
++ assert.doesNotMatch(JSON.stringify(p.audit),/PRIVATE_TAIL|synthetic-r13-id|Synthetic R13 example/);
++});
++
++test('R13: health and trusted TXT report require review for shortened visible text',()=>{
++ const p=parse(['A'.repeat(LIMIT)+'PRIVATE_TAIL']);
++ const h=health.evaluate(p.audit);
++ assert.equal(h.overall,'REVIEW');
++ assert.ok(h.checks.some(x=>x.code==='TEXT_TRUNCATED'&&x.count===1));
++ assert.ok(!h.checks.some(x=>x.code==='NO_DETECTED_PROBLEMS'));
++ const txt=first.format(h,'PERSONAL_EXPORT');
++ assert.match(txt,/截短/);
++ assert.doesNotMatch(JSON.stringify(h)+txt,/PRIVATE_TAIL|synthetic-r13-id|Synthetic R13 example/);
++});
++
++test('R13: identical retained prefixes with different omitted tails are inconclusive',()=>{
++ const prefix='A'.repeat(LIMIT);
++ const older=parse([prefix+'OLD_PRIVATE_SUFFIX']);
++ const newer=parse([prefix+'NEW_PRIVATE_SUFFIX']);
++ const d=compare.compareSnapshots(older,newer);
++ assert.equal(d.items[0].status,'INCONCLUSIVE_TEXT');
++ assert.equal(d.summary.counts.INCONCLUSIVE_TEXT,1);
++ assert.equal(d.summary.counts.NO_DETECTED_CURRENT_VIEW_CHANGE,0);
++ assert.equal(d.summary.text_truncation_detected_in_inputs,true);
++ assert.ok(d.summary.warnings.includes('TRUNCATED_TEXT_NOT_FULLY_COMPARABLE'));
++ assert.doesNotMatch(JSON.stringify(d.summary),/PRIVATE_SUFFIX|synthetic-r13-id|Synthetic R13 example/);
++});
++
++test('R13: the downloaded conversation warns at each shortened message',()=>{
++ const p=parse(['A'.repeat(LIMIT)+'PRIVATE_TAIL']);
++ const html=core.exportConversationHtml(p.conversations[0]);
++ assert.match(html,/Text shortened/);
++ assert.match(html,/data-text-truncated="true"/);
++ assert.doesNotMatch(html,/PRIVATE_TAIL/);
++ assert.ok(Buffer.byteLength(html)<16*1024*1024);
++ const ordinary=core.exportConversationHtml(parse(['short sample']).conversations[0]);
++ assert.doesNotMatch(ordinary,/data-text-truncated="true"/);
++});
++
++test('R13: empty, short and exact-limit text remain complete within the supported reading scope',()=>{
++ for(const s of ['', '普通的中文範例', 'A'.repeat(LIMIT)]){
++  const p=parse([s]), m=p.conversations[0].messages[0];
++  assert.equal(m.text,s);assert.equal(m.textTruncated,false);
++  assert.equal(m.sourceTextCodeUnits,s.length);assert.equal(m.omittedTextCodeUnits,0);
++  assert.equal(p.audit.truncated_visible_messages,0);
++  assert.ok(!p.audit.warnings.includes('VISIBLE_MESSAGE_TEXT_TRUNCATED'));
++ }
++});
++
++test('R13: joined string and object.text parts count newline separators in the same bounded message',()=>{
++ const p=parse(['A'.repeat(LIMIT-2),{text:'BCDE'},{image_asset_pointer:'fictional-image'}]);
++ const m=p.conversations[0].messages[0];
++ assert.equal(m.text,'A'.repeat(LIMIT-2)+'\nB');
++ assert.equal(m.sourceTextCodeUnits,LIMIT+3);assert.equal(m.omittedTextCodeUnits,3);
++ assert.equal(m.nonText,1);
++});
++
++test('R13: fallback content.text is marked as shortened, and the input remains unchanged',()=>{
++ const raw=row([]);raw[0].mapping.n.message.content={text:'X'.repeat(LIMIT+9)};
++ const p=core.parseChatGPTExport(raw);
++ assert.equal(p.audit.omitted_text_code_units,9);
++ assert.equal(raw[0].mapping.n.message.content.text.length,LIMIT+9);
++});
++
++test('R13: valid surrogate pairs are never cut in half at the UTF-16 boundary',()=>{
++ const p=parse(['A'.repeat(LIMIT-1)+'😀Z']);const m=p.conversations[0].messages[0];
++ assert.equal(m.text,'A'.repeat(LIMIT-1));
++ assert.equal(m.retainedTextCodeUnits,LIMIT-1);assert.equal(m.omittedTextCodeUnits,3);
++ assert.equal(parse(['A'.repeat(LIMIT-2)+'😀']).conversations[0].messages[0].textTruncated,false);
++});
++
++test('R13: off-path text is not counted twice or presented as visible-message truncation',()=>{
++ const raw=row(['short']);
++ raw[0].mapping.off={parent:null,message:{author:{role:'assistant'},content:{parts:['Z'.repeat(LIMIT+2)]}}};
++ const p=core.parseChatGPTExport(raw);
++ assert.equal(p.audit.truncated_visible_messages,0);assert.equal(p.audit.omitted_text_code_units,0);
++ assert.equal(p.audit.off_path_message_nodes,1);
++});
++
++test('R13: multiple long visible messages aggregate once and exclude hidden roles',()=>{
++ const raw=row(['A'.repeat(LIMIT+7)]);
++ raw[0].mapping.b={parent:'n',message:{author:{role:'assistant'},content:{parts:['B'.repeat(LIMIT+3)]}}};
++ raw[0].mapping.s={parent:'b',message:{author:{role:'system'},content:{parts:['C'.repeat(LIMIT+5)]}}};
++ raw[0].current_node='s';
++ const p=core.parseChatGPTExport(raw);
++ assert.equal(p.audit.truncated_visible_messages,2);assert.equal(p.audit.truncated_conversations,1);
++ assert.equal(p.audit.omitted_text_code_units,10);
++ assert.equal(p.audit.text_truncation_scope,'VISIBLE_USER_ASSISTANT_CURRENT_PATH_ONLY');
++});
++
++test('R13: searching cannot find an omitted tail, while an ordinary snapshot retains its prior status',()=>{
++ const p=parse(['A'.repeat(LIMIT)+'UNIQUE_PRIVATE_TAIL']);
++ assert.equal(core.searchConversations(p.conversations,'UNIQUE_PRIVATE_TAIL').length,0);
++ const ordinary=parse(['ordinary text']);
++ const d=compare.compareSnapshots(ordinary,ordinary);
++ assert.equal(d.items[0].status,'NO_DETECTED_CURRENT_VIEW_CHANGE');
++ assert.equal(d.summary.counts.INCONCLUSIVE_TEXT,0);
++ assert.equal(d.summary.text_truncation_detected_in_inputs,false);
++});
++
++test('R13: truncation in the older input alone still triggers inconclusive comparison and health review',()=>{
++ const old=parse(['A'.repeat(LIMIT)+'tail']), now=parse(['A'.repeat(LIMIT)]);
++ const d=compare.compareSnapshots(old,now).summary;
++ assert.equal(d.counts.INCONCLUSIVE_TEXT,1);
++ assert.equal(health.evaluate(now.audit,{diff:d}).overall,'REVIEW');
++});
++
++test('R13: a synthetic hostile title or content is not echoed in audit, health, TXT or comparison summary',()=>{
++ const raw=row(['A'.repeat(LIMIT)+'<script>SECRET_TAIL</script>']);
++ raw[0].title='SECRET_TITLE';raw[0].id='SECRET_ID';
++ const p=core.parseChatGPTExport(raw),h=health.evaluate(p.audit);
++ assert.doesNotMatch(JSON.stringify([p.audit,h,compare.compareSnapshots(p,p).summary])+first.format(h,'PERSONAL_EXPORT'),/SECRET_|<script>/);
++});
+diff --git a/tools/build_manifest.js b/tools/build_manifest.js
+index 7677d85..e0977e6 100644
+--- a/tools/build_manifest.js
++++ b/tools/build_manifest.js
+@@ -29,2 +29,2 @@ const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.j
+-prior.version='0.10.1-preview-source';prior.date='2026-11-07';
+-prior.base_public_main='0451cd319aaddef040764d938a84559489d91b7e';
++prior.version='0.10.2-preview-source';prior.date='2026-11-09';
++prior.base_public_main='224e51eca02f8c5595edf69b3bd87dd247901ed3';
+@@ -32 +32 @@ prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_me
+-prior.source='R11 verified maintainer evidence plus R12 bounded HTML export safety hotfix with a separately pinned release';
++prior.source='R12 verified release plus explicit retained-text coverage, bounded Unicode-safe truncation metadata and inconclusive snapshot comparisons';
+@@ -33,0 +34 @@ prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual fi
++prior.scope.push('R13 explicit current-path text truncation metadata, warnings and conservative comparison');
+diff --git a/tools/build_standalone.js b/tools/build_standalone.js
+index 80799ea..db54574 100644
+--- a/tools/build_standalone.js
++++ b/tools/build_standalone.js
+@@ -31 +31 @@ output=output.replace('</body>',inline+'\n</body>');
+-output='<!-- Generated from committed sources. Edit originals then rebuild. v0.10.1 -->\n'+output;
++output='<!-- Generated from committed sources. Edit originals then rebuild. v0.10.2 -->\n'+output;

@@ -1,0 +1,300 @@
+diff --git a/.github/workflows/release-offline-r13.yml b/.github/workflows/release-offline-r13.yml
+new file mode 100644
+index 0000000..d8fc8f6
+--- /dev/null
++++ b/.github/workflows/release-offline-r13.yml
+@@ -0,0 +1,76 @@
++name: R13 offline download hotfix (one-time, pinned)
++on:
++  push:
++    branches: [main]
++    paths:
++      - package.json
++      - .github/workflows/release-offline-r13.yml
++permissions:
++  contents: read
++concurrency:
++  group: aml-r13-offline-release
++  cancel-in-progress: false
++jobs:
++  release:
++    if: github.repository == 'MAX67-gif/AI-Memory-Lifeboat' && github.ref == 'refs/heads/main'
++    runs-on: ubuntu-latest
++    timeout-minutes: 15
++    permissions:
++      contents: write
++    steps:
++      - name: Checkout canonical main (never untrusted PR content)
++        uses: actions/checkout@v4
++        with:
++          persist-credentials: false
++      - uses: actions/setup-node@v4
++        with:
++          node-version: '22'
++      - name: Decide whether this exact R13 version should publish
++        id: gate
++        shell: bash
++        run: |
++          set -euo pipefail
++          version="$(node -p "require('./package.json').version")"
++          if [[ "$version" == "0.10.2" ]]; then
++            echo 'publish=true' >> "$GITHUB_OUTPUT"
++          else
++            echo 'publish=false' >> "$GITHUB_OUTPUT"
++            echo 'Other versions require a separate explicitly reviewed publisher.'
++          fi
++      - name: Verify tests, generated offline source and public manifest
++        if: steps.gate.outputs.publish == 'true'
++        run: npm run check
++      - name: Build exact release assets and verify SHA256 and ZIP CRC
++        if: steps.gate.outputs.publish == 'true'
++        shell: bash
++        run: |
++          set -euo pipefail
++          mkdir -p release
++          cp dist/AI_Memory_Lifeboat_Offline.html release/AI_Memory_Lifeboat_Offline.html
++          git archive --format=zip --output=release/AI_Memory_Lifeboat_Source_v0.10.2.zip HEAD
++          (cd release && sha256sum AI_Memory_Lifeboat_Offline.html AI_Memory_Lifeboat_Source_v0.10.2.zip > SHA256SUMS.txt && sha256sum -c SHA256SUMS.txt)
++          unzip -tq release/AI_Memory_Lifeboat_Source_v0.10.2.zip >/dev/null
++          test -s release/AI_Memory_Lifeboat_Offline.html
++          test -s release/AI_Memory_Lifeboat_Source_v0.10.2.zip
++      - name: Publish once; do not overwrite an existing tag or Release
++        if: steps.gate.outputs.publish == 'true'
++        shell: bash
++        env:
++          GH_TOKEN: ${{ github.token }}
++        run: |
++          set -euo pipefail
++          tag='v0.10.2'
++          # ls-remote without --exit-code exits 0 even when the tag is absent,
++          # but fails on network/auth errors: never treat transport failure as "tag free".
++          existing="$(git ls-remote --tags origin "refs/tags/$tag")"
++          if [[ -n "$existing" ]]; then
++            echo "REFUSE_EXISTING_TAG_OR_RELEASE: $tag" >&2
++            exit 1
++          fi
++          gh release create "$tag" \
++            release/AI_Memory_Lifeboat_Offline.html \
++            release/AI_Memory_Lifeboat_Source_v0.10.2.zip \
++            release/SHA256SUMS.txt \
++            --target "$GITHUB_SHA" \
++            --title 'AI Memory Lifeboat v0.10.2 — Visible Truncation Offline' \
++            --notes-file docs/R13_RELEASE_NOTES.md
+diff --git a/AGENTS.md b/AGENTS.md
+index 183172c..1330855 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -39,0 +40,2 @@ R12 addendum: HTML export must be bounded by the actual UTF-8 bytes of the escap
++
++R13 addendum: preserve 2,000,000 UTF-16 code units per visible message; report truncation through additive metadata, content-free aggregates, UI, health and exported HTML. Compare shortened text as INCONCLUSIVE_TEXT, never full equality of discarded tails. Do not split valid surrogate pairs at the cutoff; do not claim full grapheme or title preservation. Keep existing schemas and pilot generators; run tests/test_truncation_r13.js and R9 state regression, rebuild standalone and manifest. v0.10.2 uses its own pinned publisher; old release tags/workflows remain immutable.
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index d841dde..b7db659 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -0,0 +1,7 @@
++## v0.10.2 — R13 (2026-11-09; release subject to CI)
++
++- Declare retained/omitted UTF-16 text coverage without increasing message or archive limits.
++- Warn in reading, content-free reports and chat-text HTML; preserve surrogate pairs at the cutoff.
++- Treat truncated current-path comparisons as inconclusive; retain existing IDs, schema fields, consent and 16 MiB HTML guard.
++- Synthetic regressions only; no adoption or account-completeness claims.
++
+diff --git a/PRIVACY.md b/PRIVACY.md
+index 2a3eb09..ae24610 100644
+--- a/PRIVACY.md
++++ b/PRIVACY.md
+@@ -35,0 +36,5 @@ R12 (v0.10.1): A single-conversation HTML larger than 16 MiB after UTF-8 encodin
++
++
++## R13｜超長文字範圍（2026-11-09）
++
++截短訊息會明確提示；搜尋與 HTML 只含保留文字，不把前綴相同當成來源完整相同。原始 ZIP/JSON、容量界線、內容匯出確認與本機處理原則不變。詳細加法欄位、未知比較狀態與測試邊界見 [R13_TEXT_TRUNCATION](docs/R13_TEXT_TRUNCATION.md)。
+diff --git a/README.en.md b/README.en.md
+index b58642b..d315540 100644
+--- a/README.en.md
++++ b/README.en.md
+@@ -2,0 +3,6 @@
++## R13 v0.10.2 candidate: explicit retained-text coverage
++
++A message longer than the existing **2,000,000 UTF-16 code-unit** limit is marked as shortened. Reading, health JSON/TXT and exported conversation HTML disclose omitted text; search only covers the retained prefix. Comparisons involving shortened messages are explicitly inconclusive, even when retained prefixes match. The boundary avoids splitting valid surrogate pairs; it is not a grapheme-count guarantee.
++
++The [v0.10.2 release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.2) is authoritative only after successful CI and asset verification; until then use [v0.10.1](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.1). See [R13 contract](docs/R13_TEXT_TRUNCATION.md). No account-completeness, memory-erasure or human-adoption claim.
++
+diff --git a/README.md b/README.md
+index 94c46d5..7781a7e 100644
+--- a/README.md
++++ b/README.md
+@@ -2,0 +3,6 @@
++## 最新修正候選｜R13 v0.10.2：超長文字不再靜默截短
++
++保留每則訊息 **2,000,000 UTF-16 code units** 的既有限制（不是 bytes，也不是字數），明確標出截短訊息、略去數量與讀取範圍。閱讀畫面、健康 JSON/TXT、下載的單篇 HTML 均會提醒；搜尋只涵蓋保留文字。有截短內容的新舊快照標為「無法完整比較」，不把相同前綴當成來源文字相同。
++
++[本版 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.2) 僅在 CI／附件驗證成功後成立；之前維持 [v0.10.1](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.1)。詳見 [截斷可見性與相容契約](docs/R13_TEXT_TRUNCATION.md)。不擴大 ZIP／JSON 或 16 MiB HTML 上限，不新增上傳或帳戶功能。
++
+diff --git a/SECURITY.md b/SECURITY.md
+index 7ea179a..6e85f14 100644
+--- a/SECURITY.md
++++ b/SECURITY.md
+@@ -43,0 +44,5 @@ R12: protect against oversized content-bearing HTML generation (max 16 MiB actua
++
++
++## R13｜超長文字範圍（2026-11-09）
++
++截短訊息會明確提示；搜尋與 HTML 只含保留文字，不把前綴相同當成來源完整相同。原始 ZIP/JSON、容量界線、內容匯出確認與本機處理原則不變。詳細加法欄位、未知比較狀態與測試邊界見 [R13_TEXT_TRUNCATION](docs/R13_TEXT_TRUNCATION.md)。
+diff --git a/docs/FORMAT_SUPPORT.md b/docs/FORMAT_SUPPORT.md
+index 3dc5887..353b912 100644
+--- a/docs/FORMAT_SUPPORT.md
++++ b/docs/FORMAT_SUPPORT.md
+@@ -24,0 +25,5 @@ R7 新增的是**分發形式**而不是新的匯入格式；單檔 HTML 與原
++
++
++## R13｜超長文字範圍（2026-11-09）
++
++截短訊息會明確提示；搜尋與 HTML 只含保留文字，不把前綴相同當成來源完整相同。原始 ZIP/JSON、容量界線、內容匯出確認與本機處理原則不變。詳細加法欄位、未知比較狀態與測試邊界見 [R13_TEXT_TRUNCATION](R13_TEXT_TRUNCATION.md)。
+diff --git a/docs/QUICK_START.md b/docs/QUICK_START.md
+index b7c43df..a45227b 100644
+--- a/docs/QUICK_START.md
++++ b/docs/QUICK_START.md
+@@ -38,0 +39,5 @@ R12 v0.10.1: If a single-chat HTML export would exceed 16 MiB after escaping, th
++
++
++## R13｜超長文字範圍（2026-11-09）
++
++截短訊息會明確提示；搜尋與 HTML 只含保留文字，不把前綴相同當成來源完整相同。原始 ZIP/JSON、容量界線、內容匯出確認與本機處理原則不變。詳細加法欄位、未知比較狀態與測試邊界見 [R13_TEXT_TRUNCATION](R13_TEXT_TRUNCATION.md)。
+diff --git a/docs/R13_RELEASE_NOTES.md b/docs/R13_RELEASE_NOTES.md
+new file mode 100644
+index 0000000..b418c20
+--- /dev/null
++++ b/docs/R13_RELEASE_NOTES.md
+@@ -0,0 +1,9 @@
++# AI Memory Lifeboat v0.10.2 — Visible Truncation Offline
++
++- Explicit warnings when the supported current-path message text exceeds the existing 2,000,000 UTF-16 code-unit cap. Numeric coverage fields never contain conversation text.
++- Same retained prefix no longer implies the omitted tails were equal: snapshot comparisons return INCONCLUSIVE_TEXT when relevant text was shortened.
++- Reading, trusted health TXT/JSON and the downloaded conversation HTML disclose the limitation. Search remains limited to retained text.
++- No size-limit increases, cloud calls, account access, telemetry or parser format expansion. Existing 16 MiB HTML cap and explicit download consent remain.
++- Synthetic engineering evidence only. Keep the original official export; no full account recovery, external adoption or program acceptance claim.
++
++Download the offline HTML, the exact-commit source ZIP and SHA256SUMS. Checksums verify release bytes, not original account completeness. Prior releases remain immutable.
+diff --git a/docs/R13_TEXT_TRUNCATION.md b/docs/R13_TEXT_TRUNCATION.md
+new file mode 100644
+index 0000000..0279ae3
+--- /dev/null
++++ b/docs/R13_TEXT_TRUNCATION.md
+@@ -0,0 +1,22 @@
++# R13｜截短文字可見性與保守比較契約
++
++## 範圍
++既有單訊息上限 2,000,000 UTF-16 code units 保留。這是 JavaScript 字串的長度單位，不是 UTF-8 bytes、字數或完整 grapheme。僅在已核對 current-path 的 user/assistant 可見訊息計數；其他分支、隱藏角色、附件、標題的 500 單位上限及平台未匯出內容仍未完整檢查。
++
++多個 string／object.text parts 依原邏輯以 newline 連接。只建立有限前綴並計算來源長度，避免再次建立無界 joined 字串。若界線恰好切開合法 surrogate pair，少留一個 UTF-16 單位，保持該 pair 不被分割；不保證不拆開複合 emoji 或結合字元。
++
++## 加法式輸出
++Schema 名稱保持 `aml.audit.v1`、`aml.health.v1`、`aml.snapshot-diff.v1`；pilot v1/v2 原始生成器不變。新版 tool_version 如實標為 0.10.2。
++
++每則可見訊息新增：`textTruncated`、`sourceTextCodeUnits`、`retainedTextCodeUnits`、`omittedTextCodeUnits`。對話新增 `truncatedVisibleMessages`、`omittedTextCodeUnits`。
++Audit 新增 `text_limit_code_units`、`text_length_unit=UTF16_CODE_UNITS`、`text_truncation_scope=VISIBLE_USER_ASSISTANT_CURRENT_PATH_ONLY`、`truncated_visible_messages`、`truncated_conversations`、`omitted_text_code_units` 與固定警告 `VISIBLE_MESSAGE_TEXT_TRUNCATED`。只包含計數/固定代碼，不包含原文、ID、標題、檔名或路徑。
++
++Health 新增 `TEXT_TRUNCATED`，優先級 REVIEW；有截短內容時不顯示 LIMITED_CHECK_OK。TXT formatter 只映射固定白名單字句，拒絕反射外來文案。
++
++比較狀態新增 `INCONCLUSIVE_TEXT`，適用兩個唯一明確 ID 且路徑有效的紀錄，只要任何一側可見文字被截短就不對省略尾段推論相同/不同。既有 ID 不明、路徑無效與只在一份匯出出現的判斷優先；原有 enum 字串不刪改。摘要新增 `text_truncation_detected_in_inputs` 與固定警告 `TRUNCATED_TEXT_NOT_FULLY_COMPARABLE`。下游需容忍新增狀態；未支援者應回報 unknown，不視為無差異。
++
++## 閱讀、搜尋、HTML
++每則截短訊息在畫面和下載 HTML 顯示固定警告。搜尋只查保留前綴；找不到尾段不是資料不存在。700 則畫面呈現限制不變；HTML 可含其餘保留訊息，但不含已略去的尾段。仍須 R10 明確同意，且 16 MiB 實際 HTML UTF-8 bytes 上限維持，超限完全拒絕。
++
++## 驗收與邊界
++測試涵蓋 exact-limit/overflow、multi-parts newline、fallback text、surrogate pair、off-path、hidden roles、兩份快照省略尾段差異、來源切換與清除、報告無原文、R12 HTML cap。皆為原創合成資料，不代表真實帳戶完整或真人採用。保留原始官方 ZIP／JSON。
+diff --git a/docs/ROADMAP.md b/docs/ROADMAP.md
+index 691217c..43431c1 100644
+--- a/docs/ROADMAP.md
++++ b/docs/ROADMAP.md
+@@ -41,0 +42,5 @@ R12 (2026-11-07): Prioritize a bounded, privacy-safe single-conversation HTML ex
++
++
++## R13｜超長文字範圍（2026-11-09）
++
++截短訊息會明確提示；搜尋與 HTML 只含保留文字，不把前綴相同當成來源完整相同。原始 ZIP/JSON、容量界線、內容匯出確認與本機處理原則不變。詳細加法欄位、未知比較狀態與測試邊界見 [R13_TEXT_TRUNCATION](R13_TEXT_TRUNCATION.md)。
+diff --git a/index.html b/index.html
+index effd92b..55b35c9 100644
+--- a/index.html
++++ b/index.html
+@@ -10 +10 @@
+-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.1 Preview</title>
++  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.2 Preview</title>
+@@ -26 +26 @@
+-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.1 Preview</span></div></div>
++      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.2 Preview</span></div></div>
+diff --git a/package.json b/package.json
+index 13d5377..a1580cd 100644
+--- a/package.json
++++ b/package.json
+@@ -3 +3 @@
+-  "version": "0.10.1",
++  "version": "0.10.2",
+diff --git a/src/app.js b/src/app.js
+index d99fe8b..33329aa 100644
+--- a/src/app.js
++++ b/src/app.js
+@@ -1 +1 @@
+-/* AI Memory Lifeboat v0.10.1 — user-triggered browser application only. MIT. */
++/* AI Memory Lifeboat v0.10.2 — user-triggered browser application only. MIT. */
+@@ -27 +27,2 @@
+-    INCONCLUSIVE_ID:'缺少可靠或唯一的對話 ID'
++    INCONCLUSIVE_ID:'缺少可靠或唯一的對話 ID',
++    INCONCLUSIVE_TEXT:'訊息已截短，無法完整比較省略的文字'
+@@ -34,0 +36 @@
++    VISIBLE_MESSAGE_TEXT_TRUNCATED:'部分超長訊息已截短；閱讀、搜尋與匯出僅包含保留部分，請保留原始 ZIP／JSON。',
+@@ -165 +167,7 @@
+-      section.append(role,text);e.detail.append(section);
++      section.append(role);
++      if(msg.textTruncated===true){
++        const note=document.createElement('p');note.className='notice';
++        note.textContent='這則訊息已截短。閱讀、搜尋及 HTML 匯出只含保留部分；省略的尾段請查原始 ZIP／JSON。';
++        section.append(note);
++      }
++      section.append(text);e.detail.append(section);
+@@ -167 +175 @@
+-    if(c.messages.length>700){const p=document.createElement('p');p.className='note';p.textContent='畫面只顯示前 700 則訊息；下載目前分支 HTML 可閱讀其餘文字。';e.detail.append(p);}
++    if(c.messages.length>700){const p=document.createElement('p');p.className='note';p.textContent='畫面只顯示前 700 則訊息；下載目前分支 HTML 可閱讀其餘保留文字；超長訊息被截短的尾段仍不包含在內。';e.detail.append(p);}
+@@ -330 +338 @@
+-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.1.json','application/json;charset=utf-8');
++    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.2.json','application/json;charset=utf-8');
+@@ -335 +343 @@
+-      'aml-first-result-v0.10.1.txt','text/plain;charset=utf-8');
++      'aml-first-result-v0.10.2.txt','text/plain;charset=utf-8');
+@@ -338 +346 @@
+-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.1.json','application/json;charset=utf-8');});
++  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.2.json','application/json;charset=utf-8');});
+@@ -343 +351 @@
+-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.1.json','application/json;charset=utf-8');});
++  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.2.json','application/json;charset=utf-8');});
+@@ -346 +354 @@
+-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.1.json','application/json;charset=utf-8');});
++  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.2.json','application/json;charset=utf-8');});
+diff --git a/src/compare.js b/src/compare.js
+index cd40eff..1fbfe0c 100644
+--- a/src/compare.js
++++ b/src/compare.js
+@@ -1 +1 @@
+-/* AI Memory Lifeboat v0.4.0 — bounded, title-free snapshot comparison summary.
++/* AI Memory Lifeboat v0.10.2 — bounded, title-free snapshot comparison summary.
+@@ -12 +12 @@
+-    'METADATA_ONLY_CHANGED','NO_DETECTED_CURRENT_VIEW_CHANGE','INCONCLUSIVE_PATH','INCONCLUSIVE_ID']);
++    'METADATA_ONLY_CHANGED','NO_DETECTED_CURRENT_VIEW_CHANGE','INCONCLUSIVE_PATH','INCONCLUSIVE_ID','INCONCLUSIVE_TEXT']);
+@@ -13,0 +14 @@
++  const hasTruncatedText=c=>c?.truncatedVisibleMessages>0||c?.messages?.some(m=>m.textTruncated===true);
+@@ -46,0 +48,3 @@
++      if(hasTruncatedText(olderRow)||hasTruncatedText(newerRow)){
++        add('INCONCLUSIVE_TEXT',newerRow);continue;
++      }
+@@ -56 +60,2 @@
+-    const summary={schema:SCHEMA,tool_version:'0.4.0',
++    const truncated=older.conversations.some(hasTruncatedText)||newer.conversations.some(hasTruncatedText);
++    const summary={schema:SCHEMA,tool_version:'0.10.2',
+@@ -61 +66 @@
+-      counts,total_display_items:items.length,
++      counts,total_display_items:items.length,text_truncation_detected_in_inputs:truncated,
+@@ -67 +72,2 @@
+-        'EXPORT_CHRONOLOGY_IS_USER_ASSUMED_NOT_AUTHENTICATED'],
++        'EXPORT_CHRONOLOGY_IS_USER_ASSUMED_NOT_AUTHENTICATED',
++        ...(truncated?['TRUNCATED_TEXT_NOT_FULLY_COMPARABLE']:[])],
