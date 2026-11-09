@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.6.0 — offline, content-free, human-readable first-result report. MIT.
+/* AI Memory Lifeboat v0.10.2 — offline, content-free, human-readable first-result report. MIT.
  * Never reflect exported titles, paths, text, IDs, filenames, unknown issue details or metadata.
  */
 (function(root,factory){
@@ -6,7 +6,7 @@
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
  if(root)root.AMLFirstResult=api;
 })(typeof globalThis==='object'?globalThis:null,function(){'use strict';
- const VERSION='0.6.0';
+ const VERSION='0.10.2';
  const SOURCE=Object.freeze({
    SYNTHETIC_DEMO:'合成示範（不代表你的帳戶已被檢查）',
    PERSONAL_EXPORT:'使用者自行選擇的匯出檔（不是帳戶完整性證明）'
@@ -25,6 +25,7 @@
    ZIP_PATH_AMBIGUOUS:['附件路徑不明確','重複、不安全或無法唯一對應的路徑需要人工核對。'],
    BYTE_FAILURE:['ZIP 位元組檢查失敗','已檢查的部分項目 CRC 或大小不一致，建議重新取得官方匯出。'],
    OFF_PATH:['部分其他對話分支未呈現','主要閱讀頁只顯示目前分支，原始匯出仍應保留。'],
+   TEXT_TRUNCATED:['部分超長訊息已截短','閱讀、搜尋及 HTML 匯出只含保留部分；省略的尾段請查原始 ZIP／JSON。'],
    NON_TEXT:['部分非文字內容無法閱讀','圖片、音訊等不能保證轉為完整可閱讀內容。'],
    REFERENCE_LIMIT:['附件參照不等於附件已保存','有參照或路徑不代表原始附件已完整匯出。'],
    BYTE_LIMIT:['ZIP 位元組檢查範圍有限','大小、壓縮格式或安全限制以外的項目未驗證。'],

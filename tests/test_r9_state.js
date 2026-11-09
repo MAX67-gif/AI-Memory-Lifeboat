@@ -210,3 +210,24 @@ test('R12: oversized HTML export closes confirmation, downloads nothing, and sho
   assert.equal(ui.by('htmlExportConfirm').open,false);
   assert.match(ui.by('status').textContent,/超過|上限|過大/);
 });
+
+// R13: truncation follows the source from parsing through reading, reports and clear.
+test('R13: shortened messages warn in the reading DOM and warnings clear on source change',async()=>{
+ const ui=harness();
+ const sample=[{id:'r13-ui-synthetic',title:'R13 synthetic long text',current_node:'a',mapping:{a:{parent:null,message:{author:{role:'user'},content:{parts:['A'.repeat(2_000_000)+'UNSEEN_TAIL']}}}}}];
+ await importJson(ui,'conversations.json',sample);
+ ui.by('conversationList').children[0].click();
+ assert.match(ui.by('conversationDetail').textContent,/截短/);
+ assert.match(ui.by('healthCards').textContent,/截短/);
+ assert.doesNotMatch(ui.by('conversationDetail').textContent,/UNSEEN_TAIL/);
+ await importOlder(ui,'older.json',sample);
+ assert.match(ui.by('compareList').textContent,/截短|無法完整比較/);
+ assert.doesNotMatch(ui.by('compareList').textContent,/undefined/);
+ ui.by('clearBtn').click();
+ assert.equal(ui.by('conversationDetail').textContent,'');
+ assert.equal(ui.by('healthCards').textContent,'');
+ assert.equal(ui.by('compareList').textContent,'');
+ await importJson(ui,'conversations.json',newer);
+ ui.by('conversationList').children[0].click();
+ assert.doesNotMatch(ui.by('conversationDetail').textContent,/截短/);
+});

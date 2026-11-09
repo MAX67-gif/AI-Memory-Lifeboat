@@ -1,4 +1,4 @@
-<!-- Generated from committed sources. Edit originals then rebuild. v0.10.1 -->
+<!-- Generated from committed sources. Edit originals then rebuild. v0.10.2 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gbDhixT0KAsA4J2x+ZTEl/bqYKkAXIcEQP7jBNHCfo0=' 'sha256-BqUy/mzwn6RfXyerzB2OTw+2+ZkjQ/x6tyADmOKQejY=' 'sha256-Y7BgT0pdKLS2GbcYru5O6J2PusaZqMgFOKp9IAzyE90=' 'sha256-t8U8mo2SrAPRb4OEayiZxcQKdLWAVYKDvrfpns8G6i0=' 'sha256-CGguLXYdujCKeSU5k3uKxPFiyOh33/kOD5gos+2MeLQ=' 'sha256-3X8ZjQHhkdNew2ef/lw5XG/zgEqGm1qbgiOOnkPsprU=' 'sha256-c8NHi5l/4DWr9LYbx3GXuZdh79SYsQHEC2K6CZFwpf0=' 'sha256-qRfndb+zoplTm7KwYlsaz5Mxce7LYobWmo4xLxrSirQ=' 'sha256-x/KpyvRE74KNE9W4tWeN2b4bVJISsnrfxW6b3favTPQ=' 'sha256-BbASZpd4gfszYSKRm/dwWBQgOiaFAjq+SctSkyZTVHE='; style-src 'sha256-HF65Q9Lc+2b7KLI4G3/wL0yz7gjaio4hnMhmHnZ0ATU='; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-LJF1UZj8IW9N1oxGtngZ9mbaUzQTzvcsg0wGCLLSkRk=' 'sha256-BqUy/mzwn6RfXyerzB2OTw+2+ZkjQ/x6tyADmOKQejY=' 'sha256-Z/lSJKsERaA9f+QeZZLTfG8xYj2hgA47cMfd63/9ZPQ=' 'sha256-jImXUiybviBxhKPJydvoeyTjzWwj+I78Hu1tYN/2qXA=' 'sha256-CGguLXYdujCKeSU5k3uKxPFiyOh33/kOD5gos+2MeLQ=' 'sha256-3X8ZjQHhkdNew2ef/lw5XG/zgEqGm1qbgiOOnkPsprU=' 'sha256-c8NHi5l/4DWr9LYbx3GXuZdh79SYsQHEC2K6CZFwpf0=' 'sha256-FCBkbsVByGRXT1C7No6Tt0D6biIr6y/6xdNotDtKtJI=' 'sha256-dxo/B/dopGQ/yeqOuDMqPQ7/MS+Md4Onh40ZGFrNuVI=' 'sha256-ra2VZZDspbeFdxwDzRw3yqx9frh5/osUtvbbx9Fuits='; style-src 'sha256-HF65Q9Lc+2b7KLI4G3/wL0yz7gjaio4hnMhmHnZ0ATU='; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.1 Preview</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.2 Preview</title>
   <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.56;color:#1d2933;background:#f4f7f9;color-scheme:light}
 *{box-sizing:border-box}body{margin:0}a{color:#12618f;text-decoration:none}a:hover{text-decoration:underline}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #2674a6;outline-offset:2px}
@@ -94,7 +94,7 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.1 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.2 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -214,7 +214,7 @@
     </div>
   </dialog>
 <script>
-/* AI Memory Lifeboat parser (audit schema 0.4.0, R12 output guard) — pure, offline, dependency-free.
+/* AI Memory Lifeboat parser (audit schema v1, R13 truncation visibility) — pure, offline, dependency-free.
  * Copyright (c) 2026 MAX67-gif. MIT.
  * Never equate an export with a complete account backup.
  */
@@ -225,7 +225,7 @@
 })(typeof globalThis === 'object' ? globalThis : null, function () {
   'use strict';
   const SCHEMA = 'aml.audit.v1';
-  const VERSION = '0.4.0';
+  const VERSION = '0.10.2';
   const MAX_CONVERSATIONS = 30000;
   const MAX_NODES = 350000;
   const MAX_TEXT = 2_000_000;
@@ -257,7 +257,23 @@
     }
     if (!parts.length && typeof content.text === 'string') result.push(content.text);
     if (!result.length && content.content_type && content.content_type !== 'text') nonText++;
-    return {text: textLimit(result.join('\n')), nonText};
+    // Build only the bounded prefix plus one look-ahead code unit. Source text
+    // already exists in the user's input; do not allocate another unbounded join.
+    const sourceTextCodeUnits = result.reduce((n, s) => n + s.length, 0) + Math.max(0, result.length - 1);
+    let prefix = '';
+    for (let i = 0; i < result.length && prefix.length < MAX_TEXT + 1; i++) {
+      if (i) prefix += '\n';
+      prefix += result[i].slice(0, Math.max(0, MAX_TEXT + 1 - prefix.length));
+    }
+    let end = Math.min(MAX_TEXT, prefix.length);
+    // Do not manufacture an unpaired surrogate by cutting a valid emoji in half.
+    if (sourceTextCodeUnits > end && end > 0 &&
+        prefix.charCodeAt(end - 1) >= 0xD800 && prefix.charCodeAt(end - 1) <= 0xDBFF &&
+        prefix.charCodeAt(end) >= 0xDC00 && prefix.charCodeAt(end) <= 0xDFFF) end--;
+    const text = prefix.slice(0, end);
+    return {text, nonText, textTruncated: sourceTextCodeUnits > text.length,
+      sourceTextCodeUnits, retainedTextCodeUnits: text.length,
+      omittedTextCodeUnits: sourceTextCodeUnits - text.length};
   }
   function countReferences(message) {
     // Count possible attachment references ONLY. Do not infer uploaded file presence.
@@ -280,7 +296,7 @@
     const conversations = [];
     let totalNodes = 0, totalMessageNodes = 0, branchExcluded = 0;
     let nonTextParts = 0, attachmentReferences = 0, missingPaths = 0, invalidRecords = 0;
-    let missingParent = 0;
+    let missingParent = 0, truncatedVisibleMessages = 0, truncatedConversations = 0, omittedTextCodeUnits = 0;
     const seenConversationIds = new Set();
     for (let i = 0; i < raw.length; i++) {
       const row = raw[i];
@@ -341,10 +357,17 @@
           const payload = normalizeText(msg);
           if (role === 'user' || role === 'assistant') {
             active.push({role, text: payload.text, nonText: payload.nonText,
+              textTruncated: payload.textTruncated, sourceTextCodeUnits: payload.sourceTextCodeUnits,
+              retainedTextCodeUnits: payload.retainedTextCodeUnits, omittedTextCodeUnits: payload.omittedTextCodeUnits,
               created: nonNegNumber(msg.create_time)});
           }
         }
       } else missingPaths++;
+      const shortened = active.filter(m => m.textTruncated);
+      const omitted = shortened.reduce((n, m) => n + m.omittedTextCodeUnits, 0);
+      truncatedVisibleMessages += shortened.length;
+      if (shortened.length) truncatedConversations++;
+      omittedTextCodeUnits += omitted;
       const activeNodes = pathValid ? path.filter(n => object(n.message)).length : 0;
       const excluded = Math.max(0, messageCount - activeNodes);
       branchExcluded += excluded;
@@ -354,7 +377,8 @@
       conversations.push({id, identityStatus:validSourceId?'STABLE_ID_PROVIDED':'SYNTHETIC_INDEX_ONLY', title, created:createTime, updated:updateTime,
         messageNodes:messageCount, visibleMessages:active.length, excludedNodes:excluded,
         pathStatus:pathValid?'CURRENT_PATH_PRESENT':'CURRENT_PATH_UNAVAILABLE',
-        referenceCount:refs, nonTextCount:opaque, messages:active});
+        referenceCount:refs, nonTextCount:opaque, messages:active,
+        truncatedVisibleMessages:shortened.length, omittedTextCodeUnits:omitted});
     }
     const warnings = [];
     if (invalidRecords) warnings.push('INVALID_RECORDS_SKIPPED');
@@ -363,11 +387,16 @@
     if (branchExcluded) warnings.push('OFF_PATH_NODES_NOT_IN_READING_VIEW');
     if (attachmentReferences) warnings.push('ATTACHMENT_REFERENCES_NOT_PROOF_OF_SAVED_FILES');
     if (nonTextParts) warnings.push('NON_TEXT_PARTS_NOT_RENDERED');
+    if (truncatedVisibleMessages) warnings.push('VISIBLE_MESSAGE_TEXT_TRUNCATED');
     const audit = {
       schema: SCHEMA, tool_version: VERSION, source_type:'CHATGPT_CONVERSATIONS_JSON',
       account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
       extraction_scope:'CONVERSATIONS_MAPPING_CURRENT_PATH_ONLY',
       input_records:raw.length, parsed_records:conversations.length, invalid_records:invalidRecords,
+      text_limit_code_units:MAX_TEXT, text_length_unit:'UTF16_CODE_UNITS',
+      text_truncation_scope:'VISIBLE_USER_ASSISTANT_CURRENT_PATH_ONLY',
+      truncated_visible_messages:truncatedVisibleMessages, truncated_conversations:truncatedConversations,
+      omitted_text_code_units:omittedTextCodeUnits,
       total_message_nodes:totalMessageNodes, active_visible_messages:conversations.reduce((n,c)=>n+c.visibleMessages,0),
       off_path_message_nodes:branchExcluded, missing_current_paths:missingPaths,
       attachment_reference_observations:attachmentReferences, non_text_parts_not_rendered:nonTextParts,
@@ -472,7 +501,9 @@
     if(size>MAX_HTML_EXPORT_BYTES)throw Error('HTML_EXPORT_TOO_LARGE');
     const blocks=[];
     for(const m of c.messages){
-      const block=`<section><h2>${escapeHtml(m.role)}</h2><pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`;
+      const notice=m.textTruncated===true
+        ? '<p data-text-truncated="true"><strong>Text shortened / 文字已截短。</strong> Only the retained prefix is included. Search and this HTML omit the remaining text. Keep and inspect the original ZIP/JSON.</p>' : '';
+      const block=`<section><h2>${escapeHtml(m.role)}</h2>${notice}<pre>${escapeHtml(m.text || (m.nonText ? '[Non-text content not rendered]' : '[Empty text]'))}</pre></section>`;
       // Count the actual escaped UTF-8 output, not just source string length.
       // The joining newline also counts toward the limit.
       size+=encoder.encode(block).length+(blocks.length?1:0);
@@ -708,7 +739,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.4.0 — bounded, title-free snapshot comparison summary.
+/* AI Memory Lifeboat v0.10.2 — bounded, title-free snapshot comparison summary.
  * Difference of visible exported current paths only. NOT account deletion detection.
  * MIT (c) 2026 MAX67-gif.
  */
@@ -719,8 +750,9 @@
 })(typeof globalThis==='object'?globalThis:null,function(){'use strict';
   const SCHEMA='aml.snapshot-diff.v1';
   const STATUSES=Object.freeze(['ONLY_IN_NEW_EXPORT','NOT_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED',
-    'METADATA_ONLY_CHANGED','NO_DETECTED_CURRENT_VIEW_CHANGE','INCONCLUSIVE_PATH','INCONCLUSIVE_ID']);
+    'METADATA_ONLY_CHANGED','NO_DETECTED_CURRENT_VIEW_CHANGE','INCONCLUSIVE_PATH','INCONCLUSIVE_ID','INCONCLUSIVE_TEXT']);
   const validId=c=>c&&c.identityStatus==='STABLE_ID_PROVIDED'&&typeof c.id==='string'&&c.id.trim().length>0;
+  const hasTruncatedText=c=>c?.truncatedVisibleMessages>0||c?.messages?.some(m=>m.textTruncated===true);
   function indexRows(rows){
     const map=new Map(),unknown=[];
     for(const row of rows){
@@ -754,6 +786,9 @@
       if(olderRow.pathStatus!=='CURRENT_PATH_PRESENT'||newerRow.pathStatus!=='CURRENT_PATH_PRESENT'){
         add('INCONCLUSIVE_PATH',newerRow);continue;
       }
+      if(hasTruncatedText(olderRow)||hasTruncatedText(newerRow)){
+        add('INCONCLUSIVE_TEXT',newerRow);continue;
+      }
       const viewChanged=!sameMessages(olderRow.messages,newerRow.messages)||
         olderRow.messageNodes!==newerRow.messageNodes||
         olderRow.excludedNodes!==newerRow.excludedNodes||
@@ -763,18 +798,20 @@
       const metadataChanged=olderRow.title!==newerRow.title||olderRow.created!==newerRow.created||olderRow.updated!==newerRow.updated;
       add(metadataChanged?'METADATA_ONLY_CHANGED':'NO_DETECTED_CURRENT_VIEW_CHANGE',newerRow);
     }
-    const summary={schema:SCHEMA,tool_version:'0.4.0',
+    const truncated=older.conversations.some(hasTruncatedText)||newer.conversations.some(hasTruncatedText);
+    const summary={schema:SCHEMA,tool_version:'0.10.2',
       inputs:'USER_SELECTED_ORDER_NOT_VERIFIED',
       identity_scope:'ONLY_RECORDS_WITH_UNIQUE_EXPLICIT_CONVERSATION_ID',
       comparison_scope:'EXPORTED_CURRENT_PATH_TEXT_AND_COUNTS_PLUS_SELECTED_METADATA',
       account_completeness:'NOT_VERIFIABLE_FROM_EITHER_EXPORT',
-      counts,total_display_items:items.length,
+      counts,total_display_items:items.length,text_truncation_detected_in_inputs:truncated,
       input_summary:{older:{records:older.audit.input_records,invalid_records:older.audit.invalid_records,missing_paths:older.audit.missing_current_paths},
         newer:{records:newer.audit.input_records,invalid_records:newer.audit.invalid_records,missing_paths:newer.audit.missing_current_paths}},
       warnings:['NOT_IN_NEW_EXPORT_IS_NOT_PROOF_OF_ACCOUNT_DELETION',
         'EQUAL_CURRENT_VIEWS_DO_NOT_PROVE_OFF_PATH_OR_ATTACHMENT_EQUALITY',
         'DIFFERENT_ACCOUNTS_CANNOT_BE_DETECTED_RELIABLY',
-        'EXPORT_CHRONOLOGY_IS_USER_ASSUMED_NOT_AUTHENTICATED'],
+        'EXPORT_CHRONOLOGY_IS_USER_ASSUMED_NOT_AUTHENTICATED',
+        ...(truncated?['TRUNCATED_TEXT_NOT_FULLY_COMPARABLE']:[])],
       contains_chat_text:false,contains_conversation_ids:false,contains_titles:false};
     return {summary,items};
   }
@@ -783,7 +820,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.4.0 — evidence-limited, content-free health guidance.
+/* AI Memory Lifeboat v0.10.2 — evidence-limited, content-free health guidance.
  * MIT (c) 2026 MAX67-gif. Never certify full-account completeness.
  */
 (function(root, factory){
@@ -792,7 +829,7 @@
   if (root) root.AMLHealth = api;
 })(typeof globalThis === 'object' ? globalThis : null, function(){ 'use strict';
   const SCHEMA='aml.health.v1';
-  const VERSION='0.4.0';
+  const VERSION='0.10.2';
   const levels=Object.freeze(['ATTENTION','REVIEW','LIMITED_CHECK_OK']);
   const nonneg=x=>Number.isSafeInteger(x)&&x>=0?x:0;
   // Every heading and action comes from code. Never reflect source/filename/ID/title in a shareable report.
@@ -804,6 +841,7 @@
     ZIP_PATH_AMBIGUOUS:['附件路徑不唯一或不安全','相同名稱可能對應多個項目，或參照路徑不安全；沒有把它們算成找到的檔案。'],
     BYTE_FAILURE:['部分 ZIP 項目位元組驗證未通過','檢查到 CRC 或檔案結構不一致；不要直接把該項目視為可用，建議向來源重新匯出。'],
     OFF_PATH:['其他對話分支未納入閱讀內容','閱讀畫面只顯示目前分支，其他訊息節點仍可能存在於原始匯出資料中。'],
+    TEXT_TRUNCATED:['部分超長訊息已截短','閱讀、搜尋與 HTML 匯出只含保留的文字；省略的尾段仍需查看原始 ZIP／JSON，不要只保存閱讀檔。'],
     NON_TEXT:['部分非文字內容無法呈現','圖片、音訊或其他資料未完整轉成文字。請保留原始官方匯出檔。'],
     REFERENCE_LIMIT:['附件參照不等於附件已備份','即使找得到路徑或 CRC 正確，也無法證明上傳的原始附件、完整內容或帳戶資料已保存。'],
     BYTE_LIMIT:['位元組驗證只有部分覆蓋','僅檢查明確且唯一的 ZIP 路徑中符合容量與格式限制的項目；跳過項目保持未知。'],
@@ -829,6 +867,7 @@
     if (z && nonneg(z.missing_explicit_paths))add('ZIP_PATH_MISSING','ATTENTION',nonneg(z.missing_explicit_paths));
     if (z && (nonneg(z.ambiguous_paths)+nonneg(z.unsafe_path_references)))add('ZIP_PATH_AMBIGUOUS','REVIEW',nonneg(z.ambiguous_paths)+nonneg(z.unsafe_path_references));
     if (b && nonneg(b.failed_integrity))add('BYTE_FAILURE','ATTENTION',nonneg(b.failed_integrity));
+    if (nonneg(a.truncated_visible_messages))add('TEXT_TRUNCATED','REVIEW',nonneg(a.truncated_visible_messages));
     if (nonneg(a.off_path_message_nodes))add('OFF_PATH','REVIEW',nonneg(a.off_path_message_nodes));
     if (nonneg(a.non_text_parts_not_rendered))add('NON_TEXT','REVIEW',nonneg(a.non_text_parts_not_rendered));
     if (nonneg(a.attachment_reference_observations))add('REFERENCE_LIMIT','REVIEW',nonneg(a.attachment_reference_observations));
@@ -837,7 +876,7 @@
     if (!z)add('JSON_LIMIT','INFORMATION');
     if (d) {
       const c=d.counts||{};
-      const total=['NOT_IN_NEW_EXPORT','ONLY_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED','METADATA_ONLY_CHANGED','INCONCLUSIVE_PATH','INCONCLUSIVE_ID'].reduce((sum,k)=>sum+nonneg(c[k]),0);
+      const total=['NOT_IN_NEW_EXPORT','ONLY_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED','METADATA_ONLY_CHANGED','INCONCLUSIVE_PATH','INCONCLUSIVE_ID','INCONCLUSIVE_TEXT'].reduce((sum,k)=>sum+nonneg(c[k]),0);
       if(total)add('DIFF_LIMIT','REVIEW',total);
     }
     const serious=checks.some(c=>c.priority==='ATTENTION');
@@ -952,7 +991,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.6.0 — offline, content-free, human-readable first-result report. MIT.
+/* AI Memory Lifeboat v0.10.2 — offline, content-free, human-readable first-result report. MIT.
  * Never reflect exported titles, paths, text, IDs, filenames, unknown issue details or metadata.
  */
 (function(root,factory){
@@ -960,7 +999,7 @@
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
  if(root)root.AMLFirstResult=api;
 })(typeof globalThis==='object'?globalThis:null,function(){'use strict';
- const VERSION='0.6.0';
+ const VERSION='0.10.2';
  const SOURCE=Object.freeze({
    SYNTHETIC_DEMO:'合成示範（不代表你的帳戶已被檢查）',
    PERSONAL_EXPORT:'使用者自行選擇的匯出檔（不是帳戶完整性證明）'
@@ -979,6 +1018,7 @@
    ZIP_PATH_AMBIGUOUS:['附件路徑不明確','重複、不安全或無法唯一對應的路徑需要人工核對。'],
    BYTE_FAILURE:['ZIP 位元組檢查失敗','已檢查的部分項目 CRC 或大小不一致，建議重新取得官方匯出。'],
    OFF_PATH:['部分其他對話分支未呈現','主要閱讀頁只顯示目前分支，原始匯出仍應保留。'],
+   TEXT_TRUNCATED:['部分超長訊息已截短','閱讀、搜尋及 HTML 匯出只含保留部分；省略的尾段請查原始 ZIP／JSON。'],
    NON_TEXT:['部分非文字內容無法閱讀','圖片、音訊等不能保證轉為完整可閱讀內容。'],
    REFERENCE_LIMIT:['附件參照不等於附件已保存','有參照或路徑不代表原始附件已完整匯出。'],
    BYTE_LIMIT:['ZIP 位元組檢查範圍有限','大小、壓縮格式或安全限制以外的項目未驗證。'],
@@ -1026,7 +1066,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.1 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.2 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -1052,7 +1092,8 @@
     METADATA_ONLY_CHANGED:'僅已檢查的標題／時間欄位不同',
     NO_DETECTED_CURRENT_VIEW_CHANGE:'目前檢查範圍沒有發現差異',
     INCONCLUSIVE_PATH:'目前分支不可比較',
-    INCONCLUSIVE_ID:'缺少可靠或唯一的對話 ID'
+    INCONCLUSIVE_ID:'缺少可靠或唯一的對話 ID',
+    INCONCLUSIVE_TEXT:'訊息已截短，無法完整比較省略的文字'
   };
   const explanations={
     INVALID_RECORDS_SKIPPED:'部分紀錄不是支援的對話資料結構，已排除。',
@@ -1060,6 +1101,7 @@
     BROKEN_PARENT_CHAIN:'至少一段對話的父節點鏈不完整。',
     OFF_PATH_NODES_NOT_IN_READING_VIEW:'分支以外的訊息節點不會顯示於主要閱讀頁面；請保留原始匯出檔。',
     ATTACHMENT_REFERENCES_NOT_PROOF_OF_SAVED_FILES:'發現附件參照，但不能因此證明檔案實體存在或可以還原。',
+    VISIBLE_MESSAGE_TEXT_TRUNCATED:'部分超長訊息已截短；閱讀、搜尋與匯出僅包含保留部分，請保留原始 ZIP／JSON。',
     NON_TEXT_PARTS_NOT_RENDERED:'部分圖片、語音或其他非文字內容沒有轉成可閱讀文字。',
     NUMBERED_JSON_SHARDS_RECOGNIZED_NOT_FULL_ACCOUNT_PROOF:'已辨識連號的 JSON 分片；這不能證明帳戶完整。',
     SINGLE_NUMBERED_JSON_MAY_OMIT_OTHER_PARTS:'只載入一個編號 JSON；可能尚有其他分片未讀取。'
@@ -1190,9 +1232,15 @@
       const section=document.createElement('section');section.className='message';
       const role=document.createElement('strong');role.textContent=msg.role;
       const text=document.createElement('pre');text.textContent=msg.text||(msg.nonText?'[非文字內容尚未顯示]':'[空白訊息]');
-      section.append(role,text);e.detail.append(section);
+      section.append(role);
+      if(msg.textTruncated===true){
+        const note=document.createElement('p');note.className='notice';
+        note.textContent='這則訊息已截短。閱讀、搜尋及 HTML 匯出只含保留部分；省略的尾段請查原始 ZIP／JSON。';
+        section.append(note);
+      }
+      section.append(text);e.detail.append(section);
     }
-    if(c.messages.length>700){const p=document.createElement('p');p.className='note';p.textContent='畫面只顯示前 700 則訊息；下載目前分支 HTML 可閱讀其餘文字。';e.detail.append(p);}
+    if(c.messages.length>700){const p=document.createElement('p');p.className='note';p.textContent='畫面只顯示前 700 則訊息；下載目前分支 HTML 可閱讀其餘保留文字；超長訊息被截短的尾段仍不包含在內。';e.detail.append(p);}
     e.html.disabled=false;
   }
   function selectConversation(i){revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);}
@@ -1355,23 +1403,23 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.1.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.2.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.1.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.2.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.1.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.2.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.1.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.2.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.1.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.2.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});
@@ -1380,7 +1428,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.1 — bilingual first-task gateway, local UI only. MIT.
+/* AI Memory Lifeboat v0.10.2 — bilingual first-task gateway, local UI only. MIT.
  * Does not claim complete English coverage of advanced results.
  * All sample results are derived from the existing synthetic demo parser.
  */

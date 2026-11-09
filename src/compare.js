@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.4.0 — bounded, title-free snapshot comparison summary.
+/* AI Memory Lifeboat v0.10.2 — bounded, title-free snapshot comparison summary.
  * Difference of visible exported current paths only. NOT account deletion detection.
  * MIT (c) 2026 MAX67-gif.
  */
@@ -9,8 +9,9 @@
 })(typeof globalThis==='object'?globalThis:null,function(){'use strict';
   const SCHEMA='aml.snapshot-diff.v1';
   const STATUSES=Object.freeze(['ONLY_IN_NEW_EXPORT','NOT_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED',
-    'METADATA_ONLY_CHANGED','NO_DETECTED_CURRENT_VIEW_CHANGE','INCONCLUSIVE_PATH','INCONCLUSIVE_ID']);
+    'METADATA_ONLY_CHANGED','NO_DETECTED_CURRENT_VIEW_CHANGE','INCONCLUSIVE_PATH','INCONCLUSIVE_ID','INCONCLUSIVE_TEXT']);
   const validId=c=>c&&c.identityStatus==='STABLE_ID_PROVIDED'&&typeof c.id==='string'&&c.id.trim().length>0;
+  const hasTruncatedText=c=>c?.truncatedVisibleMessages>0||c?.messages?.some(m=>m.textTruncated===true);
   function indexRows(rows){
     const map=new Map(),unknown=[];
     for(const row of rows){
@@ -44,6 +45,9 @@
       if(olderRow.pathStatus!=='CURRENT_PATH_PRESENT'||newerRow.pathStatus!=='CURRENT_PATH_PRESENT'){
         add('INCONCLUSIVE_PATH',newerRow);continue;
       }
+      if(hasTruncatedText(olderRow)||hasTruncatedText(newerRow)){
+        add('INCONCLUSIVE_TEXT',newerRow);continue;
+      }
       const viewChanged=!sameMessages(olderRow.messages,newerRow.messages)||
         olderRow.messageNodes!==newerRow.messageNodes||
         olderRow.excludedNodes!==newerRow.excludedNodes||
@@ -53,18 +57,20 @@
       const metadataChanged=olderRow.title!==newerRow.title||olderRow.created!==newerRow.created||olderRow.updated!==newerRow.updated;
       add(metadataChanged?'METADATA_ONLY_CHANGED':'NO_DETECTED_CURRENT_VIEW_CHANGE',newerRow);
     }
-    const summary={schema:SCHEMA,tool_version:'0.4.0',
+    const truncated=older.conversations.some(hasTruncatedText)||newer.conversations.some(hasTruncatedText);
+    const summary={schema:SCHEMA,tool_version:'0.10.2',
       inputs:'USER_SELECTED_ORDER_NOT_VERIFIED',
       identity_scope:'ONLY_RECORDS_WITH_UNIQUE_EXPLICIT_CONVERSATION_ID',
       comparison_scope:'EXPORTED_CURRENT_PATH_TEXT_AND_COUNTS_PLUS_SELECTED_METADATA',
       account_completeness:'NOT_VERIFIABLE_FROM_EITHER_EXPORT',
-      counts,total_display_items:items.length,
+      counts,total_display_items:items.length,text_truncation_detected_in_inputs:truncated,
       input_summary:{older:{records:older.audit.input_records,invalid_records:older.audit.invalid_records,missing_paths:older.audit.missing_current_paths},
         newer:{records:newer.audit.input_records,invalid_records:newer.audit.invalid_records,missing_paths:newer.audit.missing_current_paths}},
       warnings:['NOT_IN_NEW_EXPORT_IS_NOT_PROOF_OF_ACCOUNT_DELETION',
         'EQUAL_CURRENT_VIEWS_DO_NOT_PROVE_OFF_PATH_OR_ATTACHMENT_EQUALITY',
         'DIFFERENT_ACCOUNTS_CANNOT_BE_DETECTED_RELIABLY',
-        'EXPORT_CHRONOLOGY_IS_USER_ASSUMED_NOT_AUTHENTICATED'],
+        'EXPORT_CHRONOLOGY_IS_USER_ASSUMED_NOT_AUTHENTICATED',
+        ...(truncated?['TRUNCATED_TEXT_NOT_FULLY_COMPARABLE']:[])],
       contains_chat_text:false,contains_conversation_ids:false,contains_titles:false};
     return {summary,items};
   }

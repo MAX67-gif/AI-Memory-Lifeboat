@@ -2,8 +2,8 @@
 const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
 const root=path.resolve(__dirname,'..');const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 test('file version and copyright policy synchronized',()=>{
-  for(const p of ['src/app.js','src/gateway.js','index.html','package.json','README.md','README.en.md'])assert.match(read(p),/0\.10\.1/);
-  assert.match(read('src/first_result.js'),/0\.6\.0/);
+  for(const p of ['src/app.js','src/gateway.js','index.html','package.json','README.md','README.en.md'])assert.match(read(p),/0\.10\.2/);
+  for(const p of ['src/core.js','src/health.js','src/compare.js','src/first_result.js'])assert.match(read(p),/0\.10\.2/);
   assert.match(read('src/pilot_r5.js'),/0\.5\.0/); // preserve prior v2 receipt version
   // v1 schema and implementation must remain version 0.4.0 for backwards-compatible receipts.
   assert.match(read('src/pilot.js'),/0\.4\.0/);

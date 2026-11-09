@@ -1,5 +1,11 @@
 # AI Memory Lifeboat｜AI 對話救生艇
 
+## 最新修正候選｜R13 v0.10.2：超長文字不再靜默截短
+
+保留每則訊息 **2,000,000 UTF-16 code units** 的既有限制（不是 bytes，也不是字數），明確標出截短訊息、略去數量與讀取範圍。閱讀畫面、健康 JSON/TXT、下載的單篇 HTML 均會提醒；搜尋只涵蓋保留文字。有截短內容的新舊快照標為「無法完整比較」，不把相同前綴當成來源文字相同。
+
+[本版 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.2) 僅在 CI／附件驗證成功後成立；之前維持 [v0.10.1](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.1)。詳見 [截斷可見性與相容契約](docs/R13_TEXT_TRUNCATION.md)。不擴大 ZIP／JSON 或 16 MiB HTML 上限，不新增上傳或帳戶功能。
+
 ## R12 安全修正｜v0.10.1 離線版（正式發布須查 GitHub Release）
 
 **大型對話匯出防呆：**單篇含原文 HTML 超過 **16 MiB 的實際 UTF-8 輸出**時，工具明確取消下載，不會暗中只匯出一部分；既有分享前確認與無原文報告不變。這不是帳戶完整備份認證，也不代表原始訊息在其他讀取階段不會被截長。
