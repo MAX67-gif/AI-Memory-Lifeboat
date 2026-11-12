@@ -1,0 +1,41 @@
+name: R13 fixed-source recovery audit
+on:
+  push:
+    branches: ['audit/aml-r13-recovery-20261113']
+    paths: ['.github/workflows/recovery-r13.yml']
+permissions:
+  contents: read
+jobs:
+  recover:
+    if: github.repository == 'MAX67-gif/AI-Memory-Lifeboat'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: '57451820770f2636dd1a33db913d6c2c7e7b19a1'
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact released source and preserve test output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '57451820770f2636dd1a33db913d6c2c7e7b19a1'
+          mkdir -p "$RUNNER_TEMP/aml-r13-recovery"
+          npm run check 2>&1 | tee "$RUNNER_TEMP/aml-r13-recovery/node-check.log"
+          git archive --format=zip HEAD > "$RUNNER_TEMP/aml-r13-recovery/source-v0.10.2.zip"
+          git ls-tree -r HEAD > "$RUNNER_TEMP/aml-r13-recovery/source-tree.txt"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/aml-r13-recovery/source-ref.txt"
+          cp dist/AI_Memory_Lifeboat_Offline.html "$RUNNER_TEMP/aml-r13-recovery/AI_Memory_Lifeboat_Offline.html"
+          cd "$RUNNER_TEMP/aml-r13-recovery"
+          unzip -tq source-v0.10.2.zip
+          sha256sum source-v0.10.2.zip AI_Memory_Lifeboat_Offline.html node-check.log source-tree.txt source-ref.txt > SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aml-r13-exact-source-recovery
+          path: ${{ runner.temp }}/aml-r13-recovery/
+          if-no-files-found: error
+          retention-days: 30
