@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat parser (audit schema v1, R13 truncation visibility) — pure, offline, dependency-free.
+/* AI Memory Lifeboat parser (audit schema v1, R14 title and retained-text coverage) — pure, offline, dependency-free.
  * Copyright (c) 2026 MAX67-gif. MIT.
  * Never equate an export with a complete account backup.
  */
@@ -9,15 +9,27 @@
 })(typeof globalThis === 'object' ? globalThis : null, function () {
   'use strict';
   const SCHEMA = 'aml.audit.v1';
-  const VERSION = '0.10.2';
+  const VERSION = '0.10.3';
   const MAX_CONVERSATIONS = 30000;
   const MAX_NODES = 350000;
   const MAX_TEXT = 2_000_000;
+  const MAX_TITLE = 500;
   const MAX_ISSUES = 150;
   const object = x => x !== null && typeof x === 'object' && !Array.isArray(x);
   const safeString = (x, fallback = '') => typeof x === 'string' ? x : fallback;
   const nonNegNumber = x => Number.isFinite(x) && x >= 0 ? x : null;
-  const textLimit = s => s.length > MAX_TEXT ? s.slice(0, MAX_TEXT) : s;
+  function normalizeTitle(value) {
+    const source = safeString(value, 'Untitled conversation');
+    let end = Math.min(MAX_TITLE, source.length);
+    // Keep the original cap, but never manufacture an unpaired surrogate at it.
+    if (end > 0 && source.length > end &&
+        source.charCodeAt(end - 1) >= 0xD800 && source.charCodeAt(end - 1) <= 0xDBFF &&
+        source.charCodeAt(end) >= 0xDC00 && source.charCodeAt(end) <= 0xDFFF) end--;
+    const title = source.slice(0, end);
+    return {title, titleTruncated: source.length > title.length,
+      sourceTitleCodeUnits: source.length, retainedTitleCodeUnits: title.length,
+      omittedTitleCodeUnits: source.length - title.length};
+  }
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
@@ -81,6 +93,7 @@
     let totalNodes = 0, totalMessageNodes = 0, branchExcluded = 0;
     let nonTextParts = 0, attachmentReferences = 0, missingPaths = 0, invalidRecords = 0;
     let missingParent = 0, truncatedVisibleMessages = 0, truncatedConversations = 0, omittedTextCodeUnits = 0;
+    let truncatedTitles = 0, omittedTitleCodeUnits = 0;
     const seenConversationIds = new Set();
     for (let i = 0; i < raw.length; i++) {
       const row = raw[i];
@@ -155,10 +168,12 @@
       const activeNodes = pathValid ? path.filter(n => object(n.message)).length : 0;
       const excluded = Math.max(0, messageCount - activeNodes);
       branchExcluded += excluded;
-      const title = textLimit(safeString(row.title, 'Untitled conversation')).slice(0, 500);
+      const titleInfo = normalizeTitle(row.title);
+      if (titleInfo.titleTruncated) truncatedTitles++;
+      omittedTitleCodeUnits += titleInfo.omittedTitleCodeUnits;
       const createTime = nonNegNumber(row.create_time);
       const updateTime = nonNegNumber(row.update_time);
-      conversations.push({id, identityStatus:validSourceId?'STABLE_ID_PROVIDED':'SYNTHETIC_INDEX_ONLY', title, created:createTime, updated:updateTime,
+      conversations.push({id, identityStatus:validSourceId?'STABLE_ID_PROVIDED':'SYNTHETIC_INDEX_ONLY', ...titleInfo, created:createTime, updated:updateTime,
         messageNodes:messageCount, visibleMessages:active.length, excludedNodes:excluded,
         pathStatus:pathValid?'CURRENT_PATH_PRESENT':'CURRENT_PATH_UNAVAILABLE',
         referenceCount:refs, nonTextCount:opaque, messages:active,
@@ -172,6 +187,7 @@
     if (attachmentReferences) warnings.push('ATTACHMENT_REFERENCES_NOT_PROOF_OF_SAVED_FILES');
     if (nonTextParts) warnings.push('NON_TEXT_PARTS_NOT_RENDERED');
     if (truncatedVisibleMessages) warnings.push('VISIBLE_MESSAGE_TEXT_TRUNCATED');
+    if (truncatedTitles) warnings.push('CONVERSATION_TITLE_TRUNCATED');
     const audit = {
       schema: SCHEMA, tool_version: VERSION, source_type:'CHATGPT_CONVERSATIONS_JSON',
       account_completeness:'NOT_VERIFIABLE_FROM_EXPORT',
@@ -181,6 +197,9 @@
       text_truncation_scope:'VISIBLE_USER_ASSISTANT_CURRENT_PATH_ONLY',
       truncated_visible_messages:truncatedVisibleMessages, truncated_conversations:truncatedConversations,
       omitted_text_code_units:omittedTextCodeUnits,
+      title_limit_code_units:MAX_TITLE, title_length_unit:'UTF16_CODE_UNITS',
+      title_truncation_scope:'PARSED_CONVERSATION_TITLES_ONLY',
+      truncated_titles:truncatedTitles, omitted_title_code_units:omittedTitleCodeUnits,
       total_message_nodes:totalMessageNodes, active_visible_messages:conversations.reduce((n,c)=>n+c.visibleMessages,0),
       off_path_message_nodes:branchExcluded, missing_current_paths:missingPaths,
       attachment_reference_observations:attachmentReferences, non_text_parts_not_rendered:nonTextParts,
@@ -274,9 +293,11 @@
   const MAX_HTML_EXPORT_BYTES = 16 * 1024 * 1024;
   function exportConversationHtml(c) {
     if (!c || !Array.isArray(c.messages)) throw new TypeError('INVALID_CONVERSATION');
+    const titleNotice=c.titleTruncated===true
+      ? '<p data-title-truncated="true"><strong>Title shortened / 標題已截短。</strong> Only the retained title prefix is displayed and searchable; inspect the original ZIP/JSON for the complete title.</p>' : '';
     const prefix='<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
       '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'">'+
-      `<title>${escapeHtml(c.title)}</title><style>body{font:16px/1.6 system-ui;max-width:800px;margin:36px auto;padding:0 20px;color:#222}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;background:#f5f5f5;padding:16px;border-radius:8px}section{border-top:1px solid #ddd}small{color:#555}</style></head><body><h1>${escapeHtml(c.title)}</h1>`+
+      `<title>${escapeHtml(c.title)}</title><style>body{font:16px/1.6 system-ui;max-width:800px;margin:36px auto;padding:0 20px;color:#222;overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;background:#f5f5f5;padding:16px;border-radius:8px}section{border-top:1px solid #ddd}small{color:#555}</style></head><body>${titleNotice}<h1>${escapeHtml(c.title)}</h1>`+
       `<p><small>AI Memory Lifeboat ${VERSION} · ${escapeHtml(c.pathStatus)} · ${escapeHtml(formatTime(c.updated))}</small></p>`+
       '<p><strong>Partial reading view:</strong> only the exported current path is shown. Off-path branches, non-text data and unexported account content are NOT certified as preserved.</p>';
     const suffix='</body></html>';

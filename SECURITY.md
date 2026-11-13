@@ -46,3 +46,7 @@ R12: protect against oversized content-bearing HTML generation (max 16 MiB actua
 ## R13｜超長文字範圍（2026-11-09）
 
 截短訊息會明確提示；搜尋與 HTML 只含保留文字，不把前綴相同當成來源完整相同。原始 ZIP/JSON、容量界線、內容匯出確認與本機處理原則不變。詳細加法欄位、未知比較狀態與測試邊界見 [R13_TEXT_TRUNCATION](docs/R13_TEXT_TRUNCATION.md)。
+
+## R14 候選｜標題與閱讀範圍
+
+保留既有上限，明確揭露標題截短與畫面700則範圍；未知標題尾段不等於沒有差異。真人試用延後，GitHub發布狀態另查實際PR／CI／Release。完整契約與限制見 [docs/R14_TITLE_AND_READING_COVERAGE.md](docs/R14_TITLE_AND_READING_COVERAGE.md)。

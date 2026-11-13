@@ -1,5 +1,15 @@
 # AI Memory Lifeboat
 
+## R14 v0.10.3 candidate — title coverage and reading-window disclosure
+
+**Not pushed or released yet. The verified release remains [v0.10.2](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.2).**
+
+Titles retain the existing 500 UTF-16 code-unit cap, now with explicit coverage counters, surrogate-pair-safe cutting and fixed warnings. Identical retained title prefixes with unknown tails return `INCONCLUSIVE_TITLE`; proven body or metadata differences keep their original result.
+
+The reading header shows rendered / retained message counts. Only the first 700 messages are expanded on screen; search and HTML still cover retained messages beyond this window, subject to the unchanged 16 MiB HTML limit. No higher caps, network APIs, or adoption claim. See [R14 contract](docs/R14_TITLE_AND_READING_COVERAGE.md).
+
+---
+
 ## R13 v0.10.2 candidate: explicit retained-text coverage
 
 A message longer than the existing **2,000,000 UTF-16 code-unit** limit is marked as shortened. Reading, health JSON/TXT and exported conversation HTML disclose omitted text; search only covers the retained prefix. Comparisons involving shortened messages are explicitly inconclusive, even when retained prefixes match. The boundary avoids splitting valid surrogate pairs; it is not a grapheme-count guarantee.
