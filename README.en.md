@@ -1,5 +1,14 @@
 # AI Memory Lifeboat
 
+## R15 v0.10.4 candidate — bounded navigation across every matched conversation
+
+Instead of silently showing only the first 200 list rows, the app now offers **Previous / Next page** navigation (200 rows maximum per page), with an explicit page count. Search still spans all retained current-path conversations. Search changes, source replacement, and Clear reset the page; this does not change parser or archive limits.
+
+The [v0.10.4 release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.4) must be independently verified on GitHub before being called published. Until then, use the [v0.10.3 release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.3). Advanced screens remain primarily Traditional Chinese, and human adoption remains unverified. [Paging contract](docs/R15_CONVERSATION_LIST_PAGING.md).
+
+---
+
+
 ## R14 v0.10.3 candidate — title coverage and reading-window disclosure
 
 **Not pushed or released yet. The verified release remains [v0.10.2](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.2).**

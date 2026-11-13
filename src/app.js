@@ -1,9 +1,9 @@
-/* AI Memory Lifeboat v0.10.3 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.4 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
     warnings:$('warningList'),warningCount:$('warningCount'),list:$('conversationList'),detail:$('conversationDetail'),
-    search:$('searchBox'),resultCount:$('resultCount'),audit:$('downloadAudit'),html:$('downloadHtml'),
+    search:$('searchBox'),resultCount:$('resultCount'),listPager:$('listPager'),listPageInfo:$('listPageInfo'),listPrev:$('listPrev'),listNext:$('listNext'),audit:$('downloadAudit'),html:$('downloadHtml'),
     olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
     compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
     archiveAssessment:$('archiveAssessment'),healthSummary:$('healthSummary'),healthCards:$('healthCards'),
@@ -15,7 +15,8 @@
   const core=window.AMLCore, zip=window.AMLZip;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
-  let demoActive=false, pendingSensitiveExport=null;
+  let demoActive=false, pendingSensitiveExport=null, listPage=0;
+  const LIST_PAGE_SIZE=200;
   const MAX_JSON=64*1024*1024;
   const MAX_RENDERED_MESSAGES=700;
   const comparisonLabels={
@@ -61,6 +62,7 @@
     for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment])
       element.textContent='';
     delete e.healthSummary.dataset.state;
+    e.listPager.hidden=true;e.listPageInfo.textContent='';e.listPrev.disabled=true;e.listNext.disabled=true;
     e.archiveAssessment.hidden=true;e.comparePanel.hidden=true;
   }
   function clearComparisonView(){
@@ -102,7 +104,7 @@
   }
   function reset(){
     revokeSensitiveExport();generation++;comparisonGeneration++;current=null;older=null;compared=null;selected=null;
-    currentFile=null;matchedAttachmentPaths=[];byteReport=null;healthReport=null;demoActive=false;
+    currentFile=null;matchedAttachmentPaths=[];byteReport=null;healthReport=null;demoActive=false;listPage=0;
     e.demoBanner.hidden=true;e.pilotPanel.hidden=true;
     for(const sel of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])sel.value='NOT_TESTED';
     e.pilotStatus.textContent='沒有背景傳送或追蹤；不需要登入 GitHub 才能使用本工具。';
@@ -191,11 +193,16 @@
   function selectConversation(i){revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);}
   function renderList(){
     const query=e.search.value;const matched=core.searchConversations(current.conversations,query);
-    e.resultCount.textContent=`符合 ${matched.length} 則（最多顯示 200 則）`;
+    const totalPages=Math.max(1,Math.ceil(matched.length/LIST_PAGE_SIZE));
+    listPage=Math.min(listPage,totalPages-1);
+    e.resultCount.textContent=`符合 ${matched.length} 則（每頁最多 ${LIST_PAGE_SIZE} 則）`;
+    e.listPageInfo.textContent=`第 ${listPage+1} / ${totalPages} 頁`;
+    e.listPager.hidden=totalPages===1;
+    e.listPrev.disabled=listPage<=0;e.listNext.disabled=listPage>=totalPages-1;
     e.list.replaceChildren();
     if(!matched.length){const p=document.createElement('p');p.className='placeholder';p.textContent='沒有符合條件的目前分支內容。';e.list.append(p);return;}
     const idToIndex=new Map(current.conversations.map((c,i)=>[c,i]));
-    for (const c of matched.slice(0,200)) {
+    for (const c of matched.slice(listPage*LIST_PAGE_SIZE,(listPage+1)*LIST_PAGE_SIZE)) {
       const i=idToIndex.get(c),button=document.createElement('button');button.type='button';
       button.className=i===selected?'selected':'';button.textContent=c.title;
       const sm=document.createElement('small');sm.textContent=`${c.visibleMessages} 則 · ${core.formatTime(c.updated)}`;
@@ -261,7 +268,7 @@
     // R5: never carry a demo/previous-export answer into a new source's optional feedback.
     for(const select of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])select.value='NOT_TESTED';
     const rev=++generation;comparisonGeneration++;
-    current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;
+    current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;listPage=0;
     currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;
     e.attachmentVerifyStatus.textContent='尚未進行位元組檢查。';e.results.hidden=true;
     e.html.disabled=true;e.clear.disabled=false;e.olderFile.disabled=true;e.olderFile.value='';
@@ -348,23 +355,25 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.3.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.4.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.3.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.4.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.3.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.4.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.3.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.4.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
-  e.search.addEventListener('input',()=>{if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.3.json','application/json;charset=utf-8');});
+  e.listPrev.addEventListener('click',()=>{if(!current||e.listPrev.disabled)return;listPage--;renderList();e.list.scrollTop=0;});
+  e.listNext.addEventListener('click',()=>{if(!current||e.listNext.disabled)return;listPage++;renderList();e.list.scrollTop=0;});
+  e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.4.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});

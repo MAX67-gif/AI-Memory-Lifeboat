@@ -1,8 +1,17 @@
 # AI Memory Lifeboat｜AI 對話救生艇
 
+## R15 v0.10.4 候選｜全部搜尋結果都能分頁閱讀
+
+舊版在多於 200 筆對話時，清單只顯示第一批，必須搜尋才能找到後面的內容。R15 在原有每頁 200 筆的限制下，新增「上一頁／下一頁」與目前頁數；所有已保留的對話都能從清單依序到達，搜尋仍涵蓋整份已解析資料。切換備份、清除或改變搜尋條件，會重設分頁，避免殘留舊畫面；不增加 ZIP／JSON、訊息或 HTML 的限制。
+
+[v0.10.4 正式 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.4) **僅以 GitHub CI、合併與下載附件實際存在為準**。尚未發布時，請使用已驗證的 [v0.10.3](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.3)。詳細：[R15 清單分頁契約](docs/R15_CONVERSATION_LIST_PAGING.md)。真人試用仍依使用者決定延後，CI 不代表帳戶完整備份。
+
+---
+
+
 ## R14 v0.10.3 候選｜長標題告知與閱讀範圍
 
-**尚未提交本版 GitHub PR，也未建立 v0.10.3 Release。正式版仍為 [v0.10.2](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.2)。**
+**R14 v0.10.3 已正式發布：** [GitHub Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.3)。以下文字保留其設計背景。
 
 標題超過既有 500 個 UTF-16 單位時，畫面、無原文報告與單篇 HTML 會提醒截短，且不切開合法代理對。兩份標題前綴相同但尾段已省略時，回報 `INCONCLUSIVE_TITLE`，不說完整相同；已證實的內文或中繼資料差異仍優先呈現。
 

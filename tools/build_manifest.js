@@ -26,7 +26,7 @@ function collect(rel=''){
 collect();files.sort((a,b)=>a.path.localeCompare(b.path,'en'));
 if(files.length<46)throw Error('TOO_FEW_PUBLIC_FILES');
 const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.json'),'utf8'));
-prior.version='0.10.3-preview-source';prior.date='2026-11-13';
+prior.version='0.10.4-preview-source';prior.date='2026-11-13';
 prior.base_public_main='57451820770f2636dd1a33db913d6c2c7e7b19a1';
 prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_merge='EXTERNAL_VERIFICATION_REQUIRED';
 prior.source='R13 exact released tree plus R14 bounded title coverage, conservative title comparison and top-of-reading scope';

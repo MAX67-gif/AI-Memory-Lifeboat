@@ -76,3 +76,9 @@
 .sensitive-export-dialog .actions { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1.1rem; }
 .sensitive-export-dialog button { max-width:100%; white-space:normal; }
 @media (prefers-reduced-motion: reduce) {.sensitive-export-dialog {scroll-behavior:auto;}}
+
+/* R15: bounded 200-row conversation browsing, no hidden list beyond current page. */
+.list-pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;margin:-3px 0 12px}
+.list-pager[hidden]{display:none}
+#listPageInfo{font-size:.83rem;color:#526674;font-variant-numeric:tabular-nums}
+@media(prefers-color-scheme:dark){#listPageInfo{color:#d4e4ea}}

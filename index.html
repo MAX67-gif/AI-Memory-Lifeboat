@@ -7,7 +7,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.3 Preview</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.4 Preview</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="src/core.js"></script>
   <script defer src="src/zip.js"></script>
@@ -23,7 +23,7 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.3 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.4 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -109,6 +109,11 @@
           <div class="section-heading"><div><span class="step">04</span><h2 id="browseTitle">離線閱讀與搜尋</h2></div><p id="resultCount"></p></div>
           <label for="searchBox" class="field-label">搜尋目前分支的標題與文字</label>
           <input id="searchBox" type="search" placeholder="搜尋關鍵字或對話標題…" autocomplete="off">
+          <nav class="list-pager" id="listPager" aria-label="對話清單分頁" hidden>
+            <button type="button" class="secondary" id="listPrev" disabled>上一頁</button>
+            <span id="listPageInfo" aria-live="polite"></span>
+            <button type="button" class="secondary" id="listNext" disabled>下一頁</button>
+          </nav>
           <div class="reader">
             <nav class="conversation-list" id="conversationList" aria-label="對話清單"></nav>
             <article class="conversation-detail" id="conversationDetail" aria-live="polite"><p class="placeholder">從左側選一則對話開始閱讀。</p></article>

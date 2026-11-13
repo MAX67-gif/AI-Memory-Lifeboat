@@ -288,3 +288,68 @@ test('R14: coverage notices precede a long heading that can fill a mobile readin
  assert.match(children[0].textContent,/顯示 700 \/ 701/);
  assert.ok(note>=0&&note<heading);assert.ok(scope>=0&&scope<heading);
 });
+
+// R15: bounded browsing over all matched conversations, without silently hiding item 201+.
+const r15Records = n => Array.from({length:n},(_,i)=>({
+  id:`R15_ID_${i}`, title:`R15_TITLE_${String(i).padStart(4,'0')}`,
+  current_node:'n',mapping:{n:{parent:null,message:{author:{role:'user'},content:{parts:[`R15_BODY_${String(i).padStart(4,'0')}`]}}}}
+}));
+
+test('R15: a 201st matching conversation is reachable by one page turn without adding 201 DOM rows',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',r15Records(201));
+  assert.equal(ui.by('conversationList').children.length,200);
+  assert.match(ui.by('resultCount').textContent,/201/);
+  assert.match(ui.by('listPageInfo').textContent,/1\s*\/\s*2/);
+  assert.equal(ui.by('listPrev').disabled,true);
+  ui.by('listNext').click();
+  assert.equal(ui.by('conversationList').children.length,1);
+  assert.match(ui.by('conversationList').textContent,/R15_TITLE_0200/);
+  assert.equal(ui.by('listNext').disabled,true);
+  ui.by('conversationList').children[0].click();
+  assert.match(ui.by('conversationDetail').textContent,/R15_BODY_0200/);
+  ui.by('listPrev').click();
+  assert.equal(ui.by('conversationList').children.length,200);
+  assert.match(ui.by('listPageInfo').textContent,/1\s*\/\s*2/);
+});
+
+test('R15: a 401st match is reachable; search resets to page one and does not truncate search coverage',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',r15Records(401));
+  ui.by('listNext').click();ui.by('listNext').click();
+  assert.equal(ui.by('conversationList').children.length,1);
+  assert.match(ui.by('conversationList').textContent,/R15_TITLE_0400/);
+  assert.match(ui.by('listPageInfo').textContent,/3\s*\/\s*3/);
+  ui.by('searchBox').value='R15_BODY_0300';ui.by('searchBox').fire('input');
+  assert.equal(ui.by('conversationList').children.length,1);
+  assert.match(ui.by('conversationList').textContent,/R15_TITLE_0300/);
+  assert.match(ui.by('resultCount').textContent,/1/);
+  assert.equal(ui.by('listPager').hidden,true);
+  ui.by('searchBox').value='NOT_A_REAL_SYNTHETIC_MESSAGE';ui.by('searchBox').fire('input');
+  assert.equal(ui.by('listPager').hidden,true);
+  assert.equal(ui.by('listNext').disabled,true);
+  assert.match(ui.by('conversationList').textContent,/沒有符合/);
+});
+
+test('R15: changing source and clearing revoke the paging state and old rendered titles',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',r15Records(401));
+  ui.by('listNext').click();ui.by('listNext').click();
+  assert.match(ui.by('conversationList').textContent,/R15_TITLE_0400/);
+  await importJson(ui,'conversations.json',r15Records(201));
+  assert.equal(ui.by('conversationList').children.length,200);
+  assert.match(ui.by('listPageInfo').textContent,/1\s*\/\s*2/);
+  assert.doesNotMatch(ui.by('conversationList').textContent,/R15_TITLE_0400/);
+  ui.by('clearBtn').click();
+  assert.equal(ui.by('listPager').hidden,true);
+  assert.equal(ui.by('listNext').disabled,true);
+  assert.equal(ui.by('conversationList').textContent,'');
+});
+
+test('R15: exact 200 records do not invent a second page or require paging',async()=>{
+  const ui=harness();await importJson(ui,'conversations.json',r15Records(200));
+  assert.equal(ui.by('conversationList').children.length,200);
+  assert.equal(ui.by('listPager').hidden,true);
+  assert.equal(ui.by('listPrev').disabled,true);
+  assert.equal(ui.by('listNext').disabled,true);
+  assert.match(ui.by('resultCount').textContent,/200/);
+  ui.by('listNext').click();
+  assert.equal(ui.by('conversationList').children.length,200);
+});
