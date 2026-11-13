@@ -28,7 +28,7 @@ output=output.replace(/default-src 'none'; script-src 'self'; style-src 'self'; 
 if(!output.includes(replacement))throw Error('CSP_REPLACEMENT_FAILED');
 const inline=exactScripts.map(t=>'<script>'+t+'</script>').join('\n');
 output=output.replace('</body>',inline+'\n</body>');
-output='<!-- Generated from committed sources. Edit originals then rebuild. v0.10.2 -->\n'+output;
+output='<!-- Generated from committed sources. Edit originals then rebuild. v0.10.3 -->\n'+output;
 const dest=path.join(root,'dist','AI_Memory_Lifeboat_Offline.html');
 if(process.argv.includes('--check')){
  if(!fs.existsSync(dest)||fs.readFileSync(dest,'utf8')!==output)throw Error('STALE_STANDALONE_BUILD: run npm run build:offline');

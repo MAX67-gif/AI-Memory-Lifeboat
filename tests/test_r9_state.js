@@ -231,3 +231,60 @@ test('R13: shortened messages warn in the reading DOM and warnings clear on sour
  ui.by('conversationList').children[0].click();
  assert.doesNotMatch(ui.by('conversationDetail').textContent,/截短/);
 });
+
+// R14 uses the same application-event seam and synthetic-only fixtures.
+function r14Rows(title,count=1){
+ const mapping={};for(let i=0;i<count;i++)mapping['n'+i]={parent:i?'n'+(i-1):null,message:{author:{role:i%2?'assistant':'user'},content:{parts:['SYNTHETIC_MESSAGE_'+i]}}};
+ return [{id:'r14-stable',title,current_node:'n'+(count-1),mapping}];
+}
+test('R14: long title notice appears before messages and is removed when source changes',async()=>{
+ const ui=harness();await importJson(ui,'conversations.json',r14Rows('PRIVATE_TITLE_'.repeat(45)));
+ ui.by('conversationList').children[0].click();
+ const detail=ui.by('conversationDetail');
+ const note=detail.children.findIndex(c=>c.dataset?.titleTruncated==='true');
+ const message=detail.children.findIndex(c=>c.className==='message');
+ assert.ok(note>=0&&note<message);assert.match(detail.children[note].textContent,/標題已截短/);
+ assert.match(ui.by('warningList').textContent,/標題/);assert.match(ui.by('healthCards').textContent,/標題/);
+ await importJson(ui,'new.json',r14Rows('New short title'));ui.by('conversationList').children[0].click();
+ assert.doesNotMatch(detail.textContent,/標題已截短|PRIVATE_TITLE_/);
+ ui.by('clearBtn').click();assert.equal(detail.textContent,'');
+});
+
+test('R14: 701-message scope is visible above the bounded reading window, not hidden at the end',async()=>{
+ const ui=harness();await importJson(ui,'conversations.json',r14Rows('Long conversation',701));
+ ui.by('conversationList').children[0].click();
+ const detail=ui.by('conversationDetail'),children=detail.children;
+ const note=children.findIndex(c=>c.dataset?.readingWindow==='true');
+ const message=children.findIndex(c=>c.className==='message');
+ assert.ok(note>=0&&note<message);assert.match(children[note].textContent,/700.*701/);
+ assert.match(children[note].textContent,/搜尋/);assert.match(children[note].textContent,/HTML/);
+ assert.equal(children.filter(c=>c.className==='message').length,700);
+ assert.doesNotMatch(detail.textContent,/SYNTHETIC_MESSAGE_700/);
+ ui.by('searchBox').value='SYNTHETIC_MESSAGE_700';ui.by('searchBox').fire('input');
+ assert.match(ui.by('resultCount').textContent,/符合 1 則/);
+ ui.by('conversationList').children[0].click();assert.match(detail.textContent,/700.*701/);
+ await importJson(ui,'short.json',r14Rows('Exactly cap',700));ui.by('conversationList').children[0].click();
+ assert.equal(detail.children.filter(c=>c.className==='message').length,700);
+ assert.ok(!detail.children.some(c=>c.dataset?.readingWindow==='true'));
+ assert.match(detail.textContent,/顯示 700.*700/);
+});
+
+test('R14: title-unknown comparison has a readable label and clear removes the old scope notices',async()=>{
+ const ui=harness();await importJson(ui,'conversations.json',r14Rows('X'.repeat(500)+'NEW'));
+ await importOlder(ui,'old.json',r14Rows('X'.repeat(500)+'OLD'));
+ assert.match(ui.by('compareList').textContent,/標題已截短，無法完整比較/);
+ assert.match(ui.by('healthCards').textContent,/兩次匯出/);
+ ui.by('clearBtn').click();assert.equal(ui.by('compareList').textContent,'');
+ assert.equal(ui.by('healthCards').textContent,'');assert.equal(ui.by('conversationDetail').textContent,'');
+});
+
+test('R14: coverage notices precede a long heading that can fill a mobile reading pane',async()=>{
+ const ui=harness();const title='T'.repeat(500);
+ await importJson(ui,'conversations.json',r14Rows(title+'omitted',701));ui.by('conversationList').children[0].click();
+ const children=ui.by('conversationDetail').children;
+ const heading=children.findIndex(c=>c.textContent===title);
+ const note=children.findIndex(c=>c.dataset?.titleTruncated==='true');
+ const scope=children.findIndex(c=>c.dataset?.readingWindow==='true');
+ assert.match(children[0].textContent,/顯示 700 \/ 701/);
+ assert.ok(note>=0&&note<heading);assert.ok(scope>=0&&scope<heading);
+});

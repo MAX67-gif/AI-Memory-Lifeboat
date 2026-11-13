@@ -1,3 +1,10 @@
+## v0.10.3 — R14 candidate (2026-11-13; not released)
+
+- Disclose shortened title coverage in parser/audit/health/TXT/HTML; protect valid surrogate pairs at the existing cap.
+- Add conservative INCONCLUSIVE_TITLE without suppressing known body/metadata differences.
+- Move 700-message range warning to the top; search/export still use all retained messages.
+- Keep caps, schemas, previous enum strings, consent and local-only processing; human validation deferred.
+
 ## v0.10.2 — R13 (2026-11-09; release subject to CI)
 
 - Declare retained/omitted UTF-16 text coverage without increasing message or archive limits.
