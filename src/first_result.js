@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.4 — offline, content-free, human-readable first-result report. MIT.
+/* AI Memory Lifeboat v0.10.5 — offline, content-free, human-readable first-result report. MIT.
  * Never reflect exported titles, paths, text, IDs, filenames, unknown issue details or metadata.
  */
 (function(root,factory){
@@ -6,7 +6,7 @@
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
  if(root)root.AMLFirstResult=api;
 })(typeof globalThis==='object'?globalThis:null,function(){'use strict';
- const VERSION='0.10.4';
+ const VERSION='0.10.5';
  const SOURCE=Object.freeze({
    SYNTHETIC_DEMO:'合成示範（不代表你的帳戶已被檢查）',
    PERSONAL_EXPORT:'使用者自行選擇的匯出檔（不是帳戶完整性證明）'

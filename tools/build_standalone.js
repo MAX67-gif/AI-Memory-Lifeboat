@@ -12,7 +12,7 @@ let output=html.replace(/<script defer src="([^"]+)"\s*><\/script>\s*/g,(_,src)=
  if(!/^src\/[a-z0-9_]+\.js$/.test(src))throw Error('UNEXPECTED_SCRIPT:'+src);
  scriptFiles.push(src);return '';
 });
-if(scriptFiles.length!==10||!scriptFiles.includes('src/gateway.js'))throw Error('SCRIPT_LIST_CHANGED');
+if(scriptFiles.length!==11||!scriptFiles.includes('src/gateway.js'))throw Error('SCRIPT_LIST_CHANGED');
 if(/<script\b/i.test(output))throw Error('UNEXPECTED_SCRIPT_IN_HTML');
 if(!output.includes('<link rel="stylesheet" href="style.css">'))throw Error('STYLESHEET_MISSING');
 if(/<\/style/i.test(css))throw Error('UNSAFE_STYLE_TERMINATOR');
@@ -28,7 +28,7 @@ output=output.replace(/default-src 'none'; script-src 'self'; style-src 'self'; 
 if(!output.includes(replacement))throw Error('CSP_REPLACEMENT_FAILED');
 const inline=exactScripts.map(t=>'<script>'+t+'</script>').join('\n');
 output=output.replace('</body>',inline+'\n</body>');
-output='<!-- Generated from committed sources. Edit originals then rebuild. v0.10.4 -->\n'+output;
+output='<!-- Generated from committed sources. Edit originals then rebuild. v0.10.5 -->\n'+output;
 const dest=path.join(root,'dist','AI_Memory_Lifeboat_Offline.html');
 if(process.argv.includes('--check')){
  if(!fs.existsSync(dest)||fs.readFileSync(dest,'utf8')!==output)throw Error('STALE_STANDALONE_BUILD: run npm run build:offline');

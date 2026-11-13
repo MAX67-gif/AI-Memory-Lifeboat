@@ -1,3 +1,11 @@
+## v0.10.5 — R16 (2026-11-13; publication subject to PR/CI and actual Release)
+
+- Complete four-way uncertainty headline in snapshot comparison, with conservative non-binary review guidance.
+- Replace the 120-row unpaged diff display with category filters and 80-row local pagination.
+- Add local conversation risk filters that combine with existing 200-row paging and full-source search, plus fixed-count coverage radar.
+- Clear stale comparison filter, pager and selected private export when source or filter context changes.
+- Preserve prior v1 JSON schemas, ZIP/parser limits, local-only behavior, HTML consent and immutable release workflows.
+
 ## v0.10.4 — R15 candidate (2026-11-13; release gated)
 
 - Add local-only Previous / Next page navigation over all matched conversations, 200 DOM list buttons per page.

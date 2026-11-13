@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.4 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.5 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -6,17 +6,19 @@
     search:$('searchBox'),resultCount:$('resultCount'),listPager:$('listPager'),listPageInfo:$('listPageInfo'),listPrev:$('listPrev'),listNext:$('listNext'),audit:$('downloadAudit'),html:$('downloadHtml'),
     olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
     compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
+    compareFilter:$('compareFilter'),comparePager:$('comparePager'),comparePageInfo:$('comparePageInfo'),comparePrev:$('comparePrev'),compareNext:$('compareNext'),compareRoute:$('compareRoute'),coverageMetrics:$('coverageMetrics'),riskFilter:$('riskFilter'),
     archiveAssessment:$('archiveAssessment'),healthSummary:$('healthSummary'),healthCards:$('healthCards'),
     downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus'),
     tryDemo:$('tryDemo'),demoBanner:$('demoBanner'),pilotPanel:$('pilotPanel'),pilotEase:$('pilotEase'),
     pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),pilotTask:$('pilotTask'),pilotScope:$('pilotScope'),
     downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult'),
     htmlExportConfirm:$('htmlExportConfirm'),cancelHtmlExport:$('cancelHtmlExport'),confirmHtmlExport:$('confirmHtmlExport')};
-  const core=window.AMLCore, zip=window.AMLZip;
+  const core=window.AMLCore, zip=window.AMLZip,view=window.AMLViewFilters;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
-  let demoActive=false, pendingSensitiveExport=null, listPage=0;
-  const LIST_PAGE_SIZE=200;
+  let demoActive=false, pendingSensitiveExport=null, listPage=0,comparePage=0;
+  const LIST_PAGE_SIZE=200, COMPARE_PAGE_SIZE=80;
+  e.riskFilter.value='ALL';e.compareFilter.value='ALL';
   const MAX_JSON=64*1024*1024;
   const MAX_RENDERED_MESSAGES=700;
   const comparisonLabels={
@@ -57,16 +59,20 @@
   function status(text,kind=''){e.status.textContent=text;e.status.className='status '+kind;}
   // R9: Hidden DOM still contains private titles and messages. Scrub it, don't only hide it.
   function clearRenderedData(){
-    for(const element of [e.list,e.detail,e.compareList,e.compareCounts,e.metrics,e.warnings,e.healthCards])
+    for(const element of [e.list,e.detail,e.compareList,e.compareCounts,e.metrics,e.warnings,e.healthCards,e.coverageMetrics])
       element.replaceChildren();
-    for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment])
+    for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment,e.compareRoute,e.comparePageInfo])
       element.textContent='';
     delete e.healthSummary.dataset.state;
     e.listPager.hidden=true;e.listPageInfo.textContent='';e.listPrev.disabled=true;e.listNext.disabled=true;
+    e.comparePager.hidden=true;e.comparePrev.disabled=true;e.compareNext.disabled=true;
+    e.riskFilter.value='ALL';e.compareFilter.value='ALL';comparePage=0;
     e.archiveAssessment.hidden=true;e.comparePanel.hidden=true;
   }
   function clearComparisonView(){
     e.comparePanel.hidden=true;e.compareList.replaceChildren();e.compareCounts.replaceChildren();
+    e.compareRoute.textContent='';e.comparePageInfo.textContent='';e.comparePager.hidden=true;
+    e.comparePrev.disabled=true;e.compareNext.disabled=true;e.compareFilter.value='ALL';comparePage=0;
   }
   // Sensitive HTML must never be exported from a stale selection or source.
   function revokeSensitiveExport(){
@@ -136,7 +142,11 @@
     }
   }
   function renderAudit(){
-    const a=current.audit;e.metrics.replaceChildren(
+    const a=current.audit;
+    e.coverageMetrics.replaceChildren(
+      metric('已截短標題',a.truncated_titles),metric('已截短文字訊息',a.truncated_visible_messages),
+      metric('目前分支不可用',a.missing_current_paths),metric('非文字未呈現',a.non_text_parts_not_rendered));
+    e.metrics.replaceChildren(
       metric('可解析對話',a.parsed_records),metric('目前分支文字訊息',a.active_visible_messages),
       metric('未顯示的分支節點',a.off_path_message_nodes),metric('可能的附件參照',a.attachment_reference_observations));
     e.warnings.replaceChildren();
@@ -192,10 +202,15 @@
   }
   function selectConversation(i){revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);}
   function renderList(){
-    const query=e.search.value;const matched=core.searchConversations(current.conversations,query);
+    const query=e.search.value;const matched=view.filterConversations(core.searchConversations(current.conversations,query),e.riskFilter.value);
     const totalPages=Math.max(1,Math.ceil(matched.length/LIST_PAGE_SIZE));
     listPage=Math.min(listPage,totalPages-1);
-    e.resultCount.textContent=`符合 ${matched.length} 則（每頁最多 ${LIST_PAGE_SIZE} 則）`;
+    e.resultCount.textContent=`符合 ${matched.length} 則（已解析 ${current.conversations.length} 則，每頁最多 ${LIST_PAGE_SIZE} 則）`;
+    if(selected!==null&&!matched.includes(current.conversations[selected])){
+      revokeSensitiveExport();selected=null;e.html.disabled=true;
+      const note=document.createElement('p');note.className='placeholder';
+      note.textContent='目前選取的對話不在篩選結果，請從清單重新選擇。';e.detail.replaceChildren(note);
+    }
     e.listPageInfo.textContent=`第 ${listPage+1} / ${totalPages} 頁`;
     e.listPager.hidden=totalPages===1;
     e.listPrev.disabled=listPage<=0;e.listNext.disabled=listPage>=totalPages-1;
@@ -247,18 +262,24 @@
       metric('只在新版匯出出現',c.ONLY_IN_NEW_EXPORT),
       metric('新版匯出未見',c.NOT_IN_NEW_EXPORT),
       metric('目前分支有差異',c.CURRENT_VIEW_CHANGED),
-      metric('無法確定',c.INCONCLUSIVE_PATH+c.INCONCLUSIVE_ID));
+      metric('無法確定',view.countUnknown(c)));
+    const route=view.routeComparison(compared.summary);
+    e.compareRoute.textContent=route.message;
+    e.compareRoute.dataset.state=route.code;
     e.compareList.replaceChildren();
-    const relevant=compared.items.filter(x=>x.status!=='NO_DETECTED_CURRENT_VIEW_CHANGE');
+    const filtered=view.filterComparison(compared.items,e.compareFilter.value);
+    const page=view.page(filtered,comparePage,COMPARE_PAGE_SIZE);comparePage=page.page;
+    e.comparePageInfo.textContent=`第 ${page.page+1} / ${page.totalPages} 頁 · 本類 ${page.total} 項`;
+    e.comparePager.hidden=page.totalPages<=1;
+    e.comparePrev.disabled=page.page<=0;e.compareNext.disabled=page.page>=page.totalPages-1;
     const fragment=document.createDocumentFragment();
-    for(const item of relevant.slice(0,120)){
+    for(const item of page.items){
       const li=document.createElement('li');
       const label=document.createElement('strong');label.textContent=comparisonLabels[item.status]||item.status;
       const title=document.createElement('span');title.textContent=' · '+item.title;
       li.append(label,title);fragment.append(li);
     }
-    if(relevant.length>120){const li=document.createElement('li');li.textContent=`僅顯示前 120 項，另有 ${relevant.length-120} 項未顯示。摘要報告不包含對話名稱。`;fragment.append(li);}
-    if(!relevant.length){const li=document.createElement('li');li.textContent='目前檢查範圍沒有發現差異，並非兩份備份完全相同。';fragment.append(li);}
+    if(!page.total){const li=document.createElement('li');li.textContent='沒有符合此類篩選的比較結果。這不代表兩份備份完全相同。';fragment.append(li);}
     e.compareList.append(fragment);renderHealth();
   }
   async function importFile(file){
@@ -268,7 +289,7 @@
     // R5: never carry a demo/previous-export answer into a new source's optional feedback.
     for(const select of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])select.value='NOT_TESTED';
     const rev=++generation;comparisonGeneration++;
-    current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;listPage=0;
+    current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;listPage=0;comparePage=0;
     currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;
     e.attachmentVerifyStatus.textContent='尚未進行位元組檢查。';e.results.hidden=true;
     e.html.disabled=true;e.clear.disabled=false;e.olderFile.disabled=true;e.olderFile.value='';
@@ -355,25 +376,29 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.4.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.5.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.4.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.5.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.4.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.5.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.4.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.5.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.listPrev.addEventListener('click',()=>{if(!current||e.listPrev.disabled)return;listPage--;renderList();e.list.scrollTop=0;});
   e.listNext.addEventListener('click',()=>{if(!current||e.listNext.disabled)return;listPage++;renderList();e.list.scrollTop=0;});
+  e.riskFilter.addEventListener('change',()=>{listPage=0;if(current)renderList();});
+  e.compareFilter.addEventListener('change',()=>{comparePage=0;if(compared)renderComparison();});
+  e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;renderComparison();e.compareList.scrollTop=0;});
+  e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;renderComparison();e.compareList.scrollTop=0;});
   e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.4.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.5.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});

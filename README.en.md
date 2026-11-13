@@ -1,5 +1,14 @@
 # AI Memory Lifeboat
 
+## R16 v0.10.5 candidate — truth-centered comparison and local coverage filters
+
+Four inconclusive states (ID, current path, shortened text, shortened title) now count toward the **Uncertain** headline. Browse all reviewable comparison results in bounded 80-row pages and filter by trustworthy categories; missing from the newer export is **not** proof of deletion. A local coverage radar and six conversation-risk filters work with search and the existing 200-row list pagination.
+
+The [v0.10.5 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.5) is authoritative only after actual GitHub CI and asset checks. Until then use [v0.10.4](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.4). No account completeness certification, hosted upload, extra provider or external human-adoption evidence. [Detailed contract](docs/R16_COMPARISON_TRUTH_CENTER.md).
+
+---
+
+
 ## R15 v0.10.4 candidate — bounded navigation across every matched conversation
 
 Instead of silently showing only the first 200 list rows, the app now offers **Previous / Next page** navigation (200 rows maximum per page), with an explicit page count. Search still spans all retained current-path conversations. Search changes, source replacement, and Clear reset the page; this does not change parser or archive limits.

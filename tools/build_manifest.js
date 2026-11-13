@@ -26,13 +26,15 @@ function collect(rel=''){
 collect();files.sort((a,b)=>a.path.localeCompare(b.path,'en'));
 if(files.length<46)throw Error('TOO_FEW_PUBLIC_FILES');
 const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.json'),'utf8'));
-prior.version='0.10.4-preview-source';prior.date='2026-11-13';
-prior.base_public_main='57451820770f2636dd1a33db913d6c2c7e7b19a1';
+prior.version='0.10.5-preview-source';prior.date='2026-11-13';
+prior.base_public_main='75460a8dee7e70bac7bb9d5f8863a5ac58604c45';
 prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_merge='EXTERNAL_VERIFICATION_REQUIRED';
-prior.source='R13 exact released tree plus R14 bounded title coverage, conservative title comparison and top-of-reading scope';
+prior.source='R15 exact released tree plus R16 conservative comparison triage, complete paged diff browsing and local risk filtering';
 prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 pinned release preserved','R9 clear hidden DOM and revoke stale comparison/CRC results preserved', 'R10 explicit local-only content-bearing HTML export confirmation preserved', 'R12 deliberate 16 MiB output cap fails closed without producing oversized HTML'];
 prior.scope.push('R13 explicit current-path text truncation metadata, warnings and conservative comparison');
 prior.scope.push('R14 explicit title truncation metadata and INCONCLUSIVE_TITLE; existing 700-message view cap disclosed at top');
+prior.scope.push('R15 complete 200-row local conversation list paging retained');
+prior.scope.push('R16 local comparison status filters, complete 80-row diff paging, four-way unknown counts and risk coverage filters');
 prior.evidence.node_test_target='npm run check';
 prior.evidence.browser='real Chromium synthetic offline and source parity, hosted Pages NOT_VERIFIED';
 prior.evidence.real_account_export_tested=false;prior.evidence.external_adoption_confirmed=false;

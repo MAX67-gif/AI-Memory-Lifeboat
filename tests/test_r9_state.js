@@ -11,6 +11,7 @@ const HEALTH = require('../src/health.js');
 const DEMO = require('../src/demo.js');
 const PILOT = require('../src/pilot_r5.js');
 const FIRST = require('../src/first_result.js');
+const VIEW = require('../src/view_filters.js');
 
 class FakeElement {
   constructor() {
@@ -40,7 +41,7 @@ function harness(zipOverrides={}){
   const document={getElementById:by,querySelector:s=>s==='label[for="archiveFile"]'?picker:null,
     createElement:tag=>{const el=new FakeElement();if(tag==='a'){el.click=()=>downloads.push({name:el.download,url:el.href});}return el;},createDocumentFragment:()=>new FakeElement(),body};
   const zip={MAX_ARCHIVE:128*1024*1024,...zipOverrides};
-  const window={AMLCore:CORE,AMLCompare:COMPARE,AMLHealth:HEALTH,AMLDemo:DEMO,AMLPilotR5:PILOT,AMLFirstResult:FIRST,AMLZip:zip};
+  const window={AMLCore:CORE,AMLCompare:COMPARE,AMLHealth:HEALTH,AMLDemo:DEMO,AMLPilotR5:PILOT,AMLFirstResult:FIRST,AMLViewFilters:VIEW,AMLZip:zip};
   const context={window,document,Blob,URL:{createObjectURL:()=> 'blob:test',revokeObjectURL(){}},setTimeout(){},Uint8Array};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../src/app.js'),'utf8'),context,{filename:'src/app.js'});
   return {by,document,zip,downloads};
@@ -352,4 +353,46 @@ test('R15: exact 200 records do not invent a second page or require paging',asyn
   assert.match(ui.by('resultCount').textContent,/200/);
   ui.by('listNext').click();
   assert.equal(ui.by('conversationList').children.length,200);
+});
+
+// R16: interaction-surface tests for local truth routing and complete browsing.
+const syntheticRows=(n,tag='NEW')=>Array.from({length:n},(_,i)=>({
+  id:`${tag}-${i}`,title:`Synthetic ${tag} ${i}`,
+  current_node:'n',mapping:{n:{parent:null,message:{author:{role:'user'},content:{parts:[`Synthetic content ${i}`]}}}}
+}));
+test('R16: comparison filter and bounded pages reach all 167 new records without hiding them at 120',async()=>{
+  const ui=harness();await importJson(ui,'newer.json',syntheticRows(167));await importOlder(ui,'older.json',[]);
+  const pager=ui.by('comparePager'),info=ui.by('comparePageInfo');
+  assert.equal((ui.by('compareList').textContent.match(/只在新版匯出中出現/g)||[]).length,80);
+  assert.match(info.textContent,/第 1 \/ 3 頁/);
+  assert.equal(pager.hidden,false);
+  ui.by('compareNext').click();ui.by('compareNext').click();
+  assert.equal((ui.by('compareList').textContent.match(/只在新版匯出中出現/g)||[]).length,7);
+  assert.match(ui.by('compareList').textContent,/Synthetic NEW 166/);
+  assert.equal(ui.by('compareNext').disabled,true);
+  ui.by('compareFilter').value='UNKNOWN';ui.by('compareFilter').fire('change');
+  assert.match(ui.by('compareList').textContent,/沒有符合/);
+  assert.equal(ui.by('comparePager').hidden,true);
+});
+test('R16: title-truncated snapshot shows one uncertainty in comparison metric and route',async()=>{
+  const common='Q'.repeat(510);
+  const older=[{id:'fixture',title:common+' old',current_node:'n',mapping:{n:{parent:null,message:{author:{role:'user'},content:{parts:['same']}}}}}];
+  const newer=[{id:'fixture',title:common+' new',current_node:'n',mapping:{n:{parent:null,message:{author:{role:'user'},content:{parts:['same']}}}}}];
+  const ui=harness();await importJson(ui,'newer.json',newer);await importOlder(ui,'older.json',older);
+  assert.equal(ui.by('compareCounts').children[3].children[0].textContent,'1');
+  assert.match(ui.by('compareRoute').textContent,/無法完整比較/);
+  ui.by('compareFilter').value='UNKNOWN';ui.by('compareFilter').fire('change');
+  assert.match(ui.by('compareList').textContent,/標題已截短/);
+});
+test('R16: risk filter combines with search and clears hidden selection when it no longer matches',async()=>{
+  const rows=syntheticRows(3);rows[0].title='T'.repeat(520);
+  const ui=harness();await importJson(ui,'newer.json',rows);
+  ui.by('conversationList').children[1].click();assert.equal(ui.by('downloadHtml').disabled,false);
+  ui.by('riskFilter').value='TITLE_TRUNCATED';ui.by('riskFilter').fire('change');
+  assert.equal(ui.by('conversationList').children.length,1);
+  assert.equal(ui.by('downloadHtml').disabled,true);
+  assert.doesNotMatch(ui.by('conversationDetail').textContent,/Synthetic content 1/);
+  ui.by('searchBox').value='does-not-exist';ui.by('searchBox').fire('input');
+  assert.match(ui.by('resultCount').textContent,/符合 0/);
+  ui.by('clearBtn').click();assert.equal(ui.by('riskFilter').value,'ALL');
 });
