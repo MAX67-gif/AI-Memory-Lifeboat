@@ -1,4 +1,11 @@
-## v0.10.3 — R14 candidate (2026-11-13; not released)
+## v0.10.4 — R15 candidate (2026-11-13; release gated)
+
+- Add local-only Previous / Next page navigation over all matched conversations, 200 DOM list buttons per page.
+- Reset paging on search, source replacement and Clear; preserve selection/HTML consent boundaries.
+- Keep search scope, ZIP/JSON caps, current-path rendering and v1 schemas unchanged.
+- Synthetic Node and Chromium tests cover 200/201/401 boundaries and no stale private DOM.
+
+## v0.10.3 — R14 official release (2026-11-13)
 
 - Disclose shortened title coverage in parser/audit/health/TXT/HTML; protect valid surrogate pairs at the existing cap.
 - Add conservative INCONCLUSIVE_TITLE without suppressing known body/metadata differences.

@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.3 — evidence-limited, content-free health guidance.
+/* AI Memory Lifeboat v0.10.4 — evidence-limited, content-free health guidance.
  * MIT (c) 2026 MAX67-gif. Never certify full-account completeness.
  */
 (function(root, factory){
@@ -7,7 +7,7 @@
   if (root) root.AMLHealth = api;
 })(typeof globalThis === 'object' ? globalThis : null, function(){ 'use strict';
   const SCHEMA='aml.health.v1';
-  const VERSION='0.10.3';
+  const VERSION='0.10.4';
   const levels=Object.freeze(['ATTENTION','REVIEW','LIMITED_CHECK_OK']);
   const nonneg=x=>Number.isSafeInteger(x)&&x>=0?x:0;
   // Every heading and action comes from code. Never reflect source/filename/ID/title in a shareable report.
