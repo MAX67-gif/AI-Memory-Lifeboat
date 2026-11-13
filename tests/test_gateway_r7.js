@@ -23,16 +23,16 @@ test('single-file HTML contains exact current scripts once and a hash-only CSP',
  assert.ok(csp,'page CSP meta missing');assert.doesNotMatch(csp,/unsafe-inline|unsafe-eval/i);
  assert.doesNotMatch(single,/<iframe\b|<script[^>]*src="https?:/i);
  const hashes=[...single.matchAll(/'sha256-([A-Za-z0-9+/=]+)'/g)].map(x=>x[1]);
- assert.equal(hashes.length,11,'10 script hashes + 1 stylesheet hash');
+ assert.equal(hashes.length,12,'11 script hashes + 1 stylesheet hash');
  const tags=[...single.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(x=>x[1]);
- assert.equal(tags.length,10);
+ assert.equal(tags.length,11);
  for(const code of tags){const hash=crypto.createHash('sha256').update(code).digest('base64');assert.ok(hashes.includes(hash),'script missing CSP hash');}
  const style=single.match(/<style>([\s\S]*?)<\/style>/);
  assert.ok(style);assert.ok(hashes.includes(crypto.createHash('sha256').update(style[1]).digest('base64')));
- assert.match(single,/AI Memory Lifeboat v0\.10\.4/);
+ assert.match(single,/AI Memory Lifeboat v0\.10\.5/);
 });
 test('standalone builder uses source files, not independently maintained runtime',()=>{
- const scripts=['core','zip','compare','health','demo','pilot','pilot_r5','first_result','app','gateway'];
+ const scripts=['core','zip','compare','health','demo','pilot','pilot_r5','first_result','view_filters','app','gateway'];
  const dist=read('dist/AI_Memory_Lifeboat_Offline.html');
  for(const script of scripts){const source=read(`src/${script}.js`);assert.ok(dist.includes(source),`missing exact source ${script}`)}
  const pkg=JSON.parse(read('package.json'));assert.equal(pkg.scripts['build:check'],'node tools/build_standalone.js --check');

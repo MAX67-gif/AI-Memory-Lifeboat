@@ -7,7 +7,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.4 Preview</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.5 Preview</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="src/core.js"></script>
   <script defer src="src/zip.js"></script>
@@ -17,13 +17,14 @@
   <script defer src="src/pilot.js"></script>
   <script defer src="src/pilot_r5.js"></script>
   <script defer src="src/first_result.js"></script>
+  <script defer src="src/view_filters.js"></script>
   <script defer src="src/app.js"></script>
   <script defer src="src/gateway.js"></script>
 </head>
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.4 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.5 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -79,6 +80,11 @@
         <section class="panel audit-panel" aria-labelledby="auditTitle">
           <div class="section-heading"><div><span class="step">02</span><h2 id="auditTitle">備份體檢</h2></div><button class="secondary" id="downloadAudit" type="button">下載檢查報告 JSON</button></div>
           <div class="metrics" id="metrics"></div>
+          <div class="coverage-radar" aria-labelledby="coverageRadarTitle">
+            <h3 id="coverageRadarTitle">可讀範圍雷達</h3>
+            <p class="small-note">以下是本次匯出中已觀察到的限制數量，不是帳戶完整度百分比，也不能證明未匯出資料不存在。</p>
+            <div id="coverageMetrics" class="metrics"></div>
+          </div>
           <div class="health-intro"><h3>下一步怎麼做？</h3><p id="healthSummary" class="health-summary" aria-live="polite"></p></div>
           <div id="healthCards" class="health-cards"></div>
           <div class="actions"><button id="downloadHealth" type="button" class="secondary">下載不含聊天內容的健康指引 JSON</button><button id="downloadFirstResult" type="button" class="secondary">下載可閱讀的純文字摘要 TXT</button></div>
@@ -100,6 +106,21 @@
           <p id="olderStatus" class="status" role="status">請先載入最新版匯出檔。</p>
           <div id="comparePanel" hidden>
             <div class="metrics" id="compareCounts"></div>
+            <p id="compareRoute" class="compare-route" role="status" aria-live="polite"></p>
+            <label class="field-label" for="compareFilter">差異類別（僅在本機篩選）</label>
+            <select id="compareFilter" class="local-filter">
+              <option value="ALL">所有需檢視結果</option>
+              <option value="UNKNOWN">無法確定（優先核對）</option>
+              <option value="DIFFERENCES">已知目前分支差異</option>
+              <option value="NEW">只在新版出現</option>
+              <option value="NOT_SEEN">新版匯出未見（不代表刪除）</option>
+              <option value="METADATA">僅中繼資料變化</option>
+            </select>
+            <nav class="compare-pager" id="comparePager" aria-label="差異清單分頁" hidden>
+              <button type="button" class="secondary" id="comparePrev" disabled>上一頁</button>
+              <span id="comparePageInfo" aria-live="polite"></span>
+              <button type="button" class="secondary" id="compareNext" disabled>下一頁</button>
+            </nav>
             <p class="note">不比較非目前分支的文字內容，也無法辨認兩份匯出是否屬於同一個帳戶。以下名稱只在本機畫面呈現，不會進入摘要報告。</p>
             <ul id="compareList" class="compare-list"></ul>
             <button id="downloadComparison" type="button" class="secondary">下載不含對話名稱的差異摘要 JSON</button>
@@ -109,6 +130,15 @@
           <div class="section-heading"><div><span class="step">04</span><h2 id="browseTitle">離線閱讀與搜尋</h2></div><p id="resultCount"></p></div>
           <label for="searchBox" class="field-label">搜尋目前分支的標題與文字</label>
           <input id="searchBox" type="search" placeholder="搜尋關鍵字或對話標題…" autocomplete="off">
+          <label class="field-label" for="riskFilter">對話範圍篩選（可與搜尋搭配）</label>
+          <select id="riskFilter" class="local-filter">
+            <option value="ALL">所有已解析對話</option>
+            <option value="TITLE_TRUNCATED">標題已截短</option>
+            <option value="TEXT_TRUNCATED">目前分支文字已截短</option>
+            <option value="PATH_UNAVAILABLE">目前分支不可用</option>
+            <option value="OTHER_BRANCH">包含其他分支節點</option>
+            <option value="NON_TEXT">有非文字內容</option>
+          </select>
           <nav class="list-pager" id="listPager" aria-label="對話清單分頁" hidden>
             <button type="button" class="secondary" id="listPrev" disabled>上一頁</button>
             <span id="listPageInfo" aria-live="polite"></span>

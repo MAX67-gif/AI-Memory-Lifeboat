@@ -82,3 +82,16 @@
 .list-pager[hidden]{display:none}
 #listPageInfo{font-size:.83rem;color:#526674;font-variant-numeric:tabular-nums}
 @media(prefers-color-scheme:dark){#listPageInfo{color:#d4e4ea}}
+
+/* R16 compare truth routes and source-coverage filters — keyboard friendly, no extra grids or remote assets. */
+.coverage-radar{margin:14px 0 17px;padding:12px 15px;border:1px solid #dae6ea;border-radius:11px;background:#f7fbfc}
+.coverage-radar h3{margin:0 0 4px;font-size:1.04rem;color:#235361}
+.coverage-radar .metrics{margin-top:10px}
+.local-filter{display:block;width:100%;max-width:480px;padding:10px 13px;margin:0 0 14px;border-radius:9px;border:1px solid #b9cbd3;background:#fff;color:#244e5a;font:inherit}
+.compare-pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;margin:7px 0 10px}
+.compare-pager[hidden]{display:none}
+.compare-pager span{font-size:.85rem;color:#536a75}
+.compare-route{padding:13px 15px;background:#eef7f8;border-inline-start:4px solid #256e7d;border-radius:8px;line-height:1.5;overflow-wrap:anywhere}
+.compare-route[data-state="REVIEW_UNCERTAIN"]{border-color:#a87930;background:#fff8e9;color:#70521e}
+@media(max-width:700px){.compare-pager{justify-content:center}.coverage-radar .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-color-scheme:dark){.coverage-radar{background:#20343e;border-color:#395560}.coverage-radar h3,.compare-pager span{color:#d6e7ee}.local-filter{background:#253b45;color:#f1f7f9;border-color:#46616b}.compare-route{background:#203f48;color:#d3e9ef}.compare-route[data-state="REVIEW_UNCERTAIN"]{background:#3b3025;color:#ffe3ad}}

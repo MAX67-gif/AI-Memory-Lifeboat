@@ -9,7 +9,7 @@ test('R5 first-result human-readable summary is fully fixed and scoped to known 
  const h=health.evaluate(privateAudit);
  const txt=summary.format(h,'PERSONAL_EXPORT');
  assert.match(txt,/帳戶資料全部匯出/);assert.match(txt,/保留/);
- assert.match(txt,/僅限/);assert.match(txt,/工具版本：0\.10\.4/);
+ assert.match(txt,/僅限/);assert.match(txt,/工具版本：0\.10\.5/);
  for(const bad of ['SUPER_SECRET_ID_8','Private Topic ABC','MY SECRET PHRASE!'])assert.ok(!txt.includes(bad));
 });
 test('R5 synthetic demo explicitly cannot certify account',()=>{

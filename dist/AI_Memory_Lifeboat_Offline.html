@@ -1,4 +1,4 @@
-<!-- Generated from committed sources. Edit originals then rebuild. v0.10.4 -->
+<!-- Generated from committed sources. Edit originals then rebuild. v0.10.5 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Zwx2RrqHXSxaTTfyea7QJ3rdaGDPM1phqBP6wH9j3cg=' 'sha256-BqUy/mzwn6RfXyerzB2OTw+2+ZkjQ/x6tyADmOKQejY=' 'sha256-mQG+b5sgzNRYj0wCemvA0UF2rJ3pKnhUWtEqswipeMk=' 'sha256-cAAMknD8FxYlk4Zak3QrY+2ycvYiOBHk+dwudd4+YKg=' 'sha256-CGguLXYdujCKeSU5k3uKxPFiyOh33/kOD5gos+2MeLQ=' 'sha256-3X8ZjQHhkdNew2ef/lw5XG/zgEqGm1qbgiOOnkPsprU=' 'sha256-c8NHi5l/4DWr9LYbx3GXuZdh79SYsQHEC2K6CZFwpf0=' 'sha256-1mJQ9Vnbvt0MkN7c8KiNl4WK6mtawmAMyJvEamlEes0=' 'sha256-6pgjtElUhYhqojUXrg95PR/lkmn2bavfAbQ/ecF/nss=' 'sha256-0w1A7g3c++QFf0TJnp+lH6T0VZU8tyEP+NE6GBVO86U='; style-src 'sha256-mVdq2xlOnViMx4C/EOJory1Kqnwk2AkyhMaQ66Q+gDg='; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Msa1vJ5R8pRaN9dAYxzIr1MxhXjUofeUGm0gYhHQIzE=' 'sha256-BqUy/mzwn6RfXyerzB2OTw+2+ZkjQ/x6tyADmOKQejY=' 'sha256-9gJ5R9XGeu2mvHOy3qTrCUM6HgBQyYgam9HLGPqx5Kc=' 'sha256-Alj4t5urZV8NlHbwXoI+Xbuse7YVH8c4lKk4n+IxECA=' 'sha256-CGguLXYdujCKeSU5k3uKxPFiyOh33/kOD5gos+2MeLQ=' 'sha256-3X8ZjQHhkdNew2ef/lw5XG/zgEqGm1qbgiOOnkPsprU=' 'sha256-c8NHi5l/4DWr9LYbx3GXuZdh79SYsQHEC2K6CZFwpf0=' 'sha256-GsJFegd0SnzYPzzGqS8799L3LsDGZyBeqzaQWTsLDok=' 'sha256-YjufxJns2AW6Rq01xRPbOku7SkJBnM7WrMaqMSWP5Vo=' 'sha256-shQg+QVMHzYr9YV2m/f0Cmcs1gYU1HFwuBtPHMfKNzE=' 'sha256-MKsZsQArFlhbBi+40YS0Mh5M9pecyIHDh8iu1L5mVtA='; style-src 'sha256-w8lM28+A3mq3MH+liSNw43XywlKXoe1qKhLKw7CAbIo='; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.4 Preview</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.5 Preview</title>
   <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.56;color:#1d2933;background:#f4f7f9;color-scheme:light}
 *{box-sizing:border-box}body{margin:0}a{color:#12618f;text-decoration:none}a:hover{text-decoration:underline}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #2674a6;outline-offset:2px}
@@ -95,12 +95,25 @@
 #listPageInfo{font-size:.83rem;color:#526674;font-variant-numeric:tabular-nums}
 @media(prefers-color-scheme:dark){#listPageInfo{color:#d4e4ea}}
 
+/* R16 compare truth routes and source-coverage filters — keyboard friendly, no extra grids or remote assets. */
+.coverage-radar{margin:14px 0 17px;padding:12px 15px;border:1px solid #dae6ea;border-radius:11px;background:#f7fbfc}
+.coverage-radar h3{margin:0 0 4px;font-size:1.04rem;color:#235361}
+.coverage-radar .metrics{margin-top:10px}
+.local-filter{display:block;width:100%;max-width:480px;padding:10px 13px;margin:0 0 14px;border-radius:9px;border:1px solid #b9cbd3;background:#fff;color:#244e5a;font:inherit}
+.compare-pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;margin:7px 0 10px}
+.compare-pager[hidden]{display:none}
+.compare-pager span{font-size:.85rem;color:#536a75}
+.compare-route{padding:13px 15px;background:#eef7f8;border-inline-start:4px solid #256e7d;border-radius:8px;line-height:1.5;overflow-wrap:anywhere}
+.compare-route[data-state="REVIEW_UNCERTAIN"]{border-color:#a87930;background:#fff8e9;color:#70521e}
+@media(max-width:700px){.compare-pager{justify-content:center}.coverage-radar .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-color-scheme:dark){.coverage-radar{background:#20343e;border-color:#395560}.coverage-radar h3,.compare-pager span{color:#d6e7ee}.local-filter{background:#253b45;color:#f1f7f9;border-color:#46616b}.compare-route{background:#203f48;color:#d3e9ef}.compare-route[data-state="REVIEW_UNCERTAIN"]{background:#3b3025;color:#ffe3ad}}
+
 </style>
   </head>
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.4 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.5 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -156,6 +169,11 @@
         <section class="panel audit-panel" aria-labelledby="auditTitle">
           <div class="section-heading"><div><span class="step">02</span><h2 id="auditTitle">備份體檢</h2></div><button class="secondary" id="downloadAudit" type="button">下載檢查報告 JSON</button></div>
           <div class="metrics" id="metrics"></div>
+          <div class="coverage-radar" aria-labelledby="coverageRadarTitle">
+            <h3 id="coverageRadarTitle">可讀範圍雷達</h3>
+            <p class="small-note">以下是本次匯出中已觀察到的限制數量，不是帳戶完整度百分比，也不能證明未匯出資料不存在。</p>
+            <div id="coverageMetrics" class="metrics"></div>
+          </div>
           <div class="health-intro"><h3>下一步怎麼做？</h3><p id="healthSummary" class="health-summary" aria-live="polite"></p></div>
           <div id="healthCards" class="health-cards"></div>
           <div class="actions"><button id="downloadHealth" type="button" class="secondary">下載不含聊天內容的健康指引 JSON</button><button id="downloadFirstResult" type="button" class="secondary">下載可閱讀的純文字摘要 TXT</button></div>
@@ -177,6 +195,21 @@
           <p id="olderStatus" class="status" role="status">請先載入最新版匯出檔。</p>
           <div id="comparePanel" hidden>
             <div class="metrics" id="compareCounts"></div>
+            <p id="compareRoute" class="compare-route" role="status" aria-live="polite"></p>
+            <label class="field-label" for="compareFilter">差異類別（僅在本機篩選）</label>
+            <select id="compareFilter" class="local-filter">
+              <option value="ALL">所有需檢視結果</option>
+              <option value="UNKNOWN">無法確定（優先核對）</option>
+              <option value="DIFFERENCES">已知目前分支差異</option>
+              <option value="NEW">只在新版出現</option>
+              <option value="NOT_SEEN">新版匯出未見（不代表刪除）</option>
+              <option value="METADATA">僅中繼資料變化</option>
+            </select>
+            <nav class="compare-pager" id="comparePager" aria-label="差異清單分頁" hidden>
+              <button type="button" class="secondary" id="comparePrev" disabled>上一頁</button>
+              <span id="comparePageInfo" aria-live="polite"></span>
+              <button type="button" class="secondary" id="compareNext" disabled>下一頁</button>
+            </nav>
             <p class="note">不比較非目前分支的文字內容，也無法辨認兩份匯出是否屬於同一個帳戶。以下名稱只在本機畫面呈現，不會進入摘要報告。</p>
             <ul id="compareList" class="compare-list"></ul>
             <button id="downloadComparison" type="button" class="secondary">下載不含對話名稱的差異摘要 JSON</button>
@@ -186,6 +219,15 @@
           <div class="section-heading"><div><span class="step">04</span><h2 id="browseTitle">離線閱讀與搜尋</h2></div><p id="resultCount"></p></div>
           <label for="searchBox" class="field-label">搜尋目前分支的標題與文字</label>
           <input id="searchBox" type="search" placeholder="搜尋關鍵字或對話標題…" autocomplete="off">
+          <label class="field-label" for="riskFilter">對話範圍篩選（可與搜尋搭配）</label>
+          <select id="riskFilter" class="local-filter">
+            <option value="ALL">所有已解析對話</option>
+            <option value="TITLE_TRUNCATED">標題已截短</option>
+            <option value="TEXT_TRUNCATED">目前分支文字已截短</option>
+            <option value="PATH_UNAVAILABLE">目前分支不可用</option>
+            <option value="OTHER_BRANCH">包含其他分支節點</option>
+            <option value="NON_TEXT">有非文字內容</option>
+          </select>
           <nav class="list-pager" id="listPager" aria-label="對話清單分頁" hidden>
             <button type="button" class="secondary" id="listPrev" disabled>上一頁</button>
             <span id="listPageInfo" aria-live="polite"></span>
@@ -236,7 +278,7 @@
 })(typeof globalThis === 'object' ? globalThis : null, function () {
   'use strict';
   const SCHEMA = 'aml.audit.v1';
-  const VERSION = '0.10.4';
+  const VERSION = '0.10.5';
   const MAX_CONVERSATIONS = 30000;
   const MAX_NODES = 350000;
   const MAX_TEXT = 2_000_000;
@@ -771,7 +813,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.4 — bounded, title-free snapshot comparison summary.
+/* AI Memory Lifeboat v0.10.5 — bounded, title-free snapshot comparison summary.
  * Difference of visible exported current paths only. NOT account deletion detection.
  * MIT (c) 2026 MAX67-gif.
  */
@@ -833,7 +875,7 @@
     }
     const truncated=older.conversations.some(hasTruncatedText)||newer.conversations.some(hasTruncatedText);
     const titleTruncated=[older,newer].some(p=>p.conversations.some(c=>c.titleTruncated===true));
-    const summary={schema:SCHEMA,tool_version:'0.10.4',
+    const summary={schema:SCHEMA,tool_version:'0.10.5',
       inputs:'USER_SELECTED_ORDER_NOT_VERIFIED',
       identity_scope:'ONLY_RECORDS_WITH_UNIQUE_EXPLICIT_CONVERSATION_ID',
       comparison_scope:'EXPORTED_CURRENT_PATH_TEXT_AND_COUNTS_PLUS_SELECTED_METADATA',
@@ -856,7 +898,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.4 — evidence-limited, content-free health guidance.
+/* AI Memory Lifeboat v0.10.5 — evidence-limited, content-free health guidance.
  * MIT (c) 2026 MAX67-gif. Never certify full-account completeness.
  */
 (function(root, factory){
@@ -865,7 +907,7 @@
   if (root) root.AMLHealth = api;
 })(typeof globalThis === 'object' ? globalThis : null, function(){ 'use strict';
   const SCHEMA='aml.health.v1';
-  const VERSION='0.10.4';
+  const VERSION='0.10.5';
   const levels=Object.freeze(['ATTENTION','REVIEW','LIMITED_CHECK_OK']);
   const nonneg=x=>Number.isSafeInteger(x)&&x>=0?x:0;
   // Every heading and action comes from code. Never reflect source/filename/ID/title in a shareable report.
@@ -1029,7 +1071,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.4 — offline, content-free, human-readable first-result report. MIT.
+/* AI Memory Lifeboat v0.10.5 — offline, content-free, human-readable first-result report. MIT.
  * Never reflect exported titles, paths, text, IDs, filenames, unknown issue details or metadata.
  */
 (function(root,factory){
@@ -1037,7 +1079,7 @@
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
  if(root)root.AMLFirstResult=api;
 })(typeof globalThis==='object'?globalThis:null,function(){'use strict';
- const VERSION='0.10.4';
+ const VERSION='0.10.5';
  const SOURCE=Object.freeze({
    SYNTHETIC_DEMO:'合成示範（不代表你的帳戶已被檢查）',
    PERSONAL_EXPORT:'使用者自行選擇的匯出檔（不是帳戶完整性證明）'
@@ -1105,7 +1147,67 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.4 — user-triggered browser application only. MIT. */
+/* AML R16 view-only comparison and coverage routes. Offline, no source export or telemetry. MIT. */
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;
+  if(root)root.AMLViewFilters=api;
+})(typeof globalThis==='object'?globalThis:null,function(){'use strict';
+  const UNKNOWN=Object.freeze(['INCONCLUSIVE_PATH','INCONCLUSIVE_ID','INCONCLUSIVE_TEXT','INCONCLUSIVE_TITLE']);
+  const DIFF_GROUPS=Object.freeze({
+    ALL:['ONLY_IN_NEW_EXPORT','NOT_IN_NEW_EXPORT','CURRENT_VIEW_CHANGED','METADATA_ONLY_CHANGED',...UNKNOWN],
+    DIFFERENCES:['CURRENT_VIEW_CHANGED'],
+    NEW:['ONLY_IN_NEW_EXPORT'],
+    NOT_SEEN:['NOT_IN_NEW_EXPORT'],
+    UNKNOWN,
+    METADATA:['METADATA_ONLY_CHANGED']
+  });
+  const RISK_GROUPS=Object.freeze(['ALL','TITLE_TRUNCATED','TEXT_TRUNCATED','PATH_UNAVAILABLE','OTHER_BRANCH','NON_TEXT']);
+  const num=v=>Number.isSafeInteger(v)&&v>=0?v:0;
+  function countUnknown(counts={}){return UNKNOWN.reduce((sum,k)=>sum+num(counts[k]),0);}
+  function routeComparison(summary){
+    const c=summary?.counts||{};
+    if(countUnknown(c))return {code:'REVIEW_UNCERTAIN',message:'存在無法完整比較的對話，請先核對目前分支、ID 或截短內容。這不是完整備份認證。'};
+    if(num(c.NOT_IN_NEW_EXPORT)||num(c.ONLY_IN_NEW_EXPORT)||num(c.CURRENT_VIEW_CHANGED))
+      return {code:'REVIEW_DIFFERENCES',message:'有新增、新版未見或目前分支差異；新版未見不能當成帳戶已刪除。'};
+    if(num(c.METADATA_ONLY_CHANGED))return {code:'REVIEW_METADATA',message:'僅觀察到已檢查中繼資料的差異；不代表原始內容全部相同。'};
+    return {code:'NO_DETECTED_CHANGE_IN_SCOPE',message:'已支援的指定範圍沒有偵測到變化，不代表兩份匯出完全相同或帳戶完整。'};
+  }
+  function filterComparison(items,group='ALL'){
+    if(!Object.prototype.hasOwnProperty.call(DIFF_GROUPS,group))throw Error('INVALID_COMPARE_FILTER');
+    const allowed=new Set(DIFF_GROUPS[group]);
+    return (Array.isArray(items)?items:[]).filter(x=>x&&allowed.has(x.status));
+  }
+  function page(items,index,size){
+    if(!Number.isSafeInteger(size)||size<1||size>500)throw Error('INVALID_PAGE_SIZE');
+    if(!Number.isSafeInteger(index))throw Error('INVALID_PAGE_INDEX');
+    const safe=Array.isArray(items)?items:[];
+    const totalPages=Math.max(1,Math.ceil(safe.length/size));
+    const current=Math.min(Math.max(0,index),totalPages-1);
+    return {items:safe.slice(current*size,(current+1)*size),page:current,totalPages,total:safe.length};
+  }
+  function filterConversations(items,group='ALL'){
+    if(!RISK_GROUPS.includes(group))throw Error('INVALID_CONVERSATION_FILTER');
+    const all=Array.isArray(items)?items:[];
+    if(group==='ALL')return all.slice();
+    return all.filter(c=>{
+      if(!c)return false;
+      switch(group){
+      case 'TITLE_TRUNCATED':return c.titleTruncated===true;
+      case 'TEXT_TRUNCATED':return c.truncatedVisibleMessages>0||c.messages?.some(m=>m.textTruncated===true)===true;
+      case 'PATH_UNAVAILABLE':return c.pathStatus!=='CURRENT_PATH_PRESENT';
+      case 'OTHER_BRANCH':return c.excludedNodes>0;
+      case 'NON_TEXT':return c.nonTextCount>0;
+      default:return false;
+      }
+    });
+  }
+  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,routeComparison,filterComparison,page,filterConversations});
+});
+
+</script>
+<script>
+/* AI Memory Lifeboat v0.10.5 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -1113,17 +1215,19 @@
     search:$('searchBox'),resultCount:$('resultCount'),listPager:$('listPager'),listPageInfo:$('listPageInfo'),listPrev:$('listPrev'),listNext:$('listNext'),audit:$('downloadAudit'),html:$('downloadHtml'),
     olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
     compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
+    compareFilter:$('compareFilter'),comparePager:$('comparePager'),comparePageInfo:$('comparePageInfo'),comparePrev:$('comparePrev'),compareNext:$('compareNext'),compareRoute:$('compareRoute'),coverageMetrics:$('coverageMetrics'),riskFilter:$('riskFilter'),
     archiveAssessment:$('archiveAssessment'),healthSummary:$('healthSummary'),healthCards:$('healthCards'),
     downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus'),
     tryDemo:$('tryDemo'),demoBanner:$('demoBanner'),pilotPanel:$('pilotPanel'),pilotEase:$('pilotEase'),
     pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),pilotTask:$('pilotTask'),pilotScope:$('pilotScope'),
     downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult'),
     htmlExportConfirm:$('htmlExportConfirm'),cancelHtmlExport:$('cancelHtmlExport'),confirmHtmlExport:$('confirmHtmlExport')};
-  const core=window.AMLCore, zip=window.AMLZip;
+  const core=window.AMLCore, zip=window.AMLZip,view=window.AMLViewFilters;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
-  let demoActive=false, pendingSensitiveExport=null, listPage=0;
-  const LIST_PAGE_SIZE=200;
+  let demoActive=false, pendingSensitiveExport=null, listPage=0,comparePage=0;
+  const LIST_PAGE_SIZE=200, COMPARE_PAGE_SIZE=80;
+  e.riskFilter.value='ALL';e.compareFilter.value='ALL';
   const MAX_JSON=64*1024*1024;
   const MAX_RENDERED_MESSAGES=700;
   const comparisonLabels={
@@ -1164,16 +1268,20 @@
   function status(text,kind=''){e.status.textContent=text;e.status.className='status '+kind;}
   // R9: Hidden DOM still contains private titles and messages. Scrub it, don't only hide it.
   function clearRenderedData(){
-    for(const element of [e.list,e.detail,e.compareList,e.compareCounts,e.metrics,e.warnings,e.healthCards])
+    for(const element of [e.list,e.detail,e.compareList,e.compareCounts,e.metrics,e.warnings,e.healthCards,e.coverageMetrics])
       element.replaceChildren();
-    for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment])
+    for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment,e.compareRoute,e.comparePageInfo])
       element.textContent='';
     delete e.healthSummary.dataset.state;
     e.listPager.hidden=true;e.listPageInfo.textContent='';e.listPrev.disabled=true;e.listNext.disabled=true;
+    e.comparePager.hidden=true;e.comparePrev.disabled=true;e.compareNext.disabled=true;
+    e.riskFilter.value='ALL';e.compareFilter.value='ALL';comparePage=0;
     e.archiveAssessment.hidden=true;e.comparePanel.hidden=true;
   }
   function clearComparisonView(){
     e.comparePanel.hidden=true;e.compareList.replaceChildren();e.compareCounts.replaceChildren();
+    e.compareRoute.textContent='';e.comparePageInfo.textContent='';e.comparePager.hidden=true;
+    e.comparePrev.disabled=true;e.compareNext.disabled=true;e.compareFilter.value='ALL';comparePage=0;
   }
   // Sensitive HTML must never be exported from a stale selection or source.
   function revokeSensitiveExport(){
@@ -1243,7 +1351,11 @@
     }
   }
   function renderAudit(){
-    const a=current.audit;e.metrics.replaceChildren(
+    const a=current.audit;
+    e.coverageMetrics.replaceChildren(
+      metric('已截短標題',a.truncated_titles),metric('已截短文字訊息',a.truncated_visible_messages),
+      metric('目前分支不可用',a.missing_current_paths),metric('非文字未呈現',a.non_text_parts_not_rendered));
+    e.metrics.replaceChildren(
       metric('可解析對話',a.parsed_records),metric('目前分支文字訊息',a.active_visible_messages),
       metric('未顯示的分支節點',a.off_path_message_nodes),metric('可能的附件參照',a.attachment_reference_observations));
     e.warnings.replaceChildren();
@@ -1299,10 +1411,15 @@
   }
   function selectConversation(i){revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);}
   function renderList(){
-    const query=e.search.value;const matched=core.searchConversations(current.conversations,query);
+    const query=e.search.value;const matched=view.filterConversations(core.searchConversations(current.conversations,query),e.riskFilter.value);
     const totalPages=Math.max(1,Math.ceil(matched.length/LIST_PAGE_SIZE));
     listPage=Math.min(listPage,totalPages-1);
-    e.resultCount.textContent=`符合 ${matched.length} 則（每頁最多 ${LIST_PAGE_SIZE} 則）`;
+    e.resultCount.textContent=`符合 ${matched.length} 則（已解析 ${current.conversations.length} 則，每頁最多 ${LIST_PAGE_SIZE} 則）`;
+    if(selected!==null&&!matched.includes(current.conversations[selected])){
+      revokeSensitiveExport();selected=null;e.html.disabled=true;
+      const note=document.createElement('p');note.className='placeholder';
+      note.textContent='目前選取的對話不在篩選結果，請從清單重新選擇。';e.detail.replaceChildren(note);
+    }
     e.listPageInfo.textContent=`第 ${listPage+1} / ${totalPages} 頁`;
     e.listPager.hidden=totalPages===1;
     e.listPrev.disabled=listPage<=0;e.listNext.disabled=listPage>=totalPages-1;
@@ -1354,18 +1471,24 @@
       metric('只在新版匯出出現',c.ONLY_IN_NEW_EXPORT),
       metric('新版匯出未見',c.NOT_IN_NEW_EXPORT),
       metric('目前分支有差異',c.CURRENT_VIEW_CHANGED),
-      metric('無法確定',c.INCONCLUSIVE_PATH+c.INCONCLUSIVE_ID));
+      metric('無法確定',view.countUnknown(c)));
+    const route=view.routeComparison(compared.summary);
+    e.compareRoute.textContent=route.message;
+    e.compareRoute.dataset.state=route.code;
     e.compareList.replaceChildren();
-    const relevant=compared.items.filter(x=>x.status!=='NO_DETECTED_CURRENT_VIEW_CHANGE');
+    const filtered=view.filterComparison(compared.items,e.compareFilter.value);
+    const page=view.page(filtered,comparePage,COMPARE_PAGE_SIZE);comparePage=page.page;
+    e.comparePageInfo.textContent=`第 ${page.page+1} / ${page.totalPages} 頁 · 本類 ${page.total} 項`;
+    e.comparePager.hidden=page.totalPages<=1;
+    e.comparePrev.disabled=page.page<=0;e.compareNext.disabled=page.page>=page.totalPages-1;
     const fragment=document.createDocumentFragment();
-    for(const item of relevant.slice(0,120)){
+    for(const item of page.items){
       const li=document.createElement('li');
       const label=document.createElement('strong');label.textContent=comparisonLabels[item.status]||item.status;
       const title=document.createElement('span');title.textContent=' · '+item.title;
       li.append(label,title);fragment.append(li);
     }
-    if(relevant.length>120){const li=document.createElement('li');li.textContent=`僅顯示前 120 項，另有 ${relevant.length-120} 項未顯示。摘要報告不包含對話名稱。`;fragment.append(li);}
-    if(!relevant.length){const li=document.createElement('li');li.textContent='目前檢查範圍沒有發現差異，並非兩份備份完全相同。';fragment.append(li);}
+    if(!page.total){const li=document.createElement('li');li.textContent='沒有符合此類篩選的比較結果。這不代表兩份備份完全相同。';fragment.append(li);}
     e.compareList.append(fragment);renderHealth();
   }
   async function importFile(file){
@@ -1375,7 +1498,7 @@
     // R5: never carry a demo/previous-export answer into a new source's optional feedback.
     for(const select of [e.pilotEase,e.pilotClarity,e.pilotReuse,e.pilotTask,e.pilotScope])select.value='NOT_TESTED';
     const rev=++generation;comparisonGeneration++;
-    current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;listPage=0;
+    current=null;older=null;compared=null;selected=null;healthReport=null;byteReport=null;listPage=0;comparePage=0;
     currentFile=null;matchedAttachmentPaths=[];e.verifyAttachments.disabled=true;
     e.attachmentVerifyStatus.textContent='尚未進行位元組檢查。';e.results.hidden=true;
     e.html.disabled=true;e.clear.disabled=false;e.olderFile.disabled=true;e.olderFile.value='';
@@ -1462,25 +1585,29 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.4.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.5.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.4.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.5.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.4.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.5.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.4.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.5.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.listPrev.addEventListener('click',()=>{if(!current||e.listPrev.disabled)return;listPage--;renderList();e.list.scrollTop=0;});
   e.listNext.addEventListener('click',()=>{if(!current||e.listNext.disabled)return;listPage++;renderList();e.list.scrollTop=0;});
+  e.riskFilter.addEventListener('change',()=>{listPage=0;if(current)renderList();});
+  e.compareFilter.addEventListener('change',()=>{comparePage=0;if(compared)renderComparison();});
+  e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;renderComparison();e.compareList.scrollTop=0;});
+  e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;renderComparison();e.compareList.scrollTop=0;});
   e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.4.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.5.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});
@@ -1489,7 +1616,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.4 — bilingual first-task gateway, local UI only. MIT.
+/* AI Memory Lifeboat v0.10.5 — bilingual first-task gateway, local UI only. MIT.
  * Does not claim complete English coverage of advanced results.
  * All sample results are derived from the existing synthetic demo parser.
  */
