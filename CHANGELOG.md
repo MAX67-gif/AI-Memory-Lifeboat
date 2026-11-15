@@ -1,3 +1,10 @@
+## v0.10.7 — R18 (2026-11-15; GitHub PR/CI/Release gate)
+
+- Reproduce the previous-page selection leak with 421 synthetic conversations (200/200/21 pages).
+- Revoke stale selection, detail DOM and content-bearing HTML export permission when page/filter/search makes a selection invisible.
+- Keep explicitly reselected visible conversations and their native keyboard/consent flows unchanged.
+- Add fail-closed selection tests; preserve parser schema, R17 navigation and all older pinned publisher workflows.
+
 ## v0.10.6 — R17 (2026-11-15; publication gated by PR/CI and real GitHub Release)
 
 - Reproduce and fix keyboard focus loss when selecting a conversation after list re-render.

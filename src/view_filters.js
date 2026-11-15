@@ -53,6 +53,12 @@
       }
     });
   }
+  // A sensitive export may only target the explicitly selected item still visible on this page.
+  function selectionOnCurrentPage(conversations,selected,pageItems){
+    return Array.isArray(conversations) && Number.isSafeInteger(selected) &&
+      selected>=0 && selected<conversations.length && Array.isArray(pageItems) &&
+      pageItems.includes(conversations[selected]);
+  }
   function keyboardTargetIndex(key,index,count){
     if(!Number.isSafeInteger(index)||!Number.isSafeInteger(count)||count<1||index<0||index>=count)return null;
     switch(key){
@@ -63,5 +69,5 @@
       default:return null;
     }
   }
-  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,routeComparison,filterComparison,page,filterConversations,keyboardTargetIndex});
+  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,routeComparison,filterComparison,page,filterConversations,selectionOnCurrentPage,keyboardTargetIndex});
 });
