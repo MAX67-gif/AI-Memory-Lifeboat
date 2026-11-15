@@ -1,3 +1,11 @@
+## R17 v0.10.6 candidate — keyboard focus continuity and bounded list navigation
+
+R16 rebuilds the conversation list when a reader selects a row, detaching the focused button and dropping focus to the page body. R17 restores focus to the selected button, supports Up/Down/Home/End *within the current 200-row page*, and keeps Enter/Space as explicit selection actions. Paging remains manual. No change to supported input formats, privacy gates, consent, or local-only design.
+
+[Check the v0.10.6 release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.6) **only after PR, CI, and release assets are actually verified**; otherwise use the [verified v0.10.5 release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.5). Advanced UI is still mostly Traditional Chinese; user adoption remains unverified. [Contract](docs/R17_KEYBOARD_FOCUS_NAVIGATION.md).
+
+---
+
 # AI Memory Lifeboat
 
 ## R16 v0.10.5 candidate — truth-centered comparison and local coverage filters

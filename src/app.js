@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.5 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.6 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -200,7 +200,12 @@
     }
     e.html.disabled=false;
   }
-  function selectConversation(i){revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);}
+  function selectConversation(i){
+    // The list is rebuilt after every selection. Keep the live button focused for keyboard users.
+    const restoreFocus=typeof e.list.contains==='function'&&e.list.contains(document.activeElement);
+    revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);
+    if(restoreFocus)e.list.querySelector('[aria-current="true"]')?.focus({preventScroll:true});
+  }
   function renderList(){
     const query=e.search.value;const matched=view.filterConversations(core.searchConversations(current.conversations,query),e.riskFilter.value);
     const totalPages=Math.max(1,Math.ceil(matched.length/LIST_PAGE_SIZE));
@@ -376,21 +381,29 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.5.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.6.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.5.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.6.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.5.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.6.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.5.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.6.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
+  e.list.addEventListener('keydown',ev=>{
+    // Arrow/Home/End move focus only within the visible page. Enter/Space select explicitly.
+    const buttons=Array.from(e.list.querySelectorAll('button'));
+    const currentIndex=buttons.indexOf(document.activeElement);
+    const target=view.keyboardTargetIndex(ev.key,currentIndex,buttons.length);
+    if(target===null)return;
+    ev.preventDefault();buttons[target].focus({preventScroll:true});
+  });
   e.listPrev.addEventListener('click',()=>{if(!current||e.listPrev.disabled)return;listPage--;renderList();e.list.scrollTop=0;});
   e.listNext.addEventListener('click',()=>{if(!current||e.listNext.disabled)return;listPage++;renderList();e.list.scrollTop=0;});
   e.riskFilter.addEventListener('change',()=>{listPage=0;if(current)renderList();});
@@ -398,7 +411,7 @@
   e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;renderComparison();e.compareList.scrollTop=0;});
   e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;renderComparison();e.compareList.scrollTop=0;});
   e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.5.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.6.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});
