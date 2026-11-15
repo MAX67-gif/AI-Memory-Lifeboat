@@ -1,3 +1,11 @@
+## R17 v0.10.6｜鍵盤焦點修復與無障礙清單導覽
+
+修正 R16 可重現的問題：鍵盤按 Enter 選取對話後，清單重繪使焦點掉回 `BODY`。現在保留在所選按鈕，並可使用 ↑／↓／Home／End 在**當頁**的最多 200 筆對話間移動焦點，Enter／空白鍵才會選取。分頁仍須明確按上一頁／下一頁，避免自動跨頁造成意外閱讀。支援原有搜尋、風險篩選與含原文下載確認；沒有改 JSON Schema、解析容量或資料傳送方式。
+
+[取得 R17 v0.10.6](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.6)（**僅於 GitHub PR／CI／Release 附件實際驗收後**視為正式發布）；此前以 [已核實的 R16 v0.10.5](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.5) 為準。詳見 [R17 契約](docs/R17_KEYBOARD_FOCUS_NAVIGATION.md)。
+
+---
+
 # AI Memory Lifeboat｜AI 對話救生艇
 
 ## R16 v0.10.5｜比較真相中心：不漏看、不亂判、不誤導

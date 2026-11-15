@@ -1,3 +1,10 @@
+## v0.10.6 — R17 (2026-11-15; publication gated by PR/CI and real GitHub Release)
+
+- Reproduce and fix keyboard focus loss when selecting a conversation after list re-render.
+- Support ArrowUp, ArrowDown, Home and End focus navigation within the visible bounded list page; Enter/Space still select deliberately.
+- Add accessible guidance and deterministic, synthetic regression checks; verify Chromium desktop/mobile and source/standalone CSP parity.
+- Preserve R16 comparison truth routing, R10 sensitive HTML consent, R12 output caps, R15 bounded paging, and all prior release tags.
+
 ## v0.10.5 — R16 (2026-11-13; publication subject to PR/CI and actual Release)
 
 - Complete four-way uncertainty headline in snapshot comparison, with conservative non-binary review guidance.
