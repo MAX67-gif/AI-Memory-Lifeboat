@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.6 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.7 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -208,13 +208,13 @@
   }
   function renderList(){
     const query=e.search.value;const matched=view.filterConversations(core.searchConversations(current.conversations,query),e.riskFilter.value);
-    const totalPages=Math.max(1,Math.ceil(matched.length/LIST_PAGE_SIZE));
-    listPage=Math.min(listPage,totalPages-1);
+    const page=view.page(matched,listPage,LIST_PAGE_SIZE);
+    listPage=page.page;const totalPages=page.totalPages;
     e.resultCount.textContent=`符合 ${matched.length} 則（已解析 ${current.conversations.length} 則，每頁最多 ${LIST_PAGE_SIZE} 則）`;
-    if(selected!==null&&!matched.includes(current.conversations[selected])){
+    if(selected!==null&&!view.selectionOnCurrentPage(current.conversations,selected,page.items)){
       revokeSensitiveExport();selected=null;e.html.disabled=true;
       const note=document.createElement('p');note.className='placeholder';
-      note.textContent='目前選取的對話不在篩選結果，請從清單重新選擇。';e.detail.replaceChildren(note);
+      note.textContent='目前選取的對話已離開本頁或篩選結果；含原文下載已撤銷，請重新選擇。';e.detail.replaceChildren(note);
     }
     e.listPageInfo.textContent=`第 ${listPage+1} / ${totalPages} 頁`;
     e.listPager.hidden=totalPages===1;
@@ -222,7 +222,7 @@
     e.list.replaceChildren();
     if(!matched.length){const p=document.createElement('p');p.className='placeholder';p.textContent='沒有符合條件的目前分支內容。';e.list.append(p);return;}
     const idToIndex=new Map(current.conversations.map((c,i)=>[c,i]));
-    for (const c of matched.slice(listPage*LIST_PAGE_SIZE,(listPage+1)*LIST_PAGE_SIZE)) {
+    for (const c of page.items) {
       const i=idToIndex.get(c),button=document.createElement('button');button.type='button';
       button.className=i===selected?'selected':'';button.textContent=c.title;
       const sm=document.createElement('small');sm.textContent=`${c.visibleMessages} 則 · ${core.formatTime(c.updated)}`;
@@ -381,20 +381,20 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.6.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.7.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.6.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.7.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.6.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.7.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.6.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.7.json','application/json;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.list.addEventListener('keydown',ev=>{
     // Arrow/Home/End move focus only within the visible page. Enter/Space select explicitly.
@@ -411,7 +411,7 @@
   e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;renderComparison();e.compareList.scrollTop=0;});
   e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;renderComparison();e.compareList.scrollTop=0;});
   e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.6.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.7.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});

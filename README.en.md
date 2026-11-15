@@ -1,3 +1,11 @@
+## R18 v0.10.7 — Visible-page selection and sensitive export gate
+
+R17 retained the previous conversation's text and content-bearing export permission after navigating to a different 200-row list page. R18 revokes stale selection and consent whenever pagination, search or a risk filter hides the previously selected conversation; users must select an item visibly present in the current page before requesting a private HTML download again. Tested using a wholly synthetic 421-conversation fixture.
+
+[Verify the v0.10.7 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.7) after GitHub CI and three release assets exist, otherwise use the [verified v0.10.6](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.6). Unchanged: local processing, R17 keyboard navigation, data-format/size boundaries and the explicit sensitive-export confirmation. [R18 contract](docs/R18_VISIBLE_SELECTION_AND_EXPORT_GATE.md).
+
+---
+
 ## R17 v0.10.6 candidate — keyboard focus continuity and bounded list navigation
 
 R16 rebuilds the conversation list when a reader selects a row, detaching the focused button and dropping focus to the page body. R17 restores focus to the selected button, supports Up/Down/Home/End *within the current 200-row page*, and keeps Enter/Space as explicit selection actions. Paging remains manual. No change to supported input formats, privacy gates, consent, or local-only design.
