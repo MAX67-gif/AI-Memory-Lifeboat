@@ -1,3 +1,13 @@
+## R20 v0.10.9 — Bounded long-conversation navigation and find-in-conversation
+
+R19 could search messages beyond the first 700, but the reader only rendered the first 700. R20 adds *previous/next 700-message window*, a clear retained-message position, and **local find + previous/next hit** that jumps to the corresponding retained message window. A wholly synthetic 1,402-message conversation is now browsable in 700/700/2 windows and searchable at messages 1,110 and 1,402. The browser still renders **at most 700 messages at once**.
+
+The tool never restores omitted tails, branches outside the current path, non-text content or account data absent from the export. Private search terms/hit indices are transient and cleared on source or selection changes. Downloading a content-bearing HTML still requires explicit user confirmation and the 16 MiB output cap. JSON/ZIP, privacy, comparison and historical Release contracts are unchanged.
+
+[Check the v0.10.9 GitHub Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.9) **only after PR, main CI and all three Release assets are verified**; otherwise use [v0.10.8](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.8). [R20 scope and security contract](docs/R20_BOUNDED_READER_AND_SEARCH.md). Independent adoption and Codex-for-OSS approval are unverified.
+
+---
+
 ## R19 v0.10.8 — Offline comparison review workbench
 
 The existing R18 comparison already paginates 80 results and conservatively counts four UNKNOWN causes. R19 adds *four separate UNKNOWN filters*, local-only title search, validated direct page navigation for long result sets, an explicit UNKNOWN count breakdown, and a **human-readable TXT guide containing fixed counts/instructions only** (no titles, IDs, transcript text or search queries). Counts themselves can be sensitive; review before sharing. Existing JSON summary semantics are unchanged.

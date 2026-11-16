@@ -1,4 +1,4 @@
-<!-- Generated from committed sources. Edit originals then rebuild. v0.10.8 -->
+<!-- Generated from committed sources. Edit originals then rebuild. v0.10.9 -->
 <!doctype html>
 <html lang="zh-Hant">
 <head>
@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ThrfvEHvhd/nmpevRVQqKgO6NN0Xrn+GghkobimTfhg=' 'sha256-BqUy/mzwn6RfXyerzB2OTw+2+ZkjQ/x6tyADmOKQejY=' 'sha256-cuFWk2eQxgI/ui+shiNcs+mcG60bkHWJLa1gxiHzuIY=' 'sha256-oRReM1Ai0Jw3OfjK+dNE0DJbNcVfS9bZPiRVrn1EkcE=' 'sha256-CGguLXYdujCKeSU5k3uKxPFiyOh33/kOD5gos+2MeLQ=' 'sha256-3X8ZjQHhkdNew2ef/lw5XG/zgEqGm1qbgiOOnkPsprU=' 'sha256-c8NHi5l/4DWr9LYbx3GXuZdh79SYsQHEC2K6CZFwpf0=' 'sha256-FncgETPr+oSG2NgsGmV79XkEgOYr8i+q2Lk8d9nADXk=' 'sha256-yT6ooPMzY8T6Jcn5zmfU/beDS8ZqsT6XELSgWhj3K3w=' 'sha256-KM1xLncI8RCR4uUzWdMlefW+A73+ATJEx3UnVzjtMP0=' 'sha256-eBKPlmzw17f1qhtkkOV8QW+MrHClz/teh9On8jSLxlQ='; style-src 'sha256-vc9LXw06xajgVFBORt6KvlrPvLUFkW7NwJKZpaWwI00='; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-yjz+IcBZIARfoxgGBQsugVyWC/tHX5KtIdf1wGyyHKA=' 'sha256-BqUy/mzwn6RfXyerzB2OTw+2+ZkjQ/x6tyADmOKQejY=' 'sha256-ChTWHRGqtYrDucKUgIB7xMxxbbNGRa2nwMvI87r0yvc=' 'sha256-qYTMC1a9RyoGcIPiw7vts1ujJ5RF1M1ACg4HEcXcHMI=' 'sha256-CGguLXYdujCKeSU5k3uKxPFiyOh33/kOD5gos+2MeLQ=' 'sha256-3X8ZjQHhkdNew2ef/lw5XG/zgEqGm1qbgiOOnkPsprU=' 'sha256-c8NHi5l/4DWr9LYbx3GXuZdh79SYsQHEC2K6CZFwpf0=' 'sha256-IR/yBZXLsi68VZE9ggsY4ahMieRJSDjSnSI8+uoxSbQ=' 'sha256-A+cUH+KA+sLMql/LYRTh7fFRnhmxIusUILXl68d9y1E=' 'sha256-ztGHiRDM5T1kf2UJt0GimoBDyz/m+4jhAD5S9CZZhYI=' 'sha256-/b4EgwgDiFRkPgT8tqPlp3SKZxlTiFCOfSEchufCXo0='; style-src 'sha256-DDvvfgStCr4IidZK3/GppvgiJ4fMvpjGQTZR5B4be84='; img-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.8 Preview</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.9 Preview</title>
   <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.56;color:#1d2933;background:#f4f7f9;color-scheme:light}
 *{box-sizing:border-box}body{margin:0}a{color:#12618f;text-decoration:none}a:hover{text-decoration:underline}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #2674a6;outline-offset:2px}
@@ -117,12 +117,26 @@
 #compareJumpStatus{flex-basis:100%;margin:0;min-height:0}
 @media(max-width:600px){.compare-pager{justify-content:flex-start}.compare-jump{width:100%}.compare-jump input{width:5rem}}
 
+/* R20: local-only message reading window; no fixed overlay or wasted column width. */
+.reader-tools{border:1px solid #cadde2;border-radius:12px;margin:12px 0 10px;padding:11px 14px;background:#f7fbfb;display:grid;gap:7px}
+.reader-tools[hidden]{display:none}
+.reader-tool-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+.reader-tool-row strong{margin-right:6px;color:#235364}
+.reader-tool-row .secondary{padding:7px 10px}
+.reader-search-row label{font-weight:650;font-size:.82rem;color:#405963}
+.reader-search-row input{flex:1 1 160px;max-width:300px;min-width:0;border:1px solid #a6bdc5;border-radius:9px;padding:9px 11px;font:inherit;color:#223842;background:#fff}
+.reader-limits{margin:2px 0 0;line-height:1.55}
+.conversation-detail .message[data-reader-hit="true"]{border-left:4px solid #b47718;padding-left:12px;background:rgba(180,119,24,.085);border-radius:5px}
+.conversation-detail .message:focus-visible{outline:3px solid #1d7492;outline-offset:3px}
+@media(max-width:700px){.reader-tools{padding:10px}.reader-search-row input{flex-basis:100%;max-width:100%}.reader-tool-row{gap:6px}}
+@media(prefers-color-scheme:dark){.reader-tools{background:#1b343c;border-color:#456776}.reader-tool-row strong,.reader-search-row label{color:#d3eaf0}.reader-search-row input{background:#253b45;border-color:#577580;color:#eef8fa}.conversation-detail .message[data-reader-hit="true"]{background:rgba(240,182,66,.12)}}
+
 </style>
   </head>
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.8 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.9 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -259,9 +273,26 @@
             <button type="button" class="secondary" id="listNext" disabled>下一頁</button>
           </nav>
           <p class="small-note">鍵盤導覽：在清單按鈕按 ↑／↓ 移動焦點，Home／End 跳到本頁首尾；Enter 或空白鍵選取對話。分頁請使用上一頁／下一頁按鈕。 換頁、搜尋或篩選使已選對話離開目前清單時，會取消含原文下載資格；必須重新選取。</p>
+          <div id="readerTools" class="reader-tools" aria-label="長對話分段閱讀與本機搜尋" hidden>
+            <div class="reader-tool-row">
+              <strong>長對話閱讀</strong>
+              <button id="readerPrev" type="button" class="secondary" disabled>上一段</button>
+              <span id="readerWindowInfo" class="small-note" aria-live="polite"></span>
+              <button id="readerNext" type="button" class="secondary" disabled>下一段</button>
+            </div>
+            <div class="reader-tool-row reader-search-row">
+              <label for="readerQuery">只搜尋目前對話已保留的文字</label>
+              <input id="readerQuery" type="search" maxlength="160" autocomplete="off" placeholder="輸入關鍵字，再按「尋找」">
+              <button id="readerFind" type="button" class="secondary">尋找</button>
+              <button id="readerPrevHit" type="button" class="secondary" disabled>上一個命中</button>
+              <button id="readerNextHit" type="button" class="secondary" disabled>下一個命中</button>
+              <span id="readerHitInfo" class="small-note" role="status" aria-live="polite"></span>
+            </div>
+            <p class="small-note reader-limits">每段最多 700 則；可切換至後續已讀取訊息，或直接定位命中所在段。搜尋不包含截短尾段、其它分支或非文字內容；不會上傳、保存搜尋字串或修改原始備份。</p>
+          </div>
           <div class="reader">
             <nav class="conversation-list" id="conversationList" aria-label="對話清單"></nav>
-            <article class="conversation-detail" id="conversationDetail" aria-live="polite"><p class="placeholder">從左側選一則對話開始閱讀。</p></article>
+            <article class="conversation-detail" id="conversationDetail" aria-live="off"><p class="placeholder">從左側選一則對話開始閱讀。</p></article>
           </div>
           <div class="actions"><button id="downloadHtml" type="button" class="secondary" disabled>下載目前對話 HTML（含原文）</button><span class="small-note">注意：這份檔案包含目前所選對話的文字，與不含聊天原文的健康摘要不同。下載前須確認；請妥善保管並保留原始 ZIP。</span></div>
         </section>
@@ -304,7 +335,7 @@
 })(typeof globalThis === 'object' ? globalThis : null, function () {
   'use strict';
   const SCHEMA = 'aml.audit.v1';
-  const VERSION = '0.10.8';
+  const VERSION = '0.10.9';
   const MAX_CONVERSATIONS = 30000;
   const MAX_NODES = 350000;
   const MAX_TEXT = 2_000_000;
@@ -839,7 +870,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.8 — bounded, title-free snapshot comparison summary.
+/* AI Memory Lifeboat v0.10.9 — bounded, title-free snapshot comparison summary.
  * Difference of visible exported current paths only. NOT account deletion detection.
  * MIT (c) 2026 MAX67-gif.
  */
@@ -901,7 +932,7 @@
     }
     const truncated=older.conversations.some(hasTruncatedText)||newer.conversations.some(hasTruncatedText);
     const titleTruncated=[older,newer].some(p=>p.conversations.some(c=>c.titleTruncated===true));
-    const summary={schema:SCHEMA,tool_version:'0.10.8',
+    const summary={schema:SCHEMA,tool_version:'0.10.9',
       inputs:'USER_SELECTED_ORDER_NOT_VERIFIED',
       identity_scope:'ONLY_RECORDS_WITH_UNIQUE_EXPLICIT_CONVERSATION_ID',
       comparison_scope:'EXPORTED_CURRENT_PATH_TEXT_AND_COUNTS_PLUS_SELECTED_METADATA',
@@ -924,7 +955,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.8 — evidence-limited, content-free health guidance.
+/* AI Memory Lifeboat v0.10.9 — evidence-limited, content-free health guidance.
  * MIT (c) 2026 MAX67-gif. Never certify full-account completeness.
  */
 (function(root, factory){
@@ -933,7 +964,7 @@
   if (root) root.AMLHealth = api;
 })(typeof globalThis === 'object' ? globalThis : null, function(){ 'use strict';
   const SCHEMA='aml.health.v1';
-  const VERSION='0.10.8';
+  const VERSION='0.10.9';
   const levels=Object.freeze(['ATTENTION','REVIEW','LIMITED_CHECK_OK']);
   const nonneg=x=>Number.isSafeInteger(x)&&x>=0?x:0;
   // Every heading and action comes from code. Never reflect source/filename/ID/title in a shareable report.
@@ -1097,7 +1128,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.8 — offline, content-free, human-readable first-result report. MIT.
+/* AI Memory Lifeboat v0.10.9 — offline, content-free, human-readable first-result report. MIT.
  * Never reflect exported titles, paths, text, IDs, filenames, unknown issue details or metadata.
  */
 (function(root,factory){
@@ -1105,7 +1136,7 @@
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
  if(root)root.AMLFirstResult=api;
 })(typeof globalThis==='object'?globalThis:null,function(){'use strict';
- const VERSION='0.10.8';
+ const VERSION='0.10.9';
  const SOURCE=Object.freeze({
    SYNTHETIC_DEMO:'合成示範（不代表你的帳戶已被檢查）',
    PERSONAL_EXPORT:'使用者自行選擇的匯出檔（不是帳戶完整性證明）'
@@ -1277,12 +1308,41 @@
       default:return null;
     }
   }
-  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,safeCount:num,routeComparison,filterComparison,page,filterConversations,selectionOnCurrentPage,keyboardTargetIndex,jumpToPage,formatReviewGuide});
+  // R20: Browse every retained message without rendering more than 700 at a time.
+  // These windows only change presentation; they never widen original export parsing limits.
+  function readerWindow(messages,index=0,size=700){
+    if(!Number.isSafeInteger(size)||size<1||size>700)throw Error('READER_WINDOW_SIZE');
+    if(!Number.isSafeInteger(index))throw Error('READER_WINDOW_INDEX');
+    const all=Array.isArray(messages)?messages:[];
+    const totalPages=Math.max(1,Math.ceil(all.length/size));
+    const current=Math.min(Math.max(index,0),totalPages-1);
+    const start=current*size;
+    return {items:all.slice(start,start+size),page:current,totalPages,total:all.length,start};
+  }
+  // Search only retained text in the selected current-path messages. Never inspect hidden nodes.
+  function readerSearchHits(messages,query){
+    if(typeof query!=='string')throw Error('READER_SEARCH_INVALID');
+    if(query.length>160)throw Error('READER_SEARCH_LENGTH');
+    const needle=query.trim().toLocaleLowerCase();
+    if(!needle)return [];
+    const hits=[];
+    const source=Array.isArray(messages)?messages:[];
+    for(let i=0;i<source.length;i++){
+      if(typeof source[i]?.text==='string'&&source[i].text.toLocaleLowerCase().includes(needle))hits.push(i);
+    }
+    return hits;
+  }
+  function readerWindowForIndex(index,count,size=700){
+    if(!Number.isSafeInteger(index)||!Number.isSafeInteger(count)||index<0||index>=count||
+      !Number.isSafeInteger(size)||size<1||size>700)return null;
+    return Math.floor(index/size);
+  }
+  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,safeCount:num,routeComparison,filterComparison,page,filterConversations,selectionOnCurrentPage,keyboardTargetIndex,jumpToPage,formatReviewGuide,readerWindow,readerSearchHits,readerWindowForIndex});
 });
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.8 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.9 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -1298,11 +1358,14 @@
     tryDemo:$('tryDemo'),demoBanner:$('demoBanner'),pilotPanel:$('pilotPanel'),pilotEase:$('pilotEase'),
     pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),pilotTask:$('pilotTask'),pilotScope:$('pilotScope'),
     downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult'),
-    htmlExportConfirm:$('htmlExportConfirm'),cancelHtmlExport:$('cancelHtmlExport'),confirmHtmlExport:$('confirmHtmlExport')};
+    htmlExportConfirm:$('htmlExportConfirm'),cancelHtmlExport:$('cancelHtmlExport'),confirmHtmlExport:$('confirmHtmlExport'),
+    readerTools:$('readerTools'),readerPrev:$('readerPrev'),readerNext:$('readerNext'),readerWindowInfo:$('readerWindowInfo'),
+    readerQuery:$('readerQuery'),readerFind:$('readerFind'),readerPrevHit:$('readerPrevHit'),readerNextHit:$('readerNextHit'),readerHitInfo:$('readerHitInfo')};
   const core=window.AMLCore, zip=window.AMLZip,view=window.AMLViewFilters;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
   let demoActive=false, pendingSensitiveExport=null, listPage=0,comparePage=0;
+  let readerPage=0,readerHits=[],readerHitCursor=-1;
   const LIST_PAGE_SIZE=200, COMPARE_PAGE_SIZE=80;
   e.riskFilter.value='ALL';e.compareFilter.value='ALL';
   const MAX_JSON=64*1024*1024;
@@ -1344,7 +1407,14 @@
   });
   function status(text,kind=''){e.status.textContent=text;e.status.className='status '+kind;}
   // R9: Hidden DOM still contains private titles and messages. Scrub it, don't only hide it.
+  function resetReaderSession(){
+    readerPage=0;readerHits=[];readerHitCursor=-1;
+    e.readerQuery.value='';e.readerTools.hidden=true;
+    e.readerWindowInfo.textContent='';e.readerHitInfo.textContent='';
+    for(const btn of [e.readerPrev,e.readerNext,e.readerPrevHit,e.readerNextHit])btn.disabled=true;
+  }
   function clearRenderedData(){
+    resetReaderSession();
     for(const element of [e.list,e.detail,e.compareList,e.compareCounts,e.metrics,e.warnings,e.healthCards,e.coverageMetrics])
       element.replaceChildren();
     for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment,e.compareRoute,e.comparePageInfo,e.compareUnknownBreakdown,e.compareJumpStatus])
@@ -1453,10 +1523,19 @@
     }
   }
   function renderMessages(c){
+    if(!current||selected===null||current.conversations[selected]!==c)return;
+    const win=view.readerWindow(c.messages,readerPage,MAX_RENDERED_MESSAGES);
+    readerPage=win.page;
+    e.readerTools.hidden=false;
+    e.readerPrev.disabled=win.page===0;e.readerNext.disabled=win.page>=win.totalPages-1;
+    const first=win.items.length?win.start+1:0;
+    e.readerWindowInfo.textContent=`已保留訊息 ${first}–${win.start+win.items.length} / ${win.total} · 第 ${win.page+1}/${win.totalPages} 段`;
+    e.readerPrevHit.disabled=readerHits.length===0;e.readerNextHit.disabled=readerHits.length===0;
+    if(readerHits.length)e.readerHitInfo.textContent=`本對話保留文字中找到 ${readerHits.length} 則命中${readerHitCursor>=0?'；目前第 '+(readerHitCursor+1)+' 個':''}。`;
     e.detail.replaceChildren();
     const title=document.createElement('h3');title.textContent=c.title;
     const meta=document.createElement('p');meta.className='small-note';
-    meta.textContent=`${core.formatTime(c.updated)} · 顯示 ${Math.min(c.messages.length,MAX_RENDERED_MESSAGES)} / ${c.messages.length} 則已讀取目前分支訊息`;
+    meta.textContent=`${core.formatTime(c.updated)} · 本段顯示 ${win.items.length} / ${c.messages.length} 則已讀取目前分支訊息`;
     e.detail.append(meta);
     if(c.titleTruncated===true){
       const note=document.createElement('p');note.className='notice';note.dataset.titleTruncated='true';
@@ -1465,7 +1544,7 @@
     }
     if(c.messages.length>MAX_RENDERED_MESSAGES){
       const note=document.createElement('p');note.className='notice';note.dataset.readingWindow='true';
-      note.textContent=`此畫面顯示前 ${MAX_RENDERED_MESSAGES} / ${c.messages.length} 則已讀取訊息，另有 ${c.messages.length-MAX_RENDERED_MESSAGES} 則未在畫面展開。搜尋仍涵蓋全部保留的目前分支文字；單篇 HTML 可含其餘保留訊息，但受 16 MiB 上限限制。被截短的標題或訊息尾段仍不包含在內。`;
+      note.textContent=`為避免瀏覽器一次渲染過多內容，每段最多 ${MAX_RENDERED_MESSAGES} / ${c.messages.length} 則；現在顯示第 ${win.page+1}/${win.totalPages} 段，可用上方上一段／下一段或搜尋命中定位閱讀其餘保留訊息。搜尋仍涵蓋全部已保留的目前分支文字。單篇 HTML 可含全部保留訊息，但受 16 MiB 上限限制；截短尾段及非目前分支不包含在內。`;
       e.detail.append(note);
     }
     e.detail.append(title);
@@ -1475,8 +1554,11 @@
       e.detail.append(n);
     }
     if(!c.messages.length){const p=document.createElement('p');p.textContent='此對話沒有可閱讀的目前分支文字訊息。';e.detail.append(p);}
-    for(const msg of c.messages.slice(0,MAX_RENDERED_MESSAGES)){
+    for(const [offset,msg] of win.items.entries()){
+      const absoluteIndex=win.start+offset;
       const section=document.createElement('section');section.className='message';
+      section.dataset.readerIndex=String(absoluteIndex);section.tabIndex=-1;
+      if(readerHitCursor>=0&&readerHits[readerHitCursor]===absoluteIndex)section.dataset.readerHit='true';
       const role=document.createElement('strong');role.textContent=msg.role;
       const text=document.createElement('pre');text.textContent=msg.text||(msg.nonText?'[非文字內容尚未顯示]':'[空白訊息]');
       section.append(role);
@@ -1492,7 +1574,7 @@
   function selectConversation(i){
     // The list is rebuilt after every selection. Keep the live button focused for keyboard users.
     const restoreFocus=typeof e.list.contains==='function'&&e.list.contains(document.activeElement);
-    revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);
+    revokeSensitiveExport();resetReaderSession();selected=i;renderList();renderMessages(current.conversations[i]);
     if(restoreFocus)e.list.querySelector('[aria-current="true"]')?.focus({preventScroll:true});
   }
   function renderList(){
@@ -1501,7 +1583,7 @@
     listPage=page.page;const totalPages=page.totalPages;
     e.resultCount.textContent=`符合 ${matched.length} 則（已解析 ${current.conversations.length} 則，每頁最多 ${LIST_PAGE_SIZE} 則）`;
     if(selected!==null&&!view.selectionOnCurrentPage(current.conversations,selected,page.items)){
-      revokeSensitiveExport();selected=null;e.html.disabled=true;
+      revokeSensitiveExport();resetReaderSession();selected=null;e.html.disabled=true;
       const note=document.createElement('p');note.className='placeholder';
       note.textContent='目前選取的對話已離開本頁或篩選結果；含原文下載已撤銷，請重新選擇。';e.detail.replaceChildren(note);
     }
@@ -1670,26 +1752,73 @@
     status('合成示例已載入：不是帳戶備份檢查。可選取對話、搜尋文字和閱讀差異。','ok');
     e.results.scrollIntoView({block:'start',behavior:'auto'});
   }
+  function readerMessageForSelected(){
+    return current&&selected!==null?current.conversations[selected]:null;
+  }
+  function showReaderHit(cursor){
+    const c=readerMessageForSelected();
+    if(!c||!readerHits.length||!Number.isSafeInteger(cursor)||cursor<0||cursor>=readerHits.length)return;
+    const index=readerHits[cursor];
+    const target=view.readerWindowForIndex(index,c.messages.length,MAX_RENDERED_MESSAGES);
+    if(target===null)return;
+    revokeSensitiveExport();readerHitCursor=cursor;readerPage=target;
+    renderMessages(c);
+    const node=e.detail.querySelector(`[data-reader-index="${index}"]`);
+    if(node){node.focus({preventScroll:true});node.scrollIntoView({block:'center',behavior:'auto'});}
+  }
+  function runReaderSearch(){
+    const c=readerMessageForSelected();if(!c)return;
+    const query=e.readerQuery.value;
+    readerHits=[];readerHitCursor=-1;
+    try{readerHits=view.readerSearchHits(c.messages,query);}
+    catch(_){e.readerHitInfo.textContent='搜尋字串無效，請縮短至 160 字內。';return;}
+    if(!query.trim()){e.readerHitInfo.textContent='請輸入關鍵字，再按尋找；僅搜尋本對話已保留的訊息文字。';}
+    else if(!readerHits.length){e.readerHitInfo.textContent='目前已保留文字未找到符合訊息；截短尾段與其他分支未檢查。';}
+    if(readerHits.length)showReaderHit(0);
+    else{e.readerPrevHit.disabled=true;e.readerNextHit.disabled=true;renderMessages(c);}
+  }
+  function stepReaderPage(delta){
+    const c=readerMessageForSelected();if(!c)return;
+    const currentPage=view.readerWindow(c.messages,readerPage,MAX_RENDERED_MESSAGES);
+    const target=readerPage+delta;
+    if(target<0||target>=currentPage.totalPages)return;
+    revokeSensitiveExport();readerPage=target;readerHitCursor=-1;
+    renderMessages(c);e.detail.scrollTop=0;
+  }
+  e.readerPrev.addEventListener('click',()=>stepReaderPage(-1));
+  e.readerNext.addEventListener('click',()=>stepReaderPage(1));
+  e.readerFind.addEventListener('click',runReaderSearch);
+  e.readerQuery.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();runReaderSearch();}});
+  e.readerQuery.addEventListener('input',()=>{
+    readerHits=[];readerHitCursor=-1;e.readerPrevHit.disabled=true;e.readerNextHit.disabled=true;
+    e.readerHitInfo.textContent='搜尋內容已更改，請按尋找重新定位。';
+  });
+  e.readerPrevHit.addEventListener('click',()=>{
+    if(readerHits.length)showReaderHit((readerHitCursor-1+readerHits.length)%readerHits.length);
+  });
+  e.readerNextHit.addEventListener('click',()=>{
+    if(readerHits.length)showReaderHit((readerHitCursor+1)%readerHits.length);
+  });
   e.tryDemo.addEventListener('click',loadSyntheticDemo);
   e.downloadPilot.addEventListener('click',()=>{
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.8.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.9.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.8.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.9.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.8.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.9.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.8.json','application/json;charset=utf-8');});
-  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.10.8.txt','text/plain;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.9.json','application/json;charset=utf-8');});
+  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.10.9.txt','text/plain;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.list.addEventListener('keydown',ev=>{
     // Arrow/Home/End move focus only within the visible page. Enter/Space select explicitly.
@@ -1717,7 +1846,7 @@
   e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
   e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
   e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.8.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.9.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});
@@ -1726,7 +1855,7 @@
 
 </script>
 <script>
-/* AI Memory Lifeboat v0.10.8 — bilingual first-task gateway, local UI only. MIT.
+/* AI Memory Lifeboat v0.10.9 — bilingual first-task gateway, local UI only. MIT.
  * Does not claim complete English coverage of advanced results.
  * All sample results are derived from the existing synthetic demo parser.
  */

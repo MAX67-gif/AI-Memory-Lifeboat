@@ -11,3 +11,7 @@
 **Proof boundary:** synthetic fixtures and CI prove only tested behavior, not compatibility with all current vendor exports or safe restoration. Real export smoke tests require the user's explicit consent and remain local; never upload private exports to public CI.
 
 R2: no backend or model processing; diff summaries exclude user text/IDs/titles and file names. ZIP matching is strict relative-path metadata, NOT byte integrity. Two large exports may exceed device memory; fail closed rather than silently dropping records.
+
+### R20 長對話分段與搜尋邊界
+
+訊息視窗只是目前分支已保留文字的局部 DOM 呈現。切換 700 訊息的視窗不會執行 ZIP 內的腳本、改變解析器上限或擴大原文匯出權限。搜尋只在使用者點選「尋找」時掃描目前選取對話之已保留訊息；允許查找更多段落，不代表可恢復被截短的尾段、非文字或其它分支。選取或來源改變要撤銷該次搜尋結果；含原文 HTML 仍保持明確確認與 16 MiB 上限。長清單 DOM 不設 aria-live 廣播整段訊息，僅讓工具列狀態單獨公告。

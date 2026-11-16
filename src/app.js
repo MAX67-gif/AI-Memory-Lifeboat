@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.8 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.9 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -14,11 +14,14 @@
     tryDemo:$('tryDemo'),demoBanner:$('demoBanner'),pilotPanel:$('pilotPanel'),pilotEase:$('pilotEase'),
     pilotClarity:$('pilotClarity'),pilotReuse:$('pilotReuse'),pilotTask:$('pilotTask'),pilotScope:$('pilotScope'),
     downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult'),
-    htmlExportConfirm:$('htmlExportConfirm'),cancelHtmlExport:$('cancelHtmlExport'),confirmHtmlExport:$('confirmHtmlExport')};
+    htmlExportConfirm:$('htmlExportConfirm'),cancelHtmlExport:$('cancelHtmlExport'),confirmHtmlExport:$('confirmHtmlExport'),
+    readerTools:$('readerTools'),readerPrev:$('readerPrev'),readerNext:$('readerNext'),readerWindowInfo:$('readerWindowInfo'),
+    readerQuery:$('readerQuery'),readerFind:$('readerFind'),readerPrevHit:$('readerPrevHit'),readerNextHit:$('readerNextHit'),readerHitInfo:$('readerHitInfo')};
   const core=window.AMLCore, zip=window.AMLZip,view=window.AMLViewFilters;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
   let demoActive=false, pendingSensitiveExport=null, listPage=0,comparePage=0;
+  let readerPage=0,readerHits=[],readerHitCursor=-1;
   const LIST_PAGE_SIZE=200, COMPARE_PAGE_SIZE=80;
   e.riskFilter.value='ALL';e.compareFilter.value='ALL';
   const MAX_JSON=64*1024*1024;
@@ -60,7 +63,14 @@
   });
   function status(text,kind=''){e.status.textContent=text;e.status.className='status '+kind;}
   // R9: Hidden DOM still contains private titles and messages. Scrub it, don't only hide it.
+  function resetReaderSession(){
+    readerPage=0;readerHits=[];readerHitCursor=-1;
+    e.readerQuery.value='';e.readerTools.hidden=true;
+    e.readerWindowInfo.textContent='';e.readerHitInfo.textContent='';
+    for(const btn of [e.readerPrev,e.readerNext,e.readerPrevHit,e.readerNextHit])btn.disabled=true;
+  }
   function clearRenderedData(){
+    resetReaderSession();
     for(const element of [e.list,e.detail,e.compareList,e.compareCounts,e.metrics,e.warnings,e.healthCards,e.coverageMetrics])
       element.replaceChildren();
     for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment,e.compareRoute,e.comparePageInfo,e.compareUnknownBreakdown,e.compareJumpStatus])
@@ -169,10 +179,19 @@
     }
   }
   function renderMessages(c){
+    if(!current||selected===null||current.conversations[selected]!==c)return;
+    const win=view.readerWindow(c.messages,readerPage,MAX_RENDERED_MESSAGES);
+    readerPage=win.page;
+    e.readerTools.hidden=false;
+    e.readerPrev.disabled=win.page===0;e.readerNext.disabled=win.page>=win.totalPages-1;
+    const first=win.items.length?win.start+1:0;
+    e.readerWindowInfo.textContent=`已保留訊息 ${first}–${win.start+win.items.length} / ${win.total} · 第 ${win.page+1}/${win.totalPages} 段`;
+    e.readerPrevHit.disabled=readerHits.length===0;e.readerNextHit.disabled=readerHits.length===0;
+    if(readerHits.length)e.readerHitInfo.textContent=`本對話保留文字中找到 ${readerHits.length} 則命中${readerHitCursor>=0?'；目前第 '+(readerHitCursor+1)+' 個':''}。`;
     e.detail.replaceChildren();
     const title=document.createElement('h3');title.textContent=c.title;
     const meta=document.createElement('p');meta.className='small-note';
-    meta.textContent=`${core.formatTime(c.updated)} · 顯示 ${Math.min(c.messages.length,MAX_RENDERED_MESSAGES)} / ${c.messages.length} 則已讀取目前分支訊息`;
+    meta.textContent=`${core.formatTime(c.updated)} · 本段顯示 ${win.items.length} / ${c.messages.length} 則已讀取目前分支訊息`;
     e.detail.append(meta);
     if(c.titleTruncated===true){
       const note=document.createElement('p');note.className='notice';note.dataset.titleTruncated='true';
@@ -181,7 +200,7 @@
     }
     if(c.messages.length>MAX_RENDERED_MESSAGES){
       const note=document.createElement('p');note.className='notice';note.dataset.readingWindow='true';
-      note.textContent=`此畫面顯示前 ${MAX_RENDERED_MESSAGES} / ${c.messages.length} 則已讀取訊息，另有 ${c.messages.length-MAX_RENDERED_MESSAGES} 則未在畫面展開。搜尋仍涵蓋全部保留的目前分支文字；單篇 HTML 可含其餘保留訊息，但受 16 MiB 上限限制。被截短的標題或訊息尾段仍不包含在內。`;
+      note.textContent=`為避免瀏覽器一次渲染過多內容，每段最多 ${MAX_RENDERED_MESSAGES} / ${c.messages.length} 則；現在顯示第 ${win.page+1}/${win.totalPages} 段，可用上方上一段／下一段或搜尋命中定位閱讀其餘保留訊息。搜尋仍涵蓋全部已保留的目前分支文字。單篇 HTML 可含全部保留訊息，但受 16 MiB 上限限制；截短尾段及非目前分支不包含在內。`;
       e.detail.append(note);
     }
     e.detail.append(title);
@@ -191,8 +210,11 @@
       e.detail.append(n);
     }
     if(!c.messages.length){const p=document.createElement('p');p.textContent='此對話沒有可閱讀的目前分支文字訊息。';e.detail.append(p);}
-    for(const msg of c.messages.slice(0,MAX_RENDERED_MESSAGES)){
+    for(const [offset,msg] of win.items.entries()){
+      const absoluteIndex=win.start+offset;
       const section=document.createElement('section');section.className='message';
+      section.dataset.readerIndex=String(absoluteIndex);section.tabIndex=-1;
+      if(readerHitCursor>=0&&readerHits[readerHitCursor]===absoluteIndex)section.dataset.readerHit='true';
       const role=document.createElement('strong');role.textContent=msg.role;
       const text=document.createElement('pre');text.textContent=msg.text||(msg.nonText?'[非文字內容尚未顯示]':'[空白訊息]');
       section.append(role);
@@ -208,7 +230,7 @@
   function selectConversation(i){
     // The list is rebuilt after every selection. Keep the live button focused for keyboard users.
     const restoreFocus=typeof e.list.contains==='function'&&e.list.contains(document.activeElement);
-    revokeSensitiveExport();selected=i;renderList();renderMessages(current.conversations[i]);
+    revokeSensitiveExport();resetReaderSession();selected=i;renderList();renderMessages(current.conversations[i]);
     if(restoreFocus)e.list.querySelector('[aria-current="true"]')?.focus({preventScroll:true});
   }
   function renderList(){
@@ -217,7 +239,7 @@
     listPage=page.page;const totalPages=page.totalPages;
     e.resultCount.textContent=`符合 ${matched.length} 則（已解析 ${current.conversations.length} 則，每頁最多 ${LIST_PAGE_SIZE} 則）`;
     if(selected!==null&&!view.selectionOnCurrentPage(current.conversations,selected,page.items)){
-      revokeSensitiveExport();selected=null;e.html.disabled=true;
+      revokeSensitiveExport();resetReaderSession();selected=null;e.html.disabled=true;
       const note=document.createElement('p');note.className='placeholder';
       note.textContent='目前選取的對話已離開本頁或篩選結果；含原文下載已撤銷，請重新選擇。';e.detail.replaceChildren(note);
     }
@@ -386,26 +408,73 @@
     status('合成示例已載入：不是帳戶備份檢查。可選取對話、搜尋文字和閱讀差異。','ok');
     e.results.scrollIntoView({block:'start',behavior:'auto'});
   }
+  function readerMessageForSelected(){
+    return current&&selected!==null?current.conversations[selected]:null;
+  }
+  function showReaderHit(cursor){
+    const c=readerMessageForSelected();
+    if(!c||!readerHits.length||!Number.isSafeInteger(cursor)||cursor<0||cursor>=readerHits.length)return;
+    const index=readerHits[cursor];
+    const target=view.readerWindowForIndex(index,c.messages.length,MAX_RENDERED_MESSAGES);
+    if(target===null)return;
+    revokeSensitiveExport();readerHitCursor=cursor;readerPage=target;
+    renderMessages(c);
+    const node=e.detail.querySelector(`[data-reader-index="${index}"]`);
+    if(node){node.focus({preventScroll:true});node.scrollIntoView({block:'center',behavior:'auto'});}
+  }
+  function runReaderSearch(){
+    const c=readerMessageForSelected();if(!c)return;
+    const query=e.readerQuery.value;
+    readerHits=[];readerHitCursor=-1;
+    try{readerHits=view.readerSearchHits(c.messages,query);}
+    catch(_){e.readerHitInfo.textContent='搜尋字串無效，請縮短至 160 字內。';return;}
+    if(!query.trim()){e.readerHitInfo.textContent='請輸入關鍵字，再按尋找；僅搜尋本對話已保留的訊息文字。';}
+    else if(!readerHits.length){e.readerHitInfo.textContent='目前已保留文字未找到符合訊息；截短尾段與其他分支未檢查。';}
+    if(readerHits.length)showReaderHit(0);
+    else{e.readerPrevHit.disabled=true;e.readerNextHit.disabled=true;renderMessages(c);}
+  }
+  function stepReaderPage(delta){
+    const c=readerMessageForSelected();if(!c)return;
+    const currentPage=view.readerWindow(c.messages,readerPage,MAX_RENDERED_MESSAGES);
+    const target=readerPage+delta;
+    if(target<0||target>=currentPage.totalPages)return;
+    revokeSensitiveExport();readerPage=target;readerHitCursor=-1;
+    renderMessages(c);e.detail.scrollTop=0;
+  }
+  e.readerPrev.addEventListener('click',()=>stepReaderPage(-1));
+  e.readerNext.addEventListener('click',()=>stepReaderPage(1));
+  e.readerFind.addEventListener('click',runReaderSearch);
+  e.readerQuery.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();runReaderSearch();}});
+  e.readerQuery.addEventListener('input',()=>{
+    readerHits=[];readerHitCursor=-1;e.readerPrevHit.disabled=true;e.readerNextHit.disabled=true;
+    e.readerHitInfo.textContent='搜尋內容已更改，請按尋找重新定位。';
+  });
+  e.readerPrevHit.addEventListener('click',()=>{
+    if(readerHits.length)showReaderHit((readerHitCursor-1+readerHits.length)%readerHits.length);
+  });
+  e.readerNextHit.addEventListener('click',()=>{
+    if(readerHits.length)showReaderHit((readerHitCursor+1)%readerHits.length);
+  });
   e.tryDemo.addEventListener('click',loadSyntheticDemo);
   e.downloadPilot.addEventListener('click',()=>{
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.8.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.9.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.8.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.9.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.8.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.9.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.8.json','application/json;charset=utf-8');});
-  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.10.8.txt','text/plain;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.9.json','application/json;charset=utf-8');});
+  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.10.9.txt','text/plain;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.list.addEventListener('keydown',ev=>{
     // Arrow/Home/End move focus only within the visible page. Enter/Space select explicitly.
@@ -433,7 +502,7 @@
   e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
   e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
   e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.8.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.9.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});

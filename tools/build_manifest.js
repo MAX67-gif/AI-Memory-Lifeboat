@@ -26,10 +26,10 @@ function collect(rel=''){
 collect();files.sort((a,b)=>a.path.localeCompare(b.path,'en'));
 if(files.length<46)throw Error('TOO_FEW_PUBLIC_FILES');
 const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.json'),'utf8'));
-prior.version='0.10.8-preview-source';prior.date='2026-11-16';
-prior.base_public_main='30086cf441512abed1b3af3d2117e583d0ee49ea';
+prior.version='0.10.9-preview-source';prior.date='2026-11-16';
+prior.base_public_main='df9056a1d9685b6a72da33fc658f1f8bf4231148';
 prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_merge='EXTERNAL_VERIFICATION_REQUIRED';
-prior.source='R18 exact released source plus R19 locally scoped diff triage, bounded jump navigation and privacy-safe human review guide';
+prior.source='R19 exact released source plus R20 bounded 700-message reader windows and selected-conversation local find navigation';
 prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 pinned release preserved','R9 clear hidden DOM and revoke stale comparison/CRC results preserved', 'R10 explicit local-only content-bearing HTML export confirmation preserved', 'R12 deliberate 16 MiB output cap fails closed without producing oversized HTML'];
 prior.scope.push('R13 explicit current-path text truncation metadata, warnings and conservative comparison');
 prior.scope.push('R14 explicit title truncation metadata and INCONCLUSIVE_TITLE; existing 700-message view cap disclosed at top');
@@ -38,6 +38,7 @@ prior.scope.push('R16 local comparison status filters, complete 80-row diff pagi
 prior.scope.push('R17 restore keyboard focus after selecting a conversation; ArrowUp/ArrowDown/Home/End navigate only within the current bounded list page');
 prior.scope.push('R18 fail-closed selection lease: when the selected conversation is not in the current visible list page, revoke sensitive export and clear stale reading content');
 prior.scope.push('R19 four UNKNOWN subfilters, local title search, validated direct comparison page navigation and title-free human review guide TXT');
+prior.scope.push('R20 later retained current-path messages reachable in 700-message windows with transient local in-conversation search and hit navigation; no parser/schema/cap changes');
 prior.evidence.node_test_target='npm run check';
 prior.evidence.browser='real Chromium synthetic offline and source parity, hosted Pages NOT_VERIFIED';
 prior.evidence.real_account_export_tested=false;prior.evidence.external_adoption_confirmed=false;
