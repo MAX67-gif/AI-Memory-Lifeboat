@@ -1,3 +1,12 @@
+## v0.11.0 — R21 (2026-11-16; pinned Release requires remote validation)
+
+- **New:** Strict one-based **jump-to-retained-message-number** for long conversations; rejects blank, scientific notation, leading zeros, signed values and out-of-bounds input. Keyboard focus is moved to the selected message in its bounded window.
+- **Fix:** After manually changing the 700-message window, pressing “previous hit” when no match is active now starts at the **last** hit; “next hit” starts at the **first**, preserving safe wrap-around.
+- **Fix:** When a query changes, clear the stale highlight immediately instead of leaving a visibly active result from the prior search.
+- **UX:** Clear old jump feedback when switching windows, selecting a different hit, replacing sources or clearing state. Compact responsive controls and limited ARIA status.
+- **Security:** No new network, storage, source data, cloud provider, or private-report fields. Keep R20 700-message render cap, R10 consent, R12 16 MiB output cap, R18 current-page selection lease, R19 difference schema and R6 archive limits.
+- **Evidence:** Synthetic negative tests, Chromium 1280x900 and 390x844 for 1402 retained messages, original R20 red regressions, updated source/offline CSP hash parity. This is engineering evidence only, not account-completeness or external-adoption proof.
+
 ## v0.10.9 — R20 bounded reading, focus-aware find, and privacy-safe source switching (2026-11-16)
 
 - Correct the R14/R19 mismatch: all retained visible messages were searchable, but only the first 700 were readable on screen. Keep the 700-message render cap while letting readers navigate later windows explicitly.

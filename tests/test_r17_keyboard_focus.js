@@ -28,7 +28,7 @@ test('R17: local list focus is explicitly restored after a re-render',()=>{
 test('R17: source and generated standalone expose matching keyboard instructions',()=>{
  for(const f of ['index.html','dist/AI_Memory_Lifeboat_Offline.html']){
   const html=read(f);assert.match(html,/Home／End/);assert.match(read('src/app.js'),/aria-current/);
-  assert.match(html,/v0\.10\.9 Preview/);
+  assert.match(html,/v0\.11\.0 Preview/);
  }
  assert.match(read('dist/AI_Memory_Lifeboat_Offline.html'),/connect-src 'none'/);
 });

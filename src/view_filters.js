@@ -131,5 +131,20 @@
       !Number.isSafeInteger(size)||size<1||size>700)return null;
     return Math.floor(index/size);
   }
-  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,safeCount:num,routeComparison,filterComparison,page,filterConversations,selectionOnCurrentPage,keyboardTargetIndex,jumpToPage,formatReviewGuide,readerWindow,readerSearchHits,readerWindowForIndex});
+  // R21: 1-based user message number to a retained 0-based index. Reject implicit coercion.
+  function readerMessageJump(value,total){
+    if(typeof value!=='string'||!/^[1-9][0-9]*$/.test(value)||value.length>9||
+       !Number.isSafeInteger(total)||total<1)return null;
+    const n=Number(value);
+    return Number.isSafeInteger(n)&&n<=total?n-1:null;
+  }
+  // R21: after manual window movement (-1 cursor), "previous" means LAST hit,
+  // and "next" means FIRST hit. All other indices wrap in a bounded list.
+  function readerHitStep(count,cursor,direction){
+    if(!Number.isSafeInteger(count)||count<1||!Number.isSafeInteger(cursor)||
+       cursor< -1||cursor>=count||(direction!==1&&direction!==-1))return null;
+    if(cursor===-1)return direction===1?0:count-1;
+    return (cursor+direction+count)%count;
+  }
+  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,safeCount:num,routeComparison,filterComparison,page,filterConversations,selectionOnCurrentPage,keyboardTargetIndex,jumpToPage,formatReviewGuide,readerWindow,readerSearchHits,readerWindowForIndex,readerMessageJump,readerHitStep});
 });

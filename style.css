@@ -118,3 +118,13 @@
 .conversation-detail .message:focus-visible{outline:3px solid #1d7492;outline-offset:3px}
 @media(max-width:700px){.reader-tools{padding:10px}.reader-search-row input{flex-basis:100%;max-width:100%}.reader-tool-row{gap:6px}}
 @media(prefers-color-scheme:dark){.reader-tools{background:#1b343c;border-color:#456776}.reader-tool-row strong,.reader-search-row label{color:#d3eaf0}.reader-search-row input{background:#253b45;border-color:#577580;color:#eef8fa}.conversation-detail .message[data-reader-hit="true"]{background:rgba(240,182,66,.12)}}
+
+/* R21: compact direct message navigation; no persistent query or fixed overlay. */
+.reader-jump-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.reader-jump-row[hidden]{display:none}
+.reader-jump-row label{font-weight:650;font-size:.84rem;color:#405963}
+.reader-jump-row input{width:118px;max-width:40vw;padding:8px 10px;border:1px solid #9ebbc4;border-radius:9px;background:#fff;color:#223842;font:inherit;font-variant-numeric:tabular-nums}
+.reader-jump-row .secondary{padding:7px 11px}
+#readerJumpStatus{flex:1 1 180px;min-width:0}
+@media(max-width:600px){.reader-jump-row{align-items:center}.reader-jump-row input{width:110px}}
+@media(prefers-color-scheme:dark){.reader-jump-row label{color:#d3eaf0}.reader-jump-row input{background:#253b45;border-color:#577580;color:#eef8fa}}

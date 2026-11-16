@@ -25,6 +25,8 @@ class FakeElement {
   replaceChildren(...nodes){this.children=[];this._text='';this.append(...nodes);}
   append(...nodes){this.children.push(...nodes);}
   setAttribute(k,v){this.attributes[k]=String(v);}
+  removeAttribute(k){delete this.attributes[k];}
+  getAttribute(k){return this.attributes[k]??null;}
   scrollIntoView(){}
   showModal(){this.open=true;}
   close(){this.open=false;this.fire('close');}

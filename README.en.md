@@ -1,3 +1,13 @@
+## R21 v0.11.0 — Message-number jump and reliable long-conversation navigation
+
+Navigate a retained long conversation by entering a **1-based message number** (for example 701 or 1110) without first searching or repeatedly switching 700-message windows. Invalid and out-of-range inputs fail closed. R21 also fixes two issues reproduced on R20 in Chromium: after manually moving windows, “previous hit” could pick the wrong match; after editing a query, obsolete result highlights remained visible. Navigation moves keyboard focus to the selected retained message; only status/index is announced, not the whole private transcript.
+
+Scope remains the **current selected conversation’s retained current-path text**. Nothing recovers omitted tails, other branches, attachments or deleted account information. Search terms/jump positions remain local and transient; source/selection changes revoke them. Content-bearing HTML still requires explicit confirmation and remains capped at 16 MiB; ZIP/JSON, comparison schemas and all prior privacy gates remain unchanged.
+
+[Check the v0.11.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.11.0) **only after PR CI, main CI and three official assets are verified**, otherwise use [v0.10.9](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.9). [Engineering contract](docs/R21_READER_NAVIGATION_CONTRACT.md). No independent real-world adoption or Codex OSS approval is claimed.
+
+---
+
 ## R20 v0.10.9 — Bounded long-conversation navigation and find-in-conversation
 
 R19 could search messages beyond the first 700, but the reader only rendered the first 700. R20 adds *previous/next 700-message window*, a clear retained-message position, and **local find + previous/next hit** that jumps to the corresponding retained message window. A wholly synthetic 1,402-message conversation is now browsable in 700/700/2 windows and searchable at messages 1,110 and 1,402. The browser still renders **at most 700 messages at once**.
