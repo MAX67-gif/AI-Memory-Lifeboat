@@ -1,3 +1,10 @@
+## v0.10.8 — R19 (2026-11-16; CI and GitHub Release required for publication)
+
+- Four separately selectable unknown comparison reasons: path, ID, truncated text and truncated title. Existing four-way conservative outcome counts and status semantics unchanged.
+- Local-only comparison-title search and a strict, 1-based page jump for long 80-row result sets. Search and navigation state are erased on new source/older source/clear; none are exported in content-free summary.
+- Visible cause count breakdown and a new human-readable local TXT review guide. Portable guide is constructed solely from whitelisted status numbers and fixed instructions, never from chat content, titles, IDs or queries.
+- Preserve strict CSP, no telemetry, R18 sensitive selection lease, R17 keyboard support, all prior release workflows, source-format caps and JSON contract.
+
 ## v0.10.7 — R18 (2026-11-15; GitHub PR/CI/Release gate)
 
 - Reproduce the previous-page selection leak with 421 synthetic conversations (200/200/21 pages).
