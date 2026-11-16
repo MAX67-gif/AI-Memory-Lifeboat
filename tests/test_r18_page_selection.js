@@ -36,6 +36,6 @@ test('empty list, stale identity and invalid selection fail closed',()=>{
 test('app enforces page-scoped lease and revokes HTML export on hidden selection',()=>{
  assert.ok(source.includes('view.page(matched,listPage,LIST_PAGE_SIZE)'));
  assert.ok(source.includes('view.selectionOnCurrentPage(current.conversations,selected,page.items)'));
- assert.ok(source.includes('revokeSensitiveExport();selected=null;e.html.disabled=true;'));
+ assert.ok(source.includes('revokeSensitiveExport();resetReaderSession();selected=null;e.html.disabled=true;'));
  assert.ok(source.includes('pending.generation===generation && pending.selected===selected'));
 });

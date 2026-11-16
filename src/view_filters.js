@@ -102,5 +102,34 @@
       default:return null;
     }
   }
-  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,safeCount:num,routeComparison,filterComparison,page,filterConversations,selectionOnCurrentPage,keyboardTargetIndex,jumpToPage,formatReviewGuide});
+  // R20: Browse every retained message without rendering more than 700 at a time.
+  // These windows only change presentation; they never widen original export parsing limits.
+  function readerWindow(messages,index=0,size=700){
+    if(!Number.isSafeInteger(size)||size<1||size>700)throw Error('READER_WINDOW_SIZE');
+    if(!Number.isSafeInteger(index))throw Error('READER_WINDOW_INDEX');
+    const all=Array.isArray(messages)?messages:[];
+    const totalPages=Math.max(1,Math.ceil(all.length/size));
+    const current=Math.min(Math.max(index,0),totalPages-1);
+    const start=current*size;
+    return {items:all.slice(start,start+size),page:current,totalPages,total:all.length,start};
+  }
+  // Search only retained text in the selected current-path messages. Never inspect hidden nodes.
+  function readerSearchHits(messages,query){
+    if(typeof query!=='string')throw Error('READER_SEARCH_INVALID');
+    if(query.length>160)throw Error('READER_SEARCH_LENGTH');
+    const needle=query.trim().toLocaleLowerCase();
+    if(!needle)return [];
+    const hits=[];
+    const source=Array.isArray(messages)?messages:[];
+    for(let i=0;i<source.length;i++){
+      if(typeof source[i]?.text==='string'&&source[i].text.toLocaleLowerCase().includes(needle))hits.push(i);
+    }
+    return hits;
+  }
+  function readerWindowForIndex(index,count,size=700){
+    if(!Number.isSafeInteger(index)||!Number.isSafeInteger(count)||index<0||index>=count||
+      !Number.isSafeInteger(size)||size<1||size>700)return null;
+    return Math.floor(index/size);
+  }
+  return Object.freeze({UNKNOWN,DIFF_GROUPS,RISK_GROUPS,countUnknown,safeCount:num,routeComparison,filterComparison,page,filterConversations,selectionOnCurrentPage,keyboardTargetIndex,jumpToPage,formatReviewGuide,readerWindow,readerSearchHits,readerWindowForIndex});
 });

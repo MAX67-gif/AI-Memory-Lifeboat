@@ -66,6 +66,6 @@ test('R18: selected data must be on this visible list page before private export
  const s=rd('src/app.js'),v=rd('src/view_filters.js');
  assert.match(s,/view\.page\(matched,listPage,LIST_PAGE_SIZE\)/);
  assert.match(s,/view\.selectionOnCurrentPage\(current\.conversations,selected,page\.items\)/);
- assert.match(s,/revokeSensitiveExport\(\);selected=null;e\.html\.disabled=true;/);
+ assert.match(s,/revokeSensitiveExport\(\);resetReaderSession\(\);selected=null;e\.html\.disabled=true;/);
  assert.match(v,/selectionOnCurrentPage/);
 });

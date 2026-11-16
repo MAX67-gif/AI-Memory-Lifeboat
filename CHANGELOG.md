@@ -1,3 +1,12 @@
+## v0.10.9 — R20 bounded reading, focus-aware find, and privacy-safe source switching (2026-11-16)
+
+- Correct the R14/R19 mismatch: all retained visible messages were searchable, but only the first 700 were readable on screen. Keep the 700-message render cap while letting readers navigate later windows explicitly.
+- Find locally within the **selected current-path conversation** and jump to its retained message. Previous/next hit supports non-contiguous hits across windows; no automatic export or remote search.
+- Reader toolbar shows scoped position and conservative search limitations. Invalid searches are rejected; non-text and omitted text remain out of scope.
+- Wipe transient search and hit state whenever the source or selection changes, a filter hides the selection, or the user clears the app. Preserve R10 content-export consent and R12 16 MiB cap.
+- Add synthetic red/green regression for 1,402 messages, Chromium desktop/mobile, and strict source/standalone CSP parity.
+- **No change** to parser, stable export summary schemas, ZIP/JSON caps, R19 review features, telemetry, account restoration or historical pinned Release workflows.
+
 ## v0.10.8 — R19 (2026-11-16; CI and GitHub Release required for publication)
 
 - Four separately selectable unknown comparison reasons: path, ID, truncated text and truncated title. Existing four-way conservative outcome counts and status semantics unchanged.
