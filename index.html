@@ -7,7 +7,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.9 Preview</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.11.0 Preview</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="src/core.js"></script>
   <script defer src="src/zip.js"></script>
@@ -24,7 +24,7 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.9 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.11.0 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -176,7 +176,14 @@
               <button id="readerNextHit" type="button" class="secondary" disabled>下一個命中</button>
               <span id="readerHitInfo" class="small-note" role="status" aria-live="polite"></span>
             </div>
-            <p class="small-note reader-limits">每段最多 700 則；可切換至後續已讀取訊息，或直接定位命中所在段。搜尋不包含截短尾段、其它分支或非文字內容；不會上傳、保存搜尋字串或修改原始備份。</p>
+            <div id="readerJumpWrap" class="reader-jump-row" hidden>
+              <label for="readerJumpInput">直接跳至第</label>
+              <input id="readerJumpInput" type="text" inputmode="numeric" maxlength="9" autocomplete="off" aria-describedby="readerJumpStatus" placeholder="例如 1110">
+              <span>則訊息</span>
+              <button id="readerJumpGo" type="button" class="secondary">跳轉</button>
+              <span id="readerJumpStatus" class="small-note" role="status" aria-live="polite"></span>
+            </div>
+            <p class="small-note reader-limits">每段最多 700 則；可切換至後續已讀取訊息、依訊息序號直接跳轉，或定位搜尋命中。僅限已保留的目前分支文字；不包含截短尾段、其它分支或非文字內容；不會上傳、保存搜尋字串或修改原始備份。</p>
           </div>
           <div class="reader">
             <nav class="conversation-list" id="conversationList" aria-label="對話清單"></nav>

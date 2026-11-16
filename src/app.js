@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.9 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.11.0 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -16,7 +16,8 @@
     downloadPilot:$('downloadPilot'),pilotStatus:$('pilotStatus'),downloadFirstResult:$('downloadFirstResult'),
     htmlExportConfirm:$('htmlExportConfirm'),cancelHtmlExport:$('cancelHtmlExport'),confirmHtmlExport:$('confirmHtmlExport'),
     readerTools:$('readerTools'),readerPrev:$('readerPrev'),readerNext:$('readerNext'),readerWindowInfo:$('readerWindowInfo'),
-    readerQuery:$('readerQuery'),readerFind:$('readerFind'),readerPrevHit:$('readerPrevHit'),readerNextHit:$('readerNextHit'),readerHitInfo:$('readerHitInfo')};
+    readerQuery:$('readerQuery'),readerFind:$('readerFind'),readerPrevHit:$('readerPrevHit'),readerNextHit:$('readerNextHit'),readerHitInfo:$('readerHitInfo'),
+    readerJumpWrap:$('readerJumpWrap'),readerJumpInput:$('readerJumpInput'),readerJumpGo:$('readerJumpGo'),readerJumpStatus:$('readerJumpStatus')};
   const core=window.AMLCore, zip=window.AMLZip,view=window.AMLViewFilters;
   let current=null, older=null, compared=null, selected=null, generation=0, comparisonGeneration=0;
   let currentFile=null, matchedAttachmentPaths=[], byteReport=null, healthReport=null;
@@ -67,6 +68,8 @@
     readerPage=0;readerHits=[];readerHitCursor=-1;
     e.readerQuery.value='';e.readerTools.hidden=true;
     e.readerWindowInfo.textContent='';e.readerHitInfo.textContent='';
+    e.readerJumpWrap.hidden=true;e.readerJumpInput.value='';e.readerJumpStatus.textContent='';
+    e.readerJumpInput.removeAttribute('aria-invalid');
     for(const btn of [e.readerPrev,e.readerNext,e.readerPrevHit,e.readerNextHit])btn.disabled=true;
   }
   function clearRenderedData(){
@@ -184,6 +187,7 @@
     readerPage=win.page;
     e.readerTools.hidden=false;
     e.readerPrev.disabled=win.page===0;e.readerNext.disabled=win.page>=win.totalPages-1;
+    e.readerJumpWrap.hidden=c.messages.length<=MAX_RENDERED_MESSAGES;
     const first=win.items.length?win.start+1:0;
     e.readerWindowInfo.textContent=`已保留訊息 ${first}–${win.start+win.items.length} / ${win.total} · 第 ${win.page+1}/${win.totalPages} 段`;
     e.readerPrevHit.disabled=readerHits.length===0;e.readerNextHit.disabled=readerHits.length===0;
@@ -214,6 +218,7 @@
       const absoluteIndex=win.start+offset;
       const section=document.createElement('section');section.className='message';
       section.dataset.readerIndex=String(absoluteIndex);section.tabIndex=-1;
+      section.setAttribute('aria-label',`第 ${absoluteIndex+1} 則訊息`);
       if(readerHitCursor>=0&&readerHits[readerHitCursor]===absoluteIndex)section.dataset.readerHit='true';
       const role=document.createElement('strong');role.textContent=msg.role;
       const text=document.createElement('pre');text.textContent=msg.text||(msg.nonText?'[非文字內容尚未顯示]':'[空白訊息]');
@@ -411,6 +416,24 @@
   function readerMessageForSelected(){
     return current&&selected!==null?current.conversations[selected]:null;
   }
+  function focusReaderMessage(index){
+    const node=e.detail.querySelector(`[data-reader-index="${index}"]`);
+    if(node){node.focus({preventScroll:true});node.scrollIntoView({block:'center',behavior:'auto'});}
+  }
+  function jumpToReaderMessage(){
+    const c=readerMessageForSelected();if(!c)return;
+    const index=view.readerMessageJump(e.readerJumpInput.value,c.messages.length);
+    if(index===null){
+      e.readerJumpStatus.textContent=`訊息序號無效，請輸入 1 到 ${c.messages.length} 的整數。`;
+      e.readerJumpInput.setAttribute('aria-invalid','true');return;
+    }
+    e.readerJumpInput.removeAttribute('aria-invalid');
+    revokeSensitiveExport();readerHitCursor=-1;
+    readerPage=view.readerWindowForIndex(index,c.messages.length,MAX_RENDERED_MESSAGES);
+    renderMessages(c);
+    e.readerJumpStatus.textContent=`已跳到第 ${index+1} / ${c.messages.length} 則（已保留的目前分支）。`;
+    focusReaderMessage(index);
+  }
   function showReaderHit(cursor){
     const c=readerMessageForSelected();
     if(!c||!readerHits.length||!Number.isSafeInteger(cursor)||cursor<0||cursor>=readerHits.length)return;
@@ -419,8 +442,9 @@
     if(target===null)return;
     revokeSensitiveExport();readerHitCursor=cursor;readerPage=target;
     renderMessages(c);
-    const node=e.detail.querySelector(`[data-reader-index="${index}"]`);
-    if(node){node.focus({preventScroll:true});node.scrollIntoView({block:'center',behavior:'auto'});}
+    focusReaderMessage(index);
+    e.readerJumpInput.value='';e.readerJumpInput.removeAttribute('aria-invalid');
+    e.readerJumpStatus.textContent='';
   }
   function runReaderSearch(){
     const c=readerMessageForSelected();if(!c)return;
@@ -439,6 +463,7 @@
     const target=readerPage+delta;
     if(target<0||target>=currentPage.totalPages)return;
     revokeSensitiveExport();readerPage=target;readerHitCursor=-1;
+    e.readerJumpInput.value='';e.readerJumpStatus.textContent='';e.readerJumpInput.removeAttribute('aria-invalid');
     renderMessages(c);e.detail.scrollTop=0;
   }
   e.readerPrev.addEventListener('click',()=>stepReaderPage(-1));
@@ -447,34 +472,41 @@
   e.readerQuery.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();runReaderSearch();}});
   e.readerQuery.addEventListener('input',()=>{
     readerHits=[];readerHitCursor=-1;e.readerPrevHit.disabled=true;e.readerNextHit.disabled=true;
+    // A previous hit cannot remain visibly highlighted when the query no longer describes it.
+    for(const hit of e.detail.querySelectorAll('[data-reader-hit="true"]'))hit.removeAttribute('data-reader-hit');
     e.readerHitInfo.textContent='搜尋內容已更改，請按尋找重新定位。';
   });
   e.readerPrevHit.addEventListener('click',()=>{
-    if(readerHits.length)showReaderHit((readerHitCursor-1+readerHits.length)%readerHits.length);
+    const target=view.readerHitStep(readerHits.length,readerHitCursor,-1);
+    if(target!==null)showReaderHit(target);
   });
   e.readerNextHit.addEventListener('click',()=>{
-    if(readerHits.length)showReaderHit((readerHitCursor+1)%readerHits.length);
+    const target=view.readerHitStep(readerHits.length,readerHitCursor,1);
+    if(target!==null)showReaderHit(target);
   });
+  e.readerJumpGo.addEventListener('click',jumpToReaderMessage);
+  e.readerJumpInput.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();jumpToReaderMessage();}});
+  e.readerJumpInput.addEventListener('input',()=>{e.readerJumpStatus.textContent='';e.readerJumpInput.removeAttribute('aria-invalid');});
   e.tryDemo.addEventListener('click',loadSyntheticDemo);
   e.downloadPilot.addEventListener('click',()=>{
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.9.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.11.0.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.9.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.11.0.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.9.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.11.0.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.9.json','application/json;charset=utf-8');});
-  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.10.9.txt','text/plain;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.11.0.json','application/json;charset=utf-8');});
+  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.11.0.txt','text/plain;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.list.addEventListener('keydown',ev=>{
     // Arrow/Home/End move focus only within the visible page. Enter/Space select explicitly.
@@ -502,7 +534,7 @@
   e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
   e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
   e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.9.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.11.0.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});
