@@ -1,3 +1,11 @@
+## R19 v0.10.8 — Offline comparison review workbench
+
+The existing R18 comparison already paginates 80 results and conservatively counts four UNKNOWN causes. R19 adds *four separate UNKNOWN filters*, local-only title search, validated direct page navigation for long result sets, an explicit UNKNOWN count breakdown, and a **human-readable TXT guide containing fixed counts/instructions only** (no titles, IDs, transcript text or search queries). Counts themselves can be sensitive; review before sharing. Existing JSON summary semantics are unchanged.
+
+[Check the v0.10.8 GitHub Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.8) only after exact-head CI, main CI and all three published assets pass; otherwise use [v0.10.7](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.10.7). No new AI provider, upload, tracking, restored deleted account data, or promise of completeness. [Design/limits](docs/R19_COMPARISON_REVIEW_WORKBENCH.md).
+
+---
+
 ## R18 v0.10.7 — Visible-page selection and sensitive export gate
 
 R17 retained the previous conversation's text and content-bearing export permission after navigating to a different 200-row list page. R18 revokes stale selection and consent whenever pagination, search or a risk filter hides the previously selected conversation; users must select an item visibly present in the current page before requesting a private HTML download again. Tested using a wholly synthetic 421-conversation fixture.

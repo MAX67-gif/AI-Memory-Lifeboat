@@ -1,4 +1,4 @@
-/* AI Memory Lifeboat v0.10.7 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.10.8 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
@@ -6,6 +6,8 @@
     search:$('searchBox'),resultCount:$('resultCount'),listPager:$('listPager'),listPageInfo:$('listPageInfo'),listPrev:$('listPrev'),listNext:$('listNext'),audit:$('downloadAudit'),html:$('downloadHtml'),
     olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
     compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
+    compareSearch:$('compareSearch'),compareUnknownBreakdown:$('compareUnknownBreakdown'),downloadReviewGuide:$('downloadReviewGuide'),
+    compareJumpWrap:$('compareJumpWrap'),comparePageJump:$('comparePageJump'),compareGoPage:$('compareGoPage'),compareJumpStatus:$('compareJumpStatus'),
     compareFilter:$('compareFilter'),comparePager:$('comparePager'),comparePageInfo:$('comparePageInfo'),comparePrev:$('comparePrev'),compareNext:$('compareNext'),compareRoute:$('compareRoute'),coverageMetrics:$('coverageMetrics'),riskFilter:$('riskFilter'),
     archiveAssessment:$('archiveAssessment'),healthSummary:$('healthSummary'),healthCards:$('healthCards'),
     downloadHealth:$('downloadHealth'),verifyAttachments:$('verifyAttachments'),attachmentVerifyStatus:$('attachmentVerifyStatus'),
@@ -61,18 +63,21 @@
   function clearRenderedData(){
     for(const element of [e.list,e.detail,e.compareList,e.compareCounts,e.metrics,e.warnings,e.healthCards,e.coverageMetrics])
       element.replaceChildren();
-    for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment,e.compareRoute,e.comparePageInfo])
+    for(const element of [e.resultCount,e.warningCount,e.healthSummary,e.archiveAssessment,e.compareRoute,e.comparePageInfo,e.compareUnknownBreakdown,e.compareJumpStatus])
       element.textContent='';
     delete e.healthSummary.dataset.state;
     e.listPager.hidden=true;e.listPageInfo.textContent='';e.listPrev.disabled=true;e.listNext.disabled=true;
     e.comparePager.hidden=true;e.comparePrev.disabled=true;e.compareNext.disabled=true;
-    e.riskFilter.value='ALL';e.compareFilter.value='ALL';comparePage=0;
+    e.riskFilter.value='ALL';e.compareFilter.value='ALL';e.compareSearch.value='';comparePage=0;
+    e.comparePageJump.value='';e.comparePageJump.disabled=true;e.compareGoPage.disabled=true;e.compareJumpWrap.hidden=true;
     e.archiveAssessment.hidden=true;e.comparePanel.hidden=true;
   }
   function clearComparisonView(){
     e.comparePanel.hidden=true;e.compareList.replaceChildren();e.compareCounts.replaceChildren();
     e.compareRoute.textContent='';e.comparePageInfo.textContent='';e.comparePager.hidden=true;
-    e.comparePrev.disabled=true;e.compareNext.disabled=true;e.compareFilter.value='ALL';comparePage=0;
+    e.comparePrev.disabled=true;e.compareNext.disabled=true;e.compareFilter.value='ALL';e.compareSearch.value='';comparePage=0;
+    e.compareUnknownBreakdown.textContent='';e.compareJumpStatus.textContent='';
+    e.comparePageJump.value='';e.comparePageJump.disabled=true;e.compareGoPage.disabled=true;e.compareJumpWrap.hidden=true;
   }
   // Sensitive HTML must never be exported from a stale selection or source.
   function revokeSensitiveExport(){
@@ -268,14 +273,19 @@
       metric('新版匯出未見',c.NOT_IN_NEW_EXPORT),
       metric('目前分支有差異',c.CURRENT_VIEW_CHANGED),
       metric('無法確定',view.countUnknown(c)));
+    e.compareUnknownBreakdown.textContent=`UNKNOWN 拆解（需人工核對）：路徑 ${view.safeCount(c.INCONCLUSIVE_PATH)}｜ID ${view.safeCount(c.INCONCLUSIVE_ID)}｜文字截短 ${view.safeCount(c.INCONCLUSIVE_TEXT)}｜標題截短 ${view.safeCount(c.INCONCLUSIVE_TITLE)}`;
     const route=view.routeComparison(compared.summary);
     e.compareRoute.textContent=route.message;
     e.compareRoute.dataset.state=route.code;
     e.compareList.replaceChildren();
-    const filtered=view.filterComparison(compared.items,e.compareFilter.value);
+    const filtered=view.filterComparison(compared.items,e.compareFilter.value,e.compareSearch.value);
     const page=view.page(filtered,comparePage,COMPARE_PAGE_SIZE);comparePage=page.page;
-    e.comparePageInfo.textContent=`第 ${page.page+1} / ${page.totalPages} 頁 · 本類 ${page.total} 項`;
+    e.comparePageInfo.textContent=`第 ${page.page+1} / ${page.totalPages} 頁 · 本類／搜尋符合 ${page.total} 項`;
     e.comparePager.hidden=page.totalPages<=1;
+    e.compareJumpWrap.hidden=page.totalPages<=2;
+    e.comparePageJump.disabled=page.totalPages<=2;e.compareGoPage.disabled=page.totalPages<=2;
+    e.comparePageJump.max=String(page.totalPages);
+    if(page.totalPages>2)e.comparePageJump.value=String(page.page+1);
     e.comparePrev.disabled=page.page<=0;e.compareNext.disabled=page.page>=page.totalPages-1;
     const fragment=document.createDocumentFragment();
     for(const item of page.items){
@@ -381,20 +391,21 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.7.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.10.8.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.10.7.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.10.8.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.7.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.10.8.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.7.json','application/json;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.10.8.json','application/json;charset=utf-8');});
+  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.10.8.txt','text/plain;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.list.addEventListener('keydown',ev=>{
     // Arrow/Home/End move focus only within the visible page. Enter/Space select explicitly.
@@ -407,11 +418,22 @@
   e.listPrev.addEventListener('click',()=>{if(!current||e.listPrev.disabled)return;listPage--;renderList();e.list.scrollTop=0;});
   e.listNext.addEventListener('click',()=>{if(!current||e.listNext.disabled)return;listPage++;renderList();e.list.scrollTop=0;});
   e.riskFilter.addEventListener('change',()=>{listPage=0;if(current)renderList();});
-  e.compareFilter.addEventListener('change',()=>{comparePage=0;if(compared)renderComparison();});
-  e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;renderComparison();e.compareList.scrollTop=0;});
-  e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;renderComparison();e.compareList.scrollTop=0;});
+  e.compareFilter.addEventListener('change',()=>{comparePage=0;e.compareJumpStatus.textContent='';if(compared)renderComparison();});
+  e.compareSearch.addEventListener('input',()=>{comparePage=0;e.compareJumpStatus.textContent='';if(compared)renderComparison();});
+  function goToComparePage(){
+    if(!compared)return;
+    const filtered=view.filterComparison(compared.items,e.compareFilter.value,e.compareSearch.value);
+    const pages=view.page(filtered,0,COMPARE_PAGE_SIZE).totalPages;
+    const target=view.jumpToPage(e.comparePageJump.value,pages);
+    if(target===null){e.compareJumpStatus.textContent=`頁碼無效，請輸入 1 到 ${pages}。`;return;}
+    comparePage=target;e.compareJumpStatus.textContent=`已跳到第 ${target+1} 頁。`;renderComparison();e.compareList.scrollTop=0;
+  }
+  e.compareGoPage.addEventListener('click',goToComparePage);
+  e.comparePageJump.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();goToComparePage();}});
+  e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
+  e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
   e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.7.json','application/json;charset=utf-8');});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.10.8.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});

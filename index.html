@@ -7,7 +7,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <meta name="description" content="AI Memory Lifeboat: 檢查、搜尋與離線閱讀 ChatGPT 官方匯出內容，不傳送你的對話。">
-  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.7 Preview</title>
+  <title>AI Memory Lifeboat｜AI 對話救生艇 v0.10.8 Preview</title>
   <link rel="stylesheet" href="style.css">
   <script defer src="src/core.js"></script>
   <script defer src="src/zip.js"></script>
@@ -24,7 +24,7 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.7 Preview</span></div></div>
+      <div class="identity"><span class="mark" aria-hidden="true">↗</span><div><strong>AI Memory Lifeboat</strong><span>AI 對話救生艇 · v0.10.8 Preview</span></div></div>
       <a href="https://github.com/MAX67-gif/AI-Memory-Lifeboat" target="_blank" rel="noopener noreferrer">GitHub 原始碼</a>
     </header>
     <main>
@@ -106,24 +106,40 @@
           <p id="olderStatus" class="status" role="status">請先載入最新版匯出檔。</p>
           <div id="comparePanel" hidden>
             <div class="metrics" id="compareCounts"></div>
+            <p class="compare-unknown-breakdown" id="compareUnknownBreakdown" aria-live="polite"></p>
             <p id="compareRoute" class="compare-route" role="status" aria-live="polite"></p>
             <label class="field-label" for="compareFilter">差異類別（僅在本機篩選）</label>
             <select id="compareFilter" class="local-filter">
               <option value="ALL">所有需檢視結果</option>
-              <option value="UNKNOWN">無法確定（優先核對）</option>
+              <option value="UNKNOWN">無法確定（合計，優先核對）</option>
+              <option value="UNKNOWN_PATH">↳ UNKNOWN 路徑／分支不可比較</option>
+              <option value="UNKNOWN_ID">↳ UNKNOWN ID 不可靠</option>
+              <option value="UNKNOWN_TEXT">↳ UNKNOWN 文字截短</option>
+              <option value="UNKNOWN_TITLE">↳ UNKNOWN 標題截短</option>
               <option value="DIFFERENCES">已知目前分支差異</option>
               <option value="NEW">只在新版出現</option>
               <option value="NOT_SEEN">新版匯出未見（不代表刪除）</option>
               <option value="METADATA">僅中繼資料變化</option>
             </select>
+            <label class="field-label" for="compareSearch">差異名稱搜尋（僅此頁本機篩選，輸入不會進入下載報告）</label>
+            <input id="compareSearch" type="search" class="local-filter" maxlength="160" autocomplete="off" placeholder="在所有差異中搜尋對話名稱…">
             <nav class="compare-pager" id="comparePager" aria-label="差異清單分頁" hidden>
               <button type="button" class="secondary" id="comparePrev" disabled>上一頁</button>
               <span id="comparePageInfo" aria-live="polite"></span>
               <button type="button" class="secondary" id="compareNext" disabled>下一頁</button>
+              <span id="compareJumpWrap" class="compare-jump" hidden>
+                <label for="comparePageJump">跳到第</label><input id="comparePageJump" type="number" min="1" step="1" inputmode="numeric" aria-label="差異結果頁碼" disabled>
+                <span>頁</span><button id="compareGoPage" type="button" class="secondary" disabled>前往</button>
+              </span>
+              <span id="compareJumpStatus" role="status" aria-live="polite" class="small-note"></span>
             </nav>
             <p class="note">不比較非目前分支的文字內容，也無法辨認兩份匯出是否屬於同一個帳戶。以下名稱只在本機畫面呈現，不會進入摘要報告。</p>
             <ul id="compareList" class="compare-list"></ul>
-            <button id="downloadComparison" type="button" class="secondary">下載不含對話名稱的差異摘要 JSON</button>
+            <div class="actions">
+              <button id="downloadComparison" type="button" class="secondary">下載不含對話名稱的差異摘要 JSON</button>
+              <button id="downloadReviewGuide" type="button" class="secondary">下載白話審閱指引 TXT（無原文／標題）</button>
+            </div>
+            <p class="small-note">TXT 只包含固定分類計數和核對步驟，不會寫入對話名稱、搜尋字串或原文；統計數量仍可能敏感，請先檢查再分享。</p>
           </div>
         </section>
         <section class="panel browse-panel" aria-labelledby="browseTitle">
