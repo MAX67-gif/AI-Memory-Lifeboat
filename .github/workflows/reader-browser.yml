@@ -1,0 +1,31 @@
+name: Offline reader browser
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  reader-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run Chrome against synthetic offline reader fixtures
+        shell: bash
+        run: |
+          output="$RUNNER_TEMP/reader-browser"
+          chrome=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || printf 'google-chrome')
+          node tools/verify_reader_browser.js --chrome "$chrome" --output-dir "$output"
+      - name: Upload synthetic reader evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-reader-browser
+          path: ${{ runner.temp }}/reader-browser/
+          if-no-files-found: error

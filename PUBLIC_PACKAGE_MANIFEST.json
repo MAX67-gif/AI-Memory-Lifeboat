@@ -46,6 +46,12 @@
       "bytes": 2135
     },
     {
+      "path": ".github/workflows/reader-browser.yml",
+      "sha256": "dc73b4fc3f5c438d6a6c1043c7a49170a2a7c8b3801d6265f46305fb8d3cb1f9",
+      "git_blob_sha1": "95df1ba48c9924f583d04bef79195ca7caff297a",
+      "bytes": 971
+    },
+    {
       "path": ".github/workflows/release-offline-r10.yml",
       "sha256": "71c493090b6bd9a27f8ae69754068253401aee9c5609c66f9ba816259ecb3603",
       "git_blob_sha1": "544e75bfda0db0ec63eb232752dca9d44ab5e68c",
@@ -610,6 +616,12 @@
       "bytes": 3097
     },
     {
+      "path": "tests/test_r22_ime_composition.js",
+      "sha256": "d4e31b11af49a56d7a4eb6a39a31473a584c3783c904a162721bcef619b39a46",
+      "git_blob_sha1": "7470c76955783f0090a6faca994a7221c823708d",
+      "bytes": 6129
+    },
+    {
       "path": "tests/test_r5_first_result.js",
       "sha256": "c271a48d4b0cfd51649c04225e1ef601509ee4c636fda273c2f13192c4e16c5e",
       "git_blob_sha1": "44e1d2849b55bb153985bb2aaca51bec6ee39797",
@@ -740,6 +752,12 @@
       "sha256": "1cf99010f0a89585aa46fbb9f982f49243e9adc8d74be2aeac0a0ceb15f73793",
       "git_blob_sha1": "b3a1fe877143a59962b93c6249ef3a01002b2665",
       "bytes": 2704
+    },
+    {
+      "path": "tools/verify_reader_browser.js",
+      "sha256": "903217cacb2d2d5d93f6b3718fa20c1c5cf8783132d82956e8c2cca406797a9d",
+      "git_blob_sha1": "28e03eff0190cfa0b7debe6517e7f3c91f0b184e",
+      "bytes": 24305
     }
   ],
   "provenance_scope": "LOCAL_PACKAGE_SNAPSHOT_NOT_LIVE_GITHUB_STATE"
