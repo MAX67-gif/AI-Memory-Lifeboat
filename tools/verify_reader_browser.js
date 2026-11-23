@@ -329,6 +329,8 @@ function browserChecks(page, downloads, errors, outbound, report, output) {
         await expectWindow(...terminal);
         const active = await focusState();
         assert.ok(active.tag !== 'BODY' && !active.disabled, `Focus was lost at reader boundary: ${JSON.stringify(active)}`);
+        assert.equal(active.name, `第 ${terminal[1]} 則訊息`, 'Boundary focus must continue at the first message in the new window');
+        assert.equal(await evaluate(() => document.activeElement.matches('.message')), true);
         assert.equal(await evaluate(selector => document.querySelector(selector).disabled, opposite), false);
         assert.equal(await evaluate(selector => document.querySelector(selector).disabled, button), true);
       });

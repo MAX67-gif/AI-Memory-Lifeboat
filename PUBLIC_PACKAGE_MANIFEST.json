@@ -780,9 +780,9 @@
     },
     {
       "path": "tools/verify_reader_browser.js",
-      "sha256": "7e3edabea746f6d677d9fba59af9c112941c2cbf742cb05f324eac8ca61859d9",
-      "git_blob_sha1": "a58eb911427b4a851dc4f89496da51dcea0a8f62",
-      "bytes": 27837
+      "sha256": "6f3790285f315b3fdd89f524424b3349e161286b66c3c179105c4f74ca2c6c56",
+      "git_blob_sha1": "d95dc3ae54b004fbe007d2f9038464a7748dff50",
+      "bytes": 28069
     }
   ],
   "provenance_scope": "LOCAL_PACKAGE_SNAPSHOT_NOT_LIVE_GITHUB_STATE"
