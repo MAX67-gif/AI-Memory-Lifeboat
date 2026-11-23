@@ -1,3 +1,12 @@
+## v0.11.1 — R22 (2026-11-24; remote publication gates apply)
+
+- Fix premature search and message jumps during input-method composition, with normal committed Enter unchanged.
+- Scroll bounded list focus into view during Arrow/Home/End navigation without implicit selection or cross-page navigation.
+- Hand off focus to the first message when a reader paging button becomes disabled at the first/last window; enabled paging buttons keep focus.
+- Add real Chrome file:// regression to pull requests and main, using generated desktop/mobile fixtures and checking actual synthetic HTML export contents.
+- Preserve existing schemas, parser budgets, 700-message rendering, selection revocation and private-download confirmation.
+- Keep all earlier Release publishers and tags immutable; new v0.11.1 has an independently pinned publisher.
+
 ## v0.11.0 — R21 (2026-11-16; pinned Release requires remote validation)
 
 - **New:** Strict one-based **jump-to-retained-message-number** for long conversations; rejects blank, scientific notation, leading zeros, signed values and out-of-bounds input. Keyboard focus is moved to the selected message in its bounded window.

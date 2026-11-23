@@ -77,3 +77,7 @@ A 反證：R19 搜尋可找到 700 則以後的訊息，但 R19 閱讀器只顯�
 ### R21（2026-11-16）｜有界長對話序號跳轉與搜尋狀態
 
 使用已保留的目前分支文字時，新的「跳至第 N 則訊息」只接受嚴格正整數；跳轉定位不會一次渲染超過 700 則。手動換段後上一個／下一個命中以未選取狀態的明確首／尾規則處理；修改查詢會清除舊高亮和命中資格，不得將前次關鍵字或訊息序號寫進報告、localStorage、URL 或網路。請保留 R18 可見頁選取租約、R10 私密下載二次確認、R12 16MiB、R19 UNKNOWN 語意。詳細 SOP 見 `docs/R21_READER_NAVIGATION_CONTRACT.md`。
+
+## R22 (2026-11-24)
+
+Complete the evidence-based IME/visible-focus repair and automated real-Chrome reader regression. Next: measure bounded-render interaction cost with synthetic large messages before considering performance changes. Keep real-user trials deferred; no new providers, cloud upload, telemetry, capacity increases or claims of complete account recovery.
