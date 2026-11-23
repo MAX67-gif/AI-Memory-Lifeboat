@@ -195,3 +195,8 @@ OpenAI 官方文件明示較大的匯出可能包含多個編號對話 JSON。R6
 本版的公開原始碼交付須以 GitHub main、PR 與 CI 的實際結果確認；獨立 GitHub Release、Pages、真人正式資料覆蓋率均需另外驗證。詳見 [R6 多分片匯入與安全邊界](docs/R6_NUMBERED_SHARDS_SUPPORT.md)。
 
 [下載原創編號 ZIP 測試範例](examples/synthetic-numbered-export.zip)；該檔完全虛構，僅供確認 R6 匯入操作，不代表任何真實資料。
+
+
+### R24 效能量測方法研究（產品版本不變）
+
+另有 [R24 分階段 Chrome 效能證據與新頁面守門](docs/R24_PHASED_PERFORMANCE_EVIDENCE.md)：分開「操作狀態可用」與「兩畫格等待」，用固定合成 1,402／7,000 訊息驗證；**不使用使用者資料、不新增上傳，也不代表正式產品升版或實際手機效能證明**。

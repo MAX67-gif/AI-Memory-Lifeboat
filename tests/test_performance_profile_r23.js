@@ -27,3 +27,18 @@ test('repeat and parameter validation never silently accepts invalid input',()=>
  for(const v of ['0','2','16','1.2','-5','NaN','0005'])assert.throws(()=>options(['--runs',v]));
  assert.throws(()=>options(['--warmup','4']));assert.throws(()=>options(['--fillers','1.2']));
 });
+
+test('R24 phase instrumentation preserves legacy frame-inclusive totals and raw components',()=>{
+ const code=require('node:fs').readFileSync(require('node:path').join(__dirname,'../tools/profile_offline_performance.js'),'utf8');
+ for(const marker of ['actionToStateReadyMs','frameWaitMs','actionToFrameMs','phaseTimingsMs','phaseSummary','PHASE_SUM'])
+   assert.ok(code.includes(marker),'Missing '+marker);
+ assert.match(code,/phaseTimings\[action\]=phases/);
+ assert.match(code,/return phases\.actionToFrameMs/);
+});
+test('R24 prevents stale-document probes by checking the new navigation loader',()=>{
+ const code=require('node:fs').readFileSync(require('node:path').join(__dirname,'../tools/profile_offline_performance.js'),'utf8');
+ assert.match(code,/page\.on\('Page\.frameNavigated'/);
+ assert.match(code,/navigatedLoaders\.clear\(\)/);
+ assert.match(code,/navigatedLoaders\.has\(nav\.loaderId\)/);
+ assert.match(code,/FRESH_DOCUMENT_LOADER_MISSING/);
+});

@@ -1,3 +1,10 @@
+## R24 research-only (2026-11-24; product remains v0.11.1)
+
+- Separate state-ready latency from two-frame waiting in real Chrome synthetic research while preserving all prior R23 timing fields and v1 schema.
+- Require a newly navigated Chrome loader before each trial so a stale prior document cannot be mistaken for a fresh run.
+- Add independent baseline and heavier synthetic Chrome CI matrix with raw artifact per fixture; no shipped HTML, runtime source, consent, parser limit or release changes.
+- Evidence interpretation and bounded non-benchmark claims: `docs/R24_PHASED_PERFORMANCE_EVIDENCE.md`.
+
 ## R23 research-only (2026-11-24; product remains v0.11.1)
 
 - Add opt-in deterministic synthetic Chrome performance probe: import, selection, retained-message search, cross-window jump, source replacement, list search and clear; record raw per-run timings, medians, nearest-rank p95 and sampled heap.

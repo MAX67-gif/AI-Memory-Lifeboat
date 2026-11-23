@@ -92,6 +92,8 @@ async function runBrowser(chrome, config, report){
     const targets=await (await fetch(`http://${host}/json/list`,{signal:AbortSignal.timeout(7000)})).json();
     const inspect=targets.find(x=>x.type==='page');if(!inspect)throw Error('NO_PAGE');
     page=await cdp(inspect.webSocketDebuggerUrl);
+    const navigatedLoaders=new Set();
+    page.on('Page.frameNavigated',x=>{if(x.frame?.loaderId)navigatedLoaders.add(x.frame.loaderId);});
     const outbound=[],errors=[];const allowed=url=>url===target||url==='about:blank'||url.startsWith('blob:')||url.startsWith('data:');
     page.on('Network.requestWillBeSent',x=>{if(!allowed(x.request.url))outbound.push('OUTBOUND_BLOCKED');});
     page.on('Network.webSocketCreated',x=>{if(!allowed(x.url))outbound.push('OUTBOUND_SOCKET');});
@@ -112,9 +114,13 @@ async function runBrowser(chrome, config, report){
       await page.send('Emulation.setTouchEmulationEnabled',{enabled:vp.mobile});
       const rows=[];
       for(let i=0;i<config.warmup+config.runs;i++){
-        const {errorText}=await page.send('Page.navigate',{url:target});if(errorText)throw Error('FILE_URL_NAVIGATION_'+errorText);
-        await until(()=>evaluate(()=>document.readyState==='complete'&&Boolean(document.querySelector('#archiveFile'))),
-          'OFFLINE_PAGE',12000);
+        navigatedLoaders.clear();
+        const nav=await page.send('Page.navigate',{url:target});
+        if(nav.errorText)throw Error('FILE_URL_NAVIGATION_'+nav.errorText);
+        if(!nav.loaderId)throw Error('FRESH_DOCUMENT_LOADER_MISSING');
+        await until(async()=>navigatedLoaders.has(nav.loaderId)&&await evaluate(
+          ()=>document.readyState==='complete'&&Boolean(document.querySelector('#archiveFile'))),
+          'OFFLINE_FRESH_DOCUMENT',12000);
         const result=await evaluate(async(original,replacement,messages,fillers)=>{
           const frame=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
           const $=id=>document.getElementById(id);
@@ -129,10 +135,16 @@ async function runBrowser(chrome, config, report){
               await new Promise(r=>setTimeout(r,15));
             }
           };
+          const phaseTimings={};
           const measure=async(action,fn)=>{
-            const from=performance.now();await fn();await frame();
-            const ms=performance.now()-from;
-            check(Number.isFinite(ms)&&ms>=0,'TIMER');return ms;
+            const from=performance.now();await fn();const ready=performance.now();
+            await frame();const painted=performance.now();
+            const phases={actionToStateReadyMs:ready-from,frameWaitMs:painted-ready,
+              actionToFrameMs:painted-from};
+            check(Object.values(phases).every(ms=>Number.isFinite(ms)&&ms>=0),'PHASE_TIMER');
+            check(Math.abs(phases.actionToStateReadyMs+phases.frameWaitMs-phases.actionToFrameMs)<0.001,'PHASE_SUM');
+            phaseTimings[action]=phases;
+            return phases.actionToFrameMs;
           };
           const results={};
           results.importToReadyMs=await measure('import',async()=>{
@@ -175,19 +187,23 @@ async function runBrowser(chrome, config, report){
             check($('conversationList').querySelectorAll('button').length===0,'CLEAR_LIST_DOM');
             check($('downloadHtml').disabled,'CLEAR_SENSITIVE_EXPORT');
           });
-          return {timings:results,visibleMessageNodes:$('conversationDetail').querySelectorAll('.message').length,
+          return {timings:results,phaseTimings,visibleMessageNodes:$('conversationDetail').querySelectorAll('.message').length,
             selectedAfterClear:Boolean($('conversationList').querySelector('[aria-current="true"]'))};
         },fx.original,fx.replacement,fx.messages,fx.fillers);
         if(!result||result.visibleMessageNodes!==0||result.selectedAfterClear)throw Error('SYNTHETIC_CLEAR_ASSERT');
         const heap=await page.send('Runtime.getHeapUsage').catch(()=>null);
         rows.push({iteration:i+1,warmup:i<config.warmup,measured:i>=config.warmup,
-          timingsMs:result.timings,heapUsedAfterClearBytes:heap?.usedSize??null,
+          timingsMs:result.timings,phaseTimingsMs:result.phaseTimings,heapUsedAfterClearBytes:heap?.usedSize??null,
           domNodesAfterClear:result.visibleMessageNodes});
         if(errors.length||outbound.length)throw Error('PRIVACY_OR_RUNTIME_ERROR');
       }
       const measured=rows.filter(x=>x.measured);
       const aggregations=Object.fromEntries(Object.keys(measured[0].timingsMs).map(k=>[k,stats(measured.map(x=>x.timingsMs[k]))]));
-      report.viewports.push({viewport:vp.name,emulated:vp.mobile,dimensions:{width:vp.width,height:vp.height},rows,summary:aggregations});
+      const phaseSummary=Object.fromEntries(Object.keys(measured[0].phaseTimingsMs).map(action=>[
+        action,Object.fromEntries(['actionToStateReadyMs','frameWaitMs','actionToFrameMs'].map(phase=>[
+          phase,stats(measured.map(x=>x.phaseTimingsMs[action][phase]))]))]));
+      report.viewports.push({viewport:vp.name,emulated:vp.mobile,dimensions:{width:vp.width,height:vp.height},
+        rows,summary:aggregations,phaseSummary});
     }
     report.networkRequestsBlocked=outbound.length;report.javascriptErrors=errors.length;
   }catch(err){report.error={code:'BROWSER_OR_SYNTHETIC_EVIDENCE_FAILED',detail:String(err.message).slice(0,220),
