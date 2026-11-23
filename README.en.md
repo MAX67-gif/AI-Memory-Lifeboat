@@ -164,3 +164,8 @@ R5 adds human-readable, content-free `.txt` results and a self-reported feedback
 OpenAI documentation now notes that large exports can contain numbered conversation JSON files. This version recognizes consecutive, unique `conversations-000.json`, `conversations-001.json`, and so forth **inside one ZIP directory** (up to 32 shards), and preserves the earlier single-file path. Missing numbers, duplicates, mixed formats, invalid JSON, CRC failures, and size limits fail closed rather than silently ignoring conversations. A separately opened numbered JSON file is explicitly marked as **possibly incomplete**. Limits remain 128 MiB ZIP and 64 MiB total uncompressed conversation JSON. This is not proof of complete account data or successful account migration. See [R6 scope](docs/R6_NUMBERED_SHARDS_SUPPORT.md).
 
 [Original synthetic numbered ZIP fixture](examples/synthetic-numbered-export.zip), never a real account export.
+
+
+### R24 synthetic profiling methodology (no product release)
+
+See [R24 phased Chrome performance evidence and fresh-document guard](docs/R24_PHASED_PERFORMANCE_EVIDENCE.md). The CI-only probe separates state-ready time from two-frame waiting and runs fixed 1,402/7,000-message synthetic profiles. No personal exports, telemetry, runtime modification, new product version, or claim about physical-device performance.

@@ -10,6 +10,16 @@ jobs:
   synthetic-performance:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: baseline-1402
+            messages: 1402
+            fillers: 200
+          - label: stress-7000
+            messages: 7000
+            fillers: 1200
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,13 +32,13 @@ jobs:
       - name: Measure generated export in real Chrome (research only)
         shell: bash
         run: |
-          output="$RUNNER_TEMP/aml-r23-performance"
+          output="$RUNNER_TEMP/aml-r24-${{ matrix.label }}"
           chrome=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || printf 'google-chrome')
-          node tools/profile_offline_performance.js --chrome "$chrome" --output-dir "$output" --runs 5 --warmup 1
+          node tools/profile_offline_performance.js --chrome "$chrome" --output-dir "$output" --runs 5 --warmup 1 --messages "${{ matrix.messages }}" --fillers "${{ matrix.fillers }}"
       - name: Retain raw timings and startup diagnostics on every outcome
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: synthetic-performance-r23
-          path: ${{ runner.temp }}/aml-r23-performance/
+          name: synthetic-performance-r24-${{ matrix.label }}
+          path: ${{ runner.temp }}/aml-r24-${{ matrix.label }}/
           if-no-files-found: warn

@@ -11,6 +11,7 @@ const { pathToFileURL } = require('node:url');
 const { parseArgs } = require('node:util');
 const { setTimeout: delay } = require('node:timers/promises');
 const target = pathToFileURL(path.resolve(__dirname, '../dist/AI_Memory_Lifeboat_Offline.html')).href;
+const STARTUP_BUDGET_MS=25000; // Single Chrome process, bounded endpoint wait, no relaunch or test bypass.
 const viewports = [{name:'desktop',width:1280,height:900,mobile:false},{name:'mobile-emulated',width:390,height:844,mobile:true}];
 
 function fixture(messages=1402, fillers=200) {
@@ -78,20 +79,37 @@ async function runBrowser(chrome, config, report){
     '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost',`--user-data-dir=${profile}`,
     '--remote-debugging-port=0','about:blank'],{stdio:['ignore','ignore','pipe']});
   let procError,stderr='',browser,page;
+  const beganStartup=Date.now();
+  const startup=report.startup={budgetMs:STARTUP_BUDGET_MS,polls:0,elapsedMs:null,
+    state:'WAITING',browser:path.basename(chrome),relaunches:0};
   proc.on('error',err=>{procError=err;});
   proc.stderr.setEncoding('utf8');proc.stderr.on('data',s=>{stderr=(stderr+s).slice(-3000);});
   try{
-    const connection=await until(async()=>{
-      if(procError||proc.exitCode!==null)throw Error(`CHROME_EXIT_${proc.exitCode??procError?.code}`);
-      const s=(await fs.readFile(path.join(profile,'DevToolsActivePort'),'utf8')).trim().split('\n');
-      return s.length===2?{port:s[0],path:s[1]}:null;
-    },'CHROME_DEVTOOLS',15000);
+    let connection;
+    try{
+      connection=await until(async()=>{
+        startup.polls++;
+        if(procError||proc.exitCode!==null)return {failed:true};
+        const s=(await fs.readFile(path.join(profile,'DevToolsActivePort'),'utf8')).trim().split('\n');
+        return s.length===2&&s[0]&&s[1]?{port:s[0],path:s[1]}:null;
+      },'CHROME_DEVTOOLS',STARTUP_BUDGET_MS);
+    }catch(err){
+      startup.elapsedMs=Date.now()-beganStartup;
+      startup.state=procError||proc.exitCode!==null?'PROCESS_EXIT_OR_START_ERROR':'ENDPOINT_TIMEOUT';
+      throw Error('CHROME_STARTUP_'+startup.state+'_'+String(err.message).slice(0,120));
+    }
+    startup.elapsedMs=Date.now()-beganStartup;
+    startup.state=connection.failed?'PROCESS_EXIT_OR_START_ERROR':'ENDPOINT_READY';
+    if(connection.failed)throw Error('CHROME_STARTUP_PROCESS_EXIT_OR_START_ERROR_'+String(procError?.message||proc.exitCode));
     const host=`127.0.0.1:${connection.port}`;
     browser=await cdp(`ws://${host}${connection.path}`);
+    startup.state='CDP_CONNECTED';startup.elapsedMs=Date.now()-beganStartup;
     const version=await browser.send('Browser.getVersion');report.environment.browser=version.product;
     const targets=await (await fetch(`http://${host}/json/list`,{signal:AbortSignal.timeout(7000)})).json();
     const inspect=targets.find(x=>x.type==='page');if(!inspect)throw Error('NO_PAGE');
     page=await cdp(inspect.webSocketDebuggerUrl);
+    const navigatedLoaders=new Set();
+    page.on('Page.frameNavigated',x=>{if(x.frame?.loaderId)navigatedLoaders.add(x.frame.loaderId);});
     const outbound=[],errors=[];const allowed=url=>url===target||url==='about:blank'||url.startsWith('blob:')||url.startsWith('data:');
     page.on('Network.requestWillBeSent',x=>{if(!allowed(x.request.url))outbound.push('OUTBOUND_BLOCKED');});
     page.on('Network.webSocketCreated',x=>{if(!allowed(x.url))outbound.push('OUTBOUND_SOCKET');});
@@ -112,9 +130,13 @@ async function runBrowser(chrome, config, report){
       await page.send('Emulation.setTouchEmulationEnabled',{enabled:vp.mobile});
       const rows=[];
       for(let i=0;i<config.warmup+config.runs;i++){
-        const {errorText}=await page.send('Page.navigate',{url:target});if(errorText)throw Error('FILE_URL_NAVIGATION_'+errorText);
-        await until(()=>evaluate(()=>document.readyState==='complete'&&Boolean(document.querySelector('#archiveFile'))),
-          'OFFLINE_PAGE',12000);
+        navigatedLoaders.clear();
+        const nav=await page.send('Page.navigate',{url:target});
+        if(nav.errorText)throw Error('FILE_URL_NAVIGATION_'+nav.errorText);
+        if(!nav.loaderId)throw Error('FRESH_DOCUMENT_LOADER_MISSING');
+        await until(async()=>navigatedLoaders.has(nav.loaderId)&&await evaluate(
+          ()=>document.readyState==='complete'&&Boolean(document.querySelector('#archiveFile'))),
+          'OFFLINE_FRESH_DOCUMENT',12000);
         const result=await evaluate(async(original,replacement,messages,fillers)=>{
           const frame=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
           const $=id=>document.getElementById(id);
@@ -129,10 +151,16 @@ async function runBrowser(chrome, config, report){
               await new Promise(r=>setTimeout(r,15));
             }
           };
+          const phaseTimings={};
           const measure=async(action,fn)=>{
-            const from=performance.now();await fn();await frame();
-            const ms=performance.now()-from;
-            check(Number.isFinite(ms)&&ms>=0,'TIMER');return ms;
+            const from=performance.now();await fn();const ready=performance.now();
+            await frame();const painted=performance.now();
+            const phases={actionToStateReadyMs:ready-from,frameWaitMs:painted-ready,
+              actionToFrameMs:painted-from};
+            check(Object.values(phases).every(ms=>Number.isFinite(ms)&&ms>=0),'PHASE_TIMER');
+            check(Math.abs(phases.actionToStateReadyMs+phases.frameWaitMs-phases.actionToFrameMs)<0.001,'PHASE_SUM');
+            phaseTimings[action]=phases;
+            return phases.actionToFrameMs;
           };
           const results={};
           results.importToReadyMs=await measure('import',async()=>{
@@ -175,23 +203,28 @@ async function runBrowser(chrome, config, report){
             check($('conversationList').querySelectorAll('button').length===0,'CLEAR_LIST_DOM');
             check($('downloadHtml').disabled,'CLEAR_SENSITIVE_EXPORT');
           });
-          return {timings:results,visibleMessageNodes:$('conversationDetail').querySelectorAll('.message').length,
+          return {timings:results,phaseTimings,visibleMessageNodes:$('conversationDetail').querySelectorAll('.message').length,
             selectedAfterClear:Boolean($('conversationList').querySelector('[aria-current="true"]'))};
         },fx.original,fx.replacement,fx.messages,fx.fillers);
         if(!result||result.visibleMessageNodes!==0||result.selectedAfterClear)throw Error('SYNTHETIC_CLEAR_ASSERT');
         const heap=await page.send('Runtime.getHeapUsage').catch(()=>null);
         rows.push({iteration:i+1,warmup:i<config.warmup,measured:i>=config.warmup,
-          timingsMs:result.timings,heapUsedAfterClearBytes:heap?.usedSize??null,
+          timingsMs:result.timings,phaseTimingsMs:result.phaseTimings,heapUsedAfterClearBytes:heap?.usedSize??null,
           domNodesAfterClear:result.visibleMessageNodes});
         if(errors.length||outbound.length)throw Error('PRIVACY_OR_RUNTIME_ERROR');
       }
       const measured=rows.filter(x=>x.measured);
       const aggregations=Object.fromEntries(Object.keys(measured[0].timingsMs).map(k=>[k,stats(measured.map(x=>x.timingsMs[k]))]));
-      report.viewports.push({viewport:vp.name,emulated:vp.mobile,dimensions:{width:vp.width,height:vp.height},rows,summary:aggregations});
+      const phaseSummary=Object.fromEntries(Object.keys(measured[0].phaseTimingsMs).map(action=>[
+        action,Object.fromEntries(['actionToStateReadyMs','frameWaitMs','actionToFrameMs'].map(phase=>[
+          phase,stats(measured.map(x=>x.phaseTimingsMs[action][phase]))]))]));
+      report.viewports.push({viewport:vp.name,emulated:vp.mobile,dimensions:{width:vp.width,height:vp.height},
+        rows,summary:aggregations,phaseSummary});
     }
     report.networkRequestsBlocked=outbound.length;report.javascriptErrors=errors.length;
   }catch(err){report.error={code:'BROWSER_OR_SYNTHETIC_EVIDENCE_FAILED',detail:String(err.message).slice(0,220),
-    chromeStderrTail:stderr.slice(-1200)};throw err;
+    chromeStderrTail:stderr.slice(-1200),chromeExitCode:proc.exitCode,chromeSignalCode:proc.signalCode,
+    chromeSpawnError:procError?.code||null,phase:startup.state};throw err;
   }finally{
     page?.close();browser?.close();
     if(proc.pid&&proc.exitCode===null&&proc.signalCode===null){
@@ -215,10 +248,11 @@ async function main(){
       tailDefinition:'nearest-rank p95; with five runs p95 equals largest sample',
       heapDefinition:'CDP sampled JS heap used after clearing, not peak and not process RSS'},viewports:[]};
   try{await runBrowser(args.chrome||process.env.CHROME_BIN||'google-chrome',args,report);}
-  catch(e){process.exitCode=1;console.error('Profile failed:',String(e.message).slice(0,220));}
+  catch(e){process.exitCode=1;console.error('Profile failed:',String(e.message).slice(0,220));
+    console.error('Bounded Chrome startup evidence:',JSON.stringify(report.startup||{}));}
   const reportPath=path.join(out,'r23-synthetic-performance.json');
   await fs.writeFile(reportPath,JSON.stringify(report,null,2)+'\n','utf8');
   console.log('Synthetic research evidence written:',reportPath);
 }
 if(require.main===module)main().catch(err=>{console.error(err.message);process.exitCode=1;});
-module.exports={fixture,stats,options};
+module.exports={fixture,stats,options,STARTUP_BUDGET_MS};

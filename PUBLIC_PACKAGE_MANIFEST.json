@@ -138,9 +138,9 @@
     },
     {
       "path": ".github/workflows/synthetic-performance-r23.yml",
-      "sha256": "44a7ec278c58119d0b484d5978b525577ee53290a068364d5357ea078bb7b721",
-      "git_blob_sha1": "1bd783527b37f0a3f1fbddc30888efcb46d1c368",
-      "bytes": 1182
+      "sha256": "e649aaa9fec1f365a862a3f876e121c8fae6696bd269d90fe49cbced1952b696",
+      "git_blob_sha1": "f640ffe0df66cd531a1bbca0ea4f406517f8b90b",
+      "bytes": 1525
     },
     {
       "path": ".github/workflows/verify.yml",
@@ -162,9 +162,9 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "4a9ea04471bea138fcad9bf13a6c08e4fc92a595b6e36dcd111e93f035fe87ec",
-      "git_blob_sha1": "da59760503eb99870733716e10eafe7384a33533",
-      "bytes": 14978
+      "sha256": "702ac5916a3ec520163df28aced38202bcc8c2637af0869d203715b0e29364e6",
+      "git_blob_sha1": "eb3964cdcd4a44ef52b3b40cee4f60e0e139c316",
+      "bytes": 15852
     },
     {
       "path": "CONTRIBUTING.md",
@@ -377,6 +377,12 @@
       "bytes": 4717
     },
     {
+      "path": "docs/R24_PHASED_PERFORMANCE_EVIDENCE.md",
+      "sha256": "8ebade3e764ac59bf8fd3fe33e3570f1432ee43bad47348b09f54f32f11a31b6",
+      "git_blob_sha1": "ef8d55d596e27aeea814df9509b6466f2ffa65cc",
+      "bytes": 4473
+    },
+    {
       "path": "docs/R5_FIRST_RESULT_AND_PILOT_V2.md",
       "sha256": "2807de6c99123ffd177d1be99af1a92cd1ac57c8d69dedc901c019fdeb877c2d",
       "git_blob_sha1": "77ee75ed9683afaf7bf3965636487e8ba10f03a8",
@@ -474,15 +480,15 @@
     },
     {
       "path": "README.en.md",
-      "sha256": "fc11191b677987c610c59c7c6b8e968173f097395f29b7e0b2ad938a6878e79a",
-      "git_blob_sha1": "1dd90fd72c769dcd1ea5e27bb176c0152f589bd1",
-      "bytes": 20237
+      "sha256": "c3fd167899382d39cc5a648121e01734a34dc8adc355dc49f465ea5f80e67eb1",
+      "git_blob_sha1": "a7b7cdc39474e3c96a7e7d8b0486e045ced0f414",
+      "bytes": 20655
     },
     {
       "path": "README.md",
-      "sha256": "cd9818dea4c18f48c4feb7f4030ce7fa8dc714395e8553d88e27fb0df9f988b8",
-      "git_blob_sha1": "a6002c01112df779f3265d0beb0bea8e811104d2",
-      "bytes": 23822
+      "sha256": "dc439077c26b49004115874871d7ffafb0deffc093c8af5817ad93b1951245bd",
+      "git_blob_sha1": "8c4a9c708416fc645dfa7618a022fc2487e1da86",
+      "bytes": 24198
     },
     {
       "path": "SECURITY.md",
@@ -600,9 +606,9 @@
     },
     {
       "path": "tests/test_performance_profile_r23.js",
-      "sha256": "50d5251d349482b617f0432acdad37871b20a801707638918c565dddfbf38efa",
-      "git_blob_sha1": "6c647db5e39144c3397647647a657a230c926561",
-      "bytes": 1869
+      "sha256": "7852d7b87a785d275b14b0566d844b4e944b93c7253d25a99403237c5e3f8644",
+      "git_blob_sha1": "77d5cc24b5dd378328cfb35f5c08b6c7fbe013cf",
+      "bytes": 3460
     },
     {
       "path": "tests/test_pilot.js",
@@ -804,9 +810,9 @@
     },
     {
       "path": "tools/profile_offline_performance.js",
-      "sha256": "59458cb37728ae4356abf1774ac46506cc5bd2e1125793ded38d1d4a944032f9",
-      "git_blob_sha1": "aae82e8d5855dc405de23a33fecf1595d632624c",
-      "bytes": 15742
+      "sha256": "a808d493283b9540cf0fa23975f233e32582cb8e078b16e5e3083d21165f464f",
+      "git_blob_sha1": "7c3702b31c5c8a349f8e923a02a6eb496807388b",
+      "bytes": 18002
     },
     {
       "path": "tools/verify_reader_browser.js",
