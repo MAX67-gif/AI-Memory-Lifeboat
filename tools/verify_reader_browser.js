@@ -11,6 +11,7 @@ const { setTimeout: delay } = require('node:timers/promises');
 const { pathToFileURL } = require('node:url');
 const { parseArgs } = require('node:util');
 
+const STARTUP_BUDGET_MS = 25000; // Explicitly bounded; no automatic browser relaunch or test bypass.
 const standalone = path.resolve(__dirname, '../dist/AI_Memory_Lifeboat_Offline.html');
 const fileUrl = pathToFileURL(standalone).href;
 const viewports = [
@@ -474,20 +475,29 @@ async function verify(chrome, output, report) {
   browser.stderr.on('data', text => { stderr = (stderr + text).slice(-4000); });
   let browserConnection;
   let page;
+  const beganStartup = Date.now();
+  const startup = report.startup = { budgetMs: STARTUP_BUDGET_MS, polls: 0, elapsedMs: null, state: 'WAITING', browser: path.basename(chrome), relaunches: 0 };
   try {
     let connection;
     try {
       connection = await until(async () => {
+        startup.polls++;
         if (processError || browser.exitCode !== null) return { failed: true };
         const [port, socketPath] = (await fs.readFile(path.join(profile, 'DevToolsActivePort'), 'utf8')).trim().split('\n');
         return port && socketPath ? { port, socketPath } : null;
-      }, 'Chrome DevTools endpoint', 12000);
+      }, 'Chrome DevTools endpoint', STARTUP_BUDGET_MS);
     } catch (error) {
+      startup.elapsedMs = Date.now() - beganStartup;
+      startup.state = processError || browser.exitCode !== null ? 'PROCESS_EXIT_OR_START_ERROR' : 'ENDPOINT_TIMEOUT';
       throw new Error(`${error.message}; Chrome stderr: ${stderr}`);
     }
+    startup.elapsedMs = Date.now() - beganStartup;
+    startup.state = connection.failed ? 'PROCESS_EXIT_OR_START_ERROR' : 'ENDPOINT_READY';
     if (connection.failed) throw new Error(`Chrome could not start: ${processError?.message || `exit ${browser.exitCode}`}; ${stderr}`);
     const endpoint = `127.0.0.1:${connection.port}`;
     browserConnection = await connect(`ws://${endpoint}${connection.socketPath}`);
+    startup.state = 'CDP_CONNECTED';
+    startup.elapsedMs = Date.now() - beganStartup;
     report.browser = (await browserConnection.send('Browser.getVersion')).product;
     const downloads = [];
     browserConnection.on('Browser.downloadWillBegin', event => downloads.push(event));
@@ -587,7 +597,8 @@ async function main() {
   if (report.setupError || report.viewports.some(viewport => viewport.cases.some(test => test.status === 'FAIL'))) process.exitCode = 1;
 }
 
-main().catch(error => {
+if (require.main === module) main().catch(error => {
   console.error(error.message);
   process.exitCode = 1;
 });
+module.exports = { STARTUP_BUDGET_MS }; // Test-only export, never loaded by the offline application.
