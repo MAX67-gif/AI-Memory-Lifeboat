@@ -1,3 +1,9 @@
+## R23 research-only (2026-11-24; product remains v0.11.1)
+
+- Add opt-in deterministic synthetic Chrome performance probe: import, selection, retained-message search, cross-window jump, source replacement, list search and clear; record raw per-run timings, medians, nearest-rank p95 and sampled heap.
+- Keep browser profiler out of the shipped standalone HTML; no telemetry, parser/format budget, schema, consent, release tag, or runtime dependency change.
+- CI publishes a research artifact, not benchmark promises, new release assets or verified human adoption. See `docs/R23_PERFORMANCE_EVIDENCE.md`.
+
 ## v0.11.1 — R22 (2026-11-24; remote publication gates apply)
 
 - Fix premature search and message jumps during input-method composition, with normal committed Enter unchanged.

@@ -1,3 +1,9 @@
+## R23 synthetic performance evidence (product remains v0.11.1)
+
+An opt-in [real-Chrome profiling harness](docs/R23_PERFORMANCE_EVIDENCE.md) now records raw interaction latency and sampled heap for a fixed 1,402-message synthetic current-path export, including import, selection, find, jump, source replacement, list filter, and clear. GitHub CI retains evidence without changing the shipped offline HTML, runtime dependencies, privacy/consent rules, product version or release tag. CI timing is not proof of real-user performance or adoption.
+
+---
+
 ## R22 v0.11.1 — Input composition and visible keyboard focus
 
 Enter while an input method is composing characters no longer triggers a search or message-number jump. Committed Enter and the native action buttons keep their existing behavior. Up/Down/Home/End keep the focused conversation visible within the current page, without selecting it or changing pages automatically. When reaching the first or last reader window disables the active page button, focus continues at that window's first message.
