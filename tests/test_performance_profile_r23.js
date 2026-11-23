@@ -42,3 +42,13 @@ test('R24 prevents stale-document probes by checking the new navigation loader',
  assert.match(code,/navigatedLoaders\.has\(nav\.loaderId\)/);
  assert.match(code,/FRESH_DOCUMENT_LOADER_MISSING/);
 });
+
+test('R24 Chrome startup reports bounded evidence without relaunch or test bypass',()=>{
+ const {STARTUP_BUDGET_MS}=require('../tools/profile_offline_performance.js');
+ assert.equal(STARTUP_BUDGET_MS,25000);
+ const code=require('node:fs').readFileSync(require('node:path').join(__dirname,'../tools/profile_offline_performance.js'),'utf8');
+ for(const field of ["state:'WAITING'",'polls:0','relaunches:0','ENDPOINT_TIMEOUT','PROCESS_EXIT_OR_START_ERROR','chromeSpawnError'])
+   assert.ok(code.includes(field),field);
+ assert.match(code,/startup\.polls\+\+/);
+ assert.match(code,/\},'CHROME_DEVTOOLS',STARTUP_BUDGET_MS\)/);
+});

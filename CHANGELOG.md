@@ -3,6 +3,7 @@
 - Separate state-ready latency from two-frame waiting in real Chrome synthetic research while preserving all prior R23 timing fields and v1 schema.
 - Require a newly navigated Chrome loader before each trial so a stale prior document cannot be mistaken for a fresh run.
 - Add independent baseline and heavier synthetic Chrome CI matrix with raw artifact per fixture; no shipped HTML, runtime source, consent, parser limit or release changes.
+- Following a real GitHub stress-job SETUP failure before any import, add one-process, bounded 25s Chrome startup diagnostics with failure-state and exit evidence; no silent reruns. Preserve failure history and avoid attributing setup timeouts to application latency.
 - Evidence interpretation and bounded non-benchmark claims: `docs/R24_PHASED_PERFORMANCE_EVIDENCE.md`.
 
 ## R23 research-only (2026-11-24; product remains v0.11.1)

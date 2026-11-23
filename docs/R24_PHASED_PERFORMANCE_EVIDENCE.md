@@ -24,3 +24,9 @@ R23 GitHub Chrome 合成研究（固定 1,402 訊息＋200 篇）許多結果為
 - R23 `v1` 研究報告 schema 與舊欄位保留，新欄位均為追加式；外部消費者應忽略未知欄位。產品 JSON 契約完全不變。
 
 **發布閘門：**只在 GitHub PR exact-head 的 Node、reader-browser、baseline/stress 四個工作全部 SUCCESS 後合併，合併後再次查 main；未達標就保持 PR，不發新版。
+
+## PR #25 首次反證與處置（2026-11-24）
+
+在 exact-head `dbf81f6b0436e388e496a032f1b744120b8e582b`，Node 283/283、原 reader-browser Chrome 38/38、baseline 1,402/200 SUCCESS；獨立 stress 7,000/1,200 在 **Chrome 未啟動到 DevToolsActivePort** 時 15 秒超時，連第一筆資料都沒有匯入。失敗 [run 45287041343](https://github.com/MAX67-gif/AI-Memory-Lifeboat/actions/runs/45287041343/job/138085949257) 歸類 **ENV_STARTUP/UNTESTED**，**不是 7,000 訊息性能退化或 parser FAIL**。保留失敗流程及產物，沒有 rerun 偷過。
+
+與 R23 已完成驗收的原 reader-browser 啟動器對照後，研究 runner 補上同級**單次、最多 25 秒**的啟動診斷，而不是無限延長：記錄 `startup.state`、`budgetMs`、`elapsedMs`、`polls`、`browser`、`relaunches=0`，以及錯誤時的 process exit/signal/spawn 與有限 stderr 尾端。這是**測試環境可觀測性**修補，沒有改產品或容量。新 exact-head/main 證據以實際 Actions 回執為準；如果 25 秒仍失敗，禁止繼續加秒數、應分離 Chrome runner 資源/版本/DBus/進程退出作更精確診斷。

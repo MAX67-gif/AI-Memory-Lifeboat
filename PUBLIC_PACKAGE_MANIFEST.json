@@ -162,9 +162,9 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "ddd77a51b5cf7ef237a2f38305928c7eb4820dd65cde8a6cd446ebb367b3f001",
-      "git_blob_sha1": "87a39ffa2d66e0d55b2a4e5a45eed3f07798087a",
-      "bytes": 15584
+      "sha256": "702ac5916a3ec520163df28aced38202bcc8c2637af0869d203715b0e29364e6",
+      "git_blob_sha1": "eb3964cdcd4a44ef52b3b40cee4f60e0e139c316",
+      "bytes": 15852
     },
     {
       "path": "CONTRIBUTING.md",
@@ -378,9 +378,9 @@
     },
     {
       "path": "docs/R24_PHASED_PERFORMANCE_EVIDENCE.md",
-      "sha256": "523edbbf7d6e0e68c6b89d9fadd015136425297a0b31ddf113ea6dd461cfd234",
-      "git_blob_sha1": "0a670b48eb265356f15184a7e1813996690d2133",
-      "bytes": 3323
+      "sha256": "8ebade3e764ac59bf8fd3fe33e3570f1432ee43bad47348b09f54f32f11a31b6",
+      "git_blob_sha1": "ef8d55d596e27aeea814df9509b6466f2ffa65cc",
+      "bytes": 4473
     },
     {
       "path": "docs/R5_FIRST_RESULT_AND_PILOT_V2.md",
@@ -606,9 +606,9 @@
     },
     {
       "path": "tests/test_performance_profile_r23.js",
-      "sha256": "950f176d191ef642b03ef3a285bea11df6df6d61a05991c02159d2fc7b4a500e",
-      "git_blob_sha1": "5998a1382ab18ba4ccd61e2dd4f88f680feeb210",
-      "bytes": 2833
+      "sha256": "7852d7b87a785d275b14b0566d844b4e944b93c7253d25a99403237c5e3f8644",
+      "git_blob_sha1": "77d5cc24b5dd378328cfb35f5c08b6c7fbe013cf",
+      "bytes": 3460
     },
     {
       "path": "tests/test_pilot.js",
@@ -810,9 +810,9 @@
     },
     {
       "path": "tools/profile_offline_performance.js",
-      "sha256": "b051340bd0f91d043ea34a0fe32fb30cad8a452409d4be13a8a2b09750e50bdb",
-      "git_blob_sha1": "a536867f06864da951ce3a8833203f8b09312f23",
-      "bytes": 16839
+      "sha256": "a808d493283b9540cf0fa23975f233e32582cb8e078b16e5e3083d21165f464f",
+      "git_blob_sha1": "7c3702b31c5c8a349f8e923a02a6eb496807388b",
+      "bytes": 18002
     },
     {
       "path": "tools/verify_reader_browser.js",

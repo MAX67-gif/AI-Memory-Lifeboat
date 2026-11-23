@@ -11,6 +11,7 @@ const { pathToFileURL } = require('node:url');
 const { parseArgs } = require('node:util');
 const { setTimeout: delay } = require('node:timers/promises');
 const target = pathToFileURL(path.resolve(__dirname, '../dist/AI_Memory_Lifeboat_Offline.html')).href;
+const STARTUP_BUDGET_MS=25000; // Single Chrome process, bounded endpoint wait, no relaunch or test bypass.
 const viewports = [{name:'desktop',width:1280,height:900,mobile:false},{name:'mobile-emulated',width:390,height:844,mobile:true}];
 
 function fixture(messages=1402, fillers=200) {
@@ -78,16 +79,31 @@ async function runBrowser(chrome, config, report){
     '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost',`--user-data-dir=${profile}`,
     '--remote-debugging-port=0','about:blank'],{stdio:['ignore','ignore','pipe']});
   let procError,stderr='',browser,page;
+  const beganStartup=Date.now();
+  const startup=report.startup={budgetMs:STARTUP_BUDGET_MS,polls:0,elapsedMs:null,
+    state:'WAITING',browser:path.basename(chrome),relaunches:0};
   proc.on('error',err=>{procError=err;});
   proc.stderr.setEncoding('utf8');proc.stderr.on('data',s=>{stderr=(stderr+s).slice(-3000);});
   try{
-    const connection=await until(async()=>{
-      if(procError||proc.exitCode!==null)throw Error(`CHROME_EXIT_${proc.exitCode??procError?.code}`);
-      const s=(await fs.readFile(path.join(profile,'DevToolsActivePort'),'utf8')).trim().split('\n');
-      return s.length===2?{port:s[0],path:s[1]}:null;
-    },'CHROME_DEVTOOLS',15000);
+    let connection;
+    try{
+      connection=await until(async()=>{
+        startup.polls++;
+        if(procError||proc.exitCode!==null)return {failed:true};
+        const s=(await fs.readFile(path.join(profile,'DevToolsActivePort'),'utf8')).trim().split('\n');
+        return s.length===2&&s[0]&&s[1]?{port:s[0],path:s[1]}:null;
+      },'CHROME_DEVTOOLS',STARTUP_BUDGET_MS);
+    }catch(err){
+      startup.elapsedMs=Date.now()-beganStartup;
+      startup.state=procError||proc.exitCode!==null?'PROCESS_EXIT_OR_START_ERROR':'ENDPOINT_TIMEOUT';
+      throw Error('CHROME_STARTUP_'+startup.state+'_'+String(err.message).slice(0,120));
+    }
+    startup.elapsedMs=Date.now()-beganStartup;
+    startup.state=connection.failed?'PROCESS_EXIT_OR_START_ERROR':'ENDPOINT_READY';
+    if(connection.failed)throw Error('CHROME_STARTUP_PROCESS_EXIT_OR_START_ERROR_'+String(procError?.message||proc.exitCode));
     const host=`127.0.0.1:${connection.port}`;
     browser=await cdp(`ws://${host}${connection.path}`);
+    startup.state='CDP_CONNECTED';startup.elapsedMs=Date.now()-beganStartup;
     const version=await browser.send('Browser.getVersion');report.environment.browser=version.product;
     const targets=await (await fetch(`http://${host}/json/list`,{signal:AbortSignal.timeout(7000)})).json();
     const inspect=targets.find(x=>x.type==='page');if(!inspect)throw Error('NO_PAGE');
@@ -207,7 +223,8 @@ async function runBrowser(chrome, config, report){
     }
     report.networkRequestsBlocked=outbound.length;report.javascriptErrors=errors.length;
   }catch(err){report.error={code:'BROWSER_OR_SYNTHETIC_EVIDENCE_FAILED',detail:String(err.message).slice(0,220),
-    chromeStderrTail:stderr.slice(-1200)};throw err;
+    chromeStderrTail:stderr.slice(-1200),chromeExitCode:proc.exitCode,chromeSignalCode:proc.signalCode,
+    chromeSpawnError:procError?.code||null,phase:startup.state};throw err;
   }finally{
     page?.close();browser?.close();
     if(proc.pid&&proc.exitCode===null&&proc.signalCode===null){
@@ -231,10 +248,11 @@ async function main(){
       tailDefinition:'nearest-rank p95; with five runs p95 equals largest sample',
       heapDefinition:'CDP sampled JS heap used after clearing, not peak and not process RSS'},viewports:[]};
   try{await runBrowser(args.chrome||process.env.CHROME_BIN||'google-chrome',args,report);}
-  catch(e){process.exitCode=1;console.error('Profile failed:',String(e.message).slice(0,220));}
+  catch(e){process.exitCode=1;console.error('Profile failed:',String(e.message).slice(0,220));
+    console.error('Bounded Chrome startup evidence:',JSON.stringify(report.startup||{}));}
   const reportPath=path.join(out,'r23-synthetic-performance.json');
   await fs.writeFile(reportPath,JSON.stringify(report,null,2)+'\n','utf8');
   console.log('Synthetic research evidence written:',reportPath);
 }
 if(require.main===module)main().catch(err=>{console.error(err.message);process.exitCode=1;});
-module.exports={fixture,stats,options};
+module.exports={fixture,stats,options,STARTUP_BUDGET_MS};
