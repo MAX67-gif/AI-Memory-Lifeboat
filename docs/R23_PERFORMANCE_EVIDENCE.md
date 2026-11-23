@@ -28,3 +28,9 @@
 **解讀標準：** N=5 的 nearest-rank p95 就是本次最大值，統計精度有限；跨 GitHub runner、不同 Chrome、CPU、負載、虛擬化環境不可直接歸因；初次建立基準不等於發現效能改善。發現延遲高或不同輪差異，先固定同 SHA/fixture/資源多次重跑，定位操作與可見卡頓，提出反例與失敗錄影／DOM 佐證；只有重現且危及實際操作才建 FIX PR。環境無法啟動（例如瀏覽器安全政策阻止 `file://`）記為 **ENV_BLOCKED**，不可寫成產品 FAIL 或 benchmark PASS。
 
 **安全界線：** 原 R6 ZIP 128 MiB / JSON 64 MiB / 32 shards、R12 原文 HTML 16 MiB、200/80/700 顯示、R18 可見選取租約、R10 私密匯出同意、R13/14 UNKNOWN 全部維持。CI 跑分不驗證真人採用、真實匯出完整性、耗電或行動裝置效能；此輪不升版本號、不改任何正式 release/tag。
+
+## 合併後主線 Chrome 啟動診斷（2026-11-24）
+
+Public PR #23 exact-head 的 Node／reader-browser／synthetic-performance 三項都 PASS；合併 `9f515556919b9a976931bf04a34a7e3dec9053c5` 後，Node 及新效能流程 PASS，但原 reader-browser workflow `45283293386` 出現啟動器 12 秒內未提供 Chrome `DevToolsActivePort` 的 SETUP FAIL。原始 stderr 只有多條 D-Bus 地址解析錯誤，不足以認定 D-Bus 就是根因。這類症狀此前 R22 Release 也出現過，不能歸咎於產品頁面；失敗時**沒有跑到任何瀏覽器產品用例**。
+
+後續在既有 runner 加入啟動階段的獨立等待統計／狀態碼／輪詢次數與固定 **25 秒上限**，保留單次進程、不偷偷 retry、不關閉回歸案例。修補 PR 通過後仍須驗證 main 工作流程；若持續逾時，保留實際 CI 反證，另診斷 Chrome runner，而不是再無條件加時間。研究階段保持 `v0.11.1`，沒有新版 Release。

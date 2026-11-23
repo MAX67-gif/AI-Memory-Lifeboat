@@ -372,9 +372,9 @@
     },
     {
       "path": "docs/R23_PERFORMANCE_EVIDENCE.md",
-      "sha256": "256e70177a8f4f9cd35b3f62af573f6faf8dd9f6e7298af30404982bf6c648ca",
-      "git_blob_sha1": "74213be961796019a14e0216aeea30a3043b8011",
-      "bytes": 3742
+      "sha256": "460c6412e02faf89b012902fdd8d56b3e938991b38afd42b2a1a2f155704a20b",
+      "git_blob_sha1": "e44cd8774d47e6674ad724b7803d6d61f9f69a20",
+      "bytes": 4717
     },
     {
       "path": "docs/R5_FIRST_RESULT_AND_PILOT_V2.md",
@@ -659,6 +659,12 @@
       "bytes": 6129
     },
     {
+      "path": "tests/test_r23_chrome_startup_diagnostics.js",
+      "sha256": "58cfad30f50918b959e082520cb08ce23a55a0d21e957fe7075c6c47e774eb5d",
+      "git_blob_sha1": "0c6d1646f261ef8ae1efa1c2074c47b61978873c",
+      "bytes": 922
+    },
+    {
       "path": "tests/test_r5_first_result.js",
       "sha256": "aa8ca9db4b17934cda2911f3c98b862c3b1550d975278108a5619317af8b66ca",
       "git_blob_sha1": "69cc250156af9e7e9a051c90ad75851f6f83d2d0",
@@ -804,9 +810,9 @@
     },
     {
       "path": "tools/verify_reader_browser.js",
-      "sha256": "6f3790285f315b3fdd89f524424b3349e161286b66c3c179105c4f74ca2c6c56",
-      "git_blob_sha1": "d95dc3ae54b004fbe007d2f9038464a7748dff50",
-      "bytes": 28069
+      "sha256": "910be33a4ef76615ca028d7260fec92aeaa62c2f5a098852fbbb616370f7acf7",
+      "git_blob_sha1": "b039f06505d58f6cfceb3108f7d4e5580290c117",
+      "bytes": 28934
     }
   ],
   "provenance_scope": "LOCAL_PACKAGE_SNAPSHOT_NOT_LIVE_GITHUB_STATE"
