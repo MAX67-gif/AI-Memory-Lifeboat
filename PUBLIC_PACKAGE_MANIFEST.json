@@ -755,9 +755,9 @@
     },
     {
       "path": "tools/verify_reader_browser.js",
-      "sha256": "903217cacb2d2d5d93f6b3718fa20c1c5cf8783132d82956e8c2cca406797a9d",
-      "git_blob_sha1": "28e03eff0190cfa0b7debe6517e7f3c91f0b184e",
-      "bytes": 24305
+      "sha256": "f3aab9f80fa2a8db9e6a36ba2b0558372c3f96e85a26576b13f04b504cb3960d",
+      "git_blob_sha1": "836ede815dacfc4fa10ec73fe5875067de5592fd",
+      "bytes": 24570
     }
   ],
   "provenance_scope": "LOCAL_PACKAGE_SNAPSHOT_NOT_LIVE_GITHUB_STATE"

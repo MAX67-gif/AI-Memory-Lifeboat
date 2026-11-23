@@ -132,9 +132,10 @@ function browserChecks(page, downloads, errors, outbound, report, output) {
     element.dispatchEvent(new Event('input', { bubbles: true }));
   }, selector, value);
   const enter = async (key = 'Enter', keyCode = 13) => {
-    for (const type of ['rawKeyDown', 'keyUp']) {
-      await page.send('Input.dispatchKeyEvent', { type, key, code: key, windowsVirtualKeyCode: keyCode });
-    }
+    // Native buttons activate on the complete Enter key sequence, including its text event.
+    await page.send('Input.dispatchKeyEvent', { type: key === 'Enter' ? 'keyDown' : 'rawKeyDown', key, code: key,
+      windowsVirtualKeyCode: keyCode, ...(key === 'Enter' ? { text: '\r', unmodifiedText: '\r' } : {}) });
+    await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key, code: key, windowsVirtualKeyCode: keyCode });
     await tick();
   };
   const focusState = () => evaluate(() => ({
