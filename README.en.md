@@ -1,3 +1,13 @@
+## R22 v0.11.1 — Input composition and visible keyboard focus
+
+Enter while an input method is composing characters no longer triggers a search or message-number jump. Committed Enter and the native action buttons keep their existing behavior. Up/Down/Home/End keep the focused conversation visible within the current page, without selecting it or changing pages automatically. When reaching the first or last reader window disables the active page button, focus continues at that window's first message.
+
+A repeatable **real-Chrome CI** checks the standalone file using generated 1,402-message fixtures: bounded windows, cross-window matches, query changes, same-ID source replacement, private-export consent and actual synthetic download content. Node/CDP tooling is development-only; the application remains a self-contained offline HTML file.
+
+[Verify the v0.11.1 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.11.1) against its three published assets and CI. The [v0.11.0 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.11.0) remains available. Synthetic Chrome and mobile emulation do not certify human input methods, screen readers, real devices or account completeness. [R22 contract](docs/R22_KEYBOARD_CONTINUITY.md).
+
+---
+
 ## R21 v0.11.0 — Message-number jump and reliable long-conversation navigation
 
 Navigate a retained long conversation by entering a **1-based message number** (for example 701 or 1110) without first searching or repeatedly switching 700-message windows. Invalid and out-of-range inputs fail closed. R21 also fixes two issues reproduced on R20 in Chromium: after manually moving windows, “previous hit” could pick the wrong match; after editing a query, obsolete result highlights remained visible. Navigation moves keyboard focus to the selected retained message; only status/index is announced, not the whole private transcript.

@@ -21,7 +21,7 @@ const viewports = [
 function conversation(id, title, count) {
   const mapping = {};
   for (let number = 1; number <= count; number++) {
-    const marker = number === 1110 ? ' 合成命中標記' : '';
+    const marker = (number === 1110 ? ' 合成命中標記' : '') + ([10, 1402].includes(number) ? ' R22_CROSS_HIT' : '');
     mapping[`m${number}`] = {
       id: `m${number}`,
       parent: number === 1 ? null : `m${number - 1}`,
@@ -209,6 +209,12 @@ function browserChecks(page, downloads, errors, outbound, report, output) {
     }
   }
   return async () => {
+    // Retain synthetic Blob objects to check the actual export, while preserving the download path.
+    await evaluate(() => {
+      window.__amlSyntheticDownloads = [];
+      const originalCreate = URL.createObjectURL.bind(URL);
+      URL.createObjectURL = blob => { window.__amlSyntheticDownloads.push(blob); return originalCreate(blob); };
+    });
     await test('message-windows', async () => {
       await startOriginal();
       await click('#readerNext');
@@ -276,6 +282,33 @@ function browserChecks(page, downloads, errors, outbound, report, output) {
       assert.equal(active.name, '第 1110 則訊息');
       assert.equal(active.hit, true);
       await expectWindow(700, 701, 1400);
+    });
+
+    await test('cross-window-search-query-edit-and-conversation-switch', async () => {
+      await startOriginal();
+      await input('#readerQuery', 'R22_CROSS_HIT');
+      await click('#readerFind');
+      assert.equal((await focusState()).name, '第 10 則訊息');
+      await click('#readerNext');
+      await click('#readerPrevHit');
+      assert.equal((await focusState()).name, '第 1402 則訊息');
+      await click('#readerPrev');
+      await click('#readerNextHit');
+      assert.equal((await focusState()).name, '第 10 則訊息');
+      await input('#readerQuery', 'Synthetic changed query');
+      assert.deepEqual(await evaluate(() => ({
+        highlights: document.querySelectorAll('[data-reader-hit="true"]').length,
+        previousDisabled: document.querySelector('#readerPrevHit').disabled,
+        nextDisabled: document.querySelector('#readerNextHit').disabled
+      })), { highlights: 0, previousDisabled: true, nextDisabled: true });
+      await input('#readerJumpInput', '1402');
+      await click('#readerJumpGo');
+      await select('Synthetic filler 1');
+      assert.deepEqual(await evaluate(() => [document.querySelector('#readerQuery').value,
+        document.querySelector('#readerJumpInput').value, document.querySelector('#readerHitInfo').textContent,
+        document.querySelector('#readerJumpStatus').textContent]), ['', '', '', '']);
+      await expectWindow(1, 1, 1);
+      assert.equal(await evaluate(() => document.querySelector('#conversationDetail h3').textContent), 'Synthetic filler 1');
     });
 
     for (const [name, button, opposite, terminal] of [
@@ -362,6 +395,9 @@ function browserChecks(page, downloads, errors, outbound, report, output) {
       await until(() => downloads.length > before, 'confirmed synthetic download');
       assert.equal(downloads.length, before + 1);
       assert.equal(downloads[before].suggestedFilename, 'aml-conversation.html');
+      const html = await evaluate(() => window.__amlSyntheticDownloads.at(-1).text());
+      assert.ok(html.includes(primaryTitle) && html.includes('Synthetic message 1402'), 'Confirmed export lost retained source content');
+      assert.ok(!html.includes(replacementTitle), 'Export contains a different source');
     });
 
     await test('source-change-revokes-old-confirmation', async () => {
@@ -375,6 +411,11 @@ function browserChecks(page, downloads, errors, outbound, report, output) {
       await click(confirm);
       await delay(200);
       assert.equal(downloads.length, before, 'Old confirmation initiated a download after replacement');
+      await click('#downloadHtml');
+      await click(confirm);
+      await until(() => downloads.length === before + 1, 'fresh replacement download');
+      const html = await evaluate(() => window.__amlSyntheticDownloads.at(-1).text());
+      assert.ok(html.includes(replacementTitle) && !html.includes(primaryTitle), 'Same-ID replacement reused old private content');
     });
 
     await test('failed-source-clears-private-dom', async () => {
@@ -388,6 +429,22 @@ function browserChecks(page, downloads, errors, outbound, report, output) {
       assert.equal(await evaluate(() => document.querySelector('#results').hidden), true);
       assert.equal(await evaluate(() => document.querySelector('#conversationList').childElementCount), 0);
       assert.ok(!(await evaluate(() => document.querySelector('#results').textContent)).includes(primaryTitle));
+    });
+
+    await test('explicit-clear-revokes-reader-and-confirmation', async () => {
+      await startOriginal();
+      await input('#readerQuery', '合成命中標記');
+      await click('#readerFind');
+      await input('#readerJumpInput', '1402');
+      await click('#readerJumpGo');
+      const before = downloads.length;
+      await click('#downloadHtml');
+      await click('#clearBtn');
+      await assertReset(primaryTitle);
+      await click(confirm);
+      await delay(200);
+      assert.equal(downloads.length, before);
+      assert.equal(await evaluate(() => document.querySelector('#results').hidden), true);
     });
 
     await test('page-makes-no-outbound-requests', async () => {
