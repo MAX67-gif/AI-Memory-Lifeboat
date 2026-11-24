@@ -175,3 +175,8 @@ OpenAI documentation now notes that large exports can contain numbered conversat
 ### R24 synthetic profiling methodology (no product release)
 
 See [R24 phased Chrome performance evidence and fresh-document guard](docs/R24_PHASED_PERFORMANCE_EVIDENCE.md). The CI-only probe separates state-ready time from two-frame waiting and runs fixed 1,402/7,000-message synthetic profiles. No personal exports, telemetry, runtime modification, new product version, or claim about physical-device performance.
+
+
+### R26 bounded import research (no new product release)
+
+[The R26 synthetic boundary test contract](docs/R26_BOUNDARY_RESEARCH_CONTRACT.md) uses a long JSON, a 32-shard ZIP, and a ZIP containing near-64MiB JSON to inspect Chrome import behavior, source-failure consent revocation, Long Tasks when supported and **sampled** JS heap. No real exports, telemetry or published runtime changes; v0.11.2 remains the official product.

@@ -1,0 +1,38 @@
+name: R26 synthetic offline import boundaries (research only)
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  boundary-chrome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [json-long, zip-32, zip-near-limit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify product parity and Node negative cases
+        run: npm run check
+      - name: Real Chrome bounded import and fail-closed source replacement
+        shell: bash
+        run: |
+          output="$RUNNER_TEMP/aml-r26-${{ matrix.kind }}"
+          chrome=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || printf 'google-chrome')
+          node tools/profile_import_boundaries_r26.js --chrome "$chrome" --output-dir "$output" --kind "${{ matrix.kind }}" --runs 3 --warmup 1
+      - name: Preserve raw synthetic evidence or explicit failure diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r26-import-boundary-${{ matrix.kind }}
+          path: ${{ runner.temp }}/aml-r26-${{ matrix.kind }}/
+          if-no-files-found: warn
