@@ -128,3 +128,11 @@
 #readerJumpStatus{flex:1 1 180px;min-width:0}
 @media(max-width:600px){.reader-jump-row{align-items:center}.reader-jump-row input{width:110px}}
 @media(prefers-color-scheme:dark){.reader-jump-row label{color:#d3eaf0}.reader-jump-row input{background:#253b45;border-color:#577580;color:#eef8fa}}
+
+/* R25: bounded list-page direct jump. Compact on mobile and accessible without new dependencies. */
+.list-pager .compare-jump{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px}
+.list-pager .compare-jump[hidden]{display:none}
+#listPageJump{width:5.2rem;max-width:100%;padding:.38rem .5rem;border:1px solid #9db4c0;border-radius:8px;background:inherit;color:inherit}
+#listPageJump[aria-invalid="true"]{border-color:#b34545;outline-offset:2px}
+#listJumpStatus{flex-basis:100%;text-align:right}
+@media(max-width:700px){.list-pager{justify-content:center}#listJumpStatus{text-align:center}}

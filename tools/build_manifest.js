@@ -26,10 +26,10 @@ function collect(rel=''){
 collect();files.sort((a,b)=>a.path.localeCompare(b.path,'en'));
 if(files.length<46)throw Error('TOO_FEW_PUBLIC_FILES');
 const prior=JSON.parse(fs.readFileSync(path.join(root,'PUBLIC_PACKAGE_MANIFEST.json'),'utf8'));
-prior.version='0.11.1-preview-source';prior.date='2026-11-24';
+prior.version='0.11.2-preview-source';prior.date='2026-11-24';
 prior.base_public_main='d41462dbe1b2c97f1448a5deb79f1b945cd7d27b';
 prior.github_publication='EXTERNAL_VERIFICATION_REQUIRED';prior.github_branch_merge='EXTERNAL_VERIFICATION_REQUIRED';
-prior.source='R21 exact released source plus R22 IME-safe input and evidence-based keyboard continuity';
+prior.source='R22 v0.11.1 shipped product plus R25 bounded conversation-list page jump; R23/R24 synthetic research retained';
 prior.scope=['R6 bounded ChatGPT JSON and ZIP shards unchanged','R7 bilingual first-task guide (not a full English UI)','R8 pinned release preserved','R9 clear hidden DOM and revoke stale comparison/CRC results preserved', 'R10 explicit local-only content-bearing HTML export confirmation preserved', 'R12 deliberate 16 MiB output cap fails closed without producing oversized HTML'];
 prior.scope.push('R13 explicit current-path text truncation metadata, warnings and conservative comparison');
 prior.scope.push('R14 explicit title truncation metadata and INCONCLUSIVE_TITLE; existing 700-message view cap disclosed at top');
@@ -41,6 +41,7 @@ prior.scope.push('R19 four UNKNOWN subfilters, local title search, validated dir
 prior.scope.push('R20 later retained current-path messages reachable in 700-message windows with transient local in-conversation search and hit navigation; no parser/schema/cap changes');
 prior.scope.push('R21 strict 1-based message jumps and corrected previous/next search-hit navigation; query edits clear stale highlights, current-path text only');
 prior.scope.push('R22 composition-safe Enter and real Chrome synthetic keyboard and sensitive-export regression; all source/schema/cap boundaries retained');
+prior.scope.push('R25 strict 1-based direct navigation for bounded 200-row conversation lists, visible-selection lease and IME-safe Enter; synthetic R23/R24 research remains outside product runtime');
 prior.evidence.node_test_target='npm run check';
 prior.evidence.browser='REAL_CHROME_CI_VERIFICATION_REQUIRED; synthetic file:// desktop/mobile; real device and hosted Pages NOT_VERIFIED';
 prior.evidence.real_account_export_tested=false;prior.evidence.external_adoption_confirmed=false;
