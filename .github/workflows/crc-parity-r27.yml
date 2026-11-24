@@ -1,0 +1,32 @@
+name: R27 CRC parity research and large-payload evidence
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  crc-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: All bounded parser and security regressions
+        run: npm run check
+      - name: Counterbalanced reference-vs-lookup CRC, fixed synthetic 63.75MiB
+        shell: bash
+        run: |
+          node tools/bench_crc_r27.js --output-dir "$RUNNER_TEMP/aml-r27-crc" --runs 3
+      - name: Preserve exact input/method/timing evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r27-crc-parity-benchmark
+          path: ${{ runner.temp }}/aml-r27-crc/
+          if-no-files-found: warn

@@ -16,13 +16,23 @@
   const decoder = new TextDecoder('utf-8', {fatal:true});
   function fail(code) { throw new Error('ZIP_'+code); }
   function uint32(view, offset) { return view.getUint32(offset, true); }
+  // Precomputed IEEE CRC32 table: same polynomial, byte-for-byte ZIP integrity checks.
+  // Indexed Uint8Array lookup replaces eight bit-level iterations per input byte.
+  const CRC32_TABLE = new Uint32Array(256);
+  for (let i=0; i<256; i++) {
+    let c=i;
+    for (let k=0; k<8; k++) c=(c >>> 1) ^ ((c & 1) ? 0xEDB88320 : 0);
+    CRC32_TABLE[i]=c >>> 0;
+  }
   function crc32(bytes) {
-    let crc = -1;
-    for (const byte of bytes) {
-      crc ^= byte;
-      for (let i=0;i<8;i++) crc = (crc >>> 1) ^ (crc & 1 ? 0xEDB88320 : 0);
+    let crc=0xFFFFFFFF;
+    if (bytes && Number.isSafeInteger(bytes.length)) {
+      for (let i=0; i<bytes.length; i++) crc=(crc >>> 8) ^ CRC32_TABLE[(crc ^ bytes[i]) & 255];
+    } else {
+      // Preserve the previous generic-iterable API for non-indexed byte sources.
+      for (const byte of bytes) crc=(crc >>> 8) ^ CRC32_TABLE[(crc ^ byte) & 255];
     }
-    return (crc ^ -1) >>> 0;
+    return (crc ^ 0xFFFFFFFF) >>> 0;
   }
   function decodeName(bytes, flags) {
     if (bytes.length > MAX_NAME_BYTES) fail('NAME_TOO_LONG');

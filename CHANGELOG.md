@@ -1,3 +1,10 @@
+## v0.11.3 — R27 (2026-11-24; pending GitHub Release verification)
+
+- RED: R26 real Chrome file:// repeatedly observed a roughly 2.6-second long task importing an original 63.75 MiB synthetic JSON within ZIP; old CRC32 hot loop was independently measured at roughly 2.8 seconds in sandbox.
+- GREEN candidate: replace eight bitwise CRC32 iterations per byte with an internal 256-entry IEEE lookup table and indexed byte scan; retains *exact* ZIP CRC32 semantics, 128 MiB archive / 64 MiB JSON / 32 shards budgets, private export consent, conservative UNKNOWN and strict CSP.
+- Add fixed-source byte-for-byte CRC parity including classic `123456789`, 63.75 MiB source and deliberately corrupted ZIP headers; independent counterbalanced reference-vs-optimized benchmark with raw evidence, no hard performance-speed threshold.
+- Product version and generated standalone updated only through pinned GitHub release verification; never rewrite v0.11.2 or prior tags. See `docs/R27_CRC_RESEARCH_AND_RELEASE.md`.
+
 ## v0.11.2 — R25 direct conversation-page jump (2026-11-24; publication gated)
 
 - Add strict, keyboard/IME-aware direct page navigation for long 200-item conversation lists; preserve current filtered search scope.

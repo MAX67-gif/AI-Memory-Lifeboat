@@ -1,3 +1,7 @@
+## R27 v0.11.3 — CRC32 hot-path parity and performance (subject to GitHub Release gates)
+
+A large synthetic ZIP exposed a repeatable long task. The new private 256-entry IEEE CRC32 lookup table preserves checksum values and fail-closed corruption behavior while reducing bitwise work. No change to offline-only CSP, private-export consent, ChatGPT current-path scope, parser limits, or prior immutable releases. See [R27 research and release contract](docs/R27_CRC_RESEARCH_AND_RELEASE.md). Check the actual [v0.11.3 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.11.3) before treating this as a published product.
+
 ## R25 v0.11.2 candidate — bounded conversation page jump
 
 Long conversation lists (200 per page) now support strict, IME-aware direct page navigation. Changing to a page that hides the selected conversation scrubs prior private reader content and revokes sensitive HTML export. Invalid entries do not change the page or consent. This remains local-only and does not certify account completeness, real-device accessibility, or verified adoption. [Security and behavior contract](docs/R25_LIST_PAGE_JUMP_AND_PRIVACY.md) | [Release notes](docs/R25_RELEASE_NOTES.md). Preserve v0.11.1.
