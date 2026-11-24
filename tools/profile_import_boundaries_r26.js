@@ -44,8 +44,14 @@ function evaluated(page,fn,...vals){return page.send('Runtime.evaluate',{express
 function byteStats(data){const s=stats(data);return {n:s.n,medianBytes:s.medianMs,
   p95NearestRankBytes:s.p95NearestRankMs,minBytes:s.minMs,maxBytes:s.maxMs};}
 async function heapSample(page){
-  const x=await page.send('Runtime.getHeapUsage');
-  return {usedBytes:x.usedSize,totalBytes:x.totalSize};
+  // Performance.getMetrics is a non-GC-forcing sample. Runtime.getHeapUsage stalled
+  // after rendering 240 long-text messages in a real Chrome research run.
+  const {metrics}=await page.send('Performance.getMetrics');
+  const m=new Map((metrics||[]).map(x=>[x.name,x.value]));
+  const used=m.get('JSHeapUsedSize'),total=m.get('JSHeapTotalSize');
+  if(!Number.isFinite(used)||!Number.isFinite(total)||used<0||total<0)
+    throw Error('R26_PERFORMANCE_HEAP_METRIC_UNAVAILABLE');
+  return {usedBytes:used,totalBytes:total};
 }
 async function browserRun(config,report,fixtures){
   const userDir=await fs.mkdtemp(path.join(os.tmpdir(),'aml-r26-browser-'));
@@ -81,7 +87,7 @@ async function browserRun(config,report,fixtures){
       allowed(p.request.url)?{requestId:p.requestId}:{requestId:p.requestId,errorReason:'BlockedByClient'}).catch(()=>errors.push('FETCH_HANDLER_ERROR')));
     page.on('Runtime.exceptionThrown',()=>errors.push('RUNTIME_EXCEPTION'));
     page.on('Runtime.consoleAPICalled',p=>{if(['error','assert'].includes(p.type))errors.push('CONSOLE_ERROR');});
-    for(const m of ['Page.enable','Runtime.enable','DOM.enable','Network.enable','Fetch.enable'])await page.send(m);
+    for(const m of ['Page.enable','Runtime.enable','DOM.enable','Network.enable','Fetch.enable','Performance.enable'])await page.send(m);
     for(const v of VIEWPORTS){
       await page.send('Emulation.setDeviceMetricsOverride',{width:v.width,height:v.height,mobile:v.mobile,deviceScaleFactor:1});
       await page.send('Emulation.setTouchEmulationEnabled',{enabled:v.mobile});
@@ -210,7 +216,7 @@ async function main(){
   const temp=await fs.mkdtemp(path.join(os.tmpdir(),'aml-r26-fixtures-'));
   const report={schema:'aml.r26.boundary-evidence.v1',mode:'SYNTHETIC_ONLY_RESEARCH_NOT_PRODUCT_RELEASE',product:'v0.11.2',kind:c.kind,
     definition:'readyMs is capture-phase input change to .ok status; toPaintMs includes two animation frames',
-    resources:'JS heap sampled at four checkpoints, not true peak heap/RSS; long tasks count only if supported',
+    resources:'Performance.getMetrics JS heap sampled at four checkpoints, not true peak heap/RSS; long tasks count only if supported',
     environment:{node:process.version,platform:process.platform,cpu:os.cpus()[0]?.model,logicalCores:os.cpus().length,totalSystemRamBytes:os.totalmem()},
     configuration:{runs:c.runs,warmup:c.warmup,newDocumentPerTrial:true,chromeStartBudgetMs:STARTUP_BUDGET_MS},
     viewports:[],outboundRequestCount:null,runtimeErrorCount:null};

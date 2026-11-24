@@ -24,7 +24,7 @@
 
 - 匯入成功：檢查 `.ok`、精確的對話數量、清單不逾 200、選取後可見訊息數量正確；抽查選取後需明確確認原文 HTML，不能默默下載。
 - 負例：在原文下載的二次確認對話框已開啟時重新載入非法來源；驗證 `.error`、舊訊息節點與清單=0、結果隱藏、原文下載 disabled、對話框已關。
-- 記錄輸入 change 到 `.ok` 狀態、兩畫格後 UI、`PerformanceObserver('longtask')` 可用與否／長任務數量，以及 `Runtime.getHeapUsage` 在讀取前／讀取後／選取後／清除後的樣本值。
+- 記錄輸入 change 到 `.ok` 狀態、兩畫格後 UI、`PerformanceObserver('longtask')` 可用與否／長任務數量，以及 `Performance.getMetrics` 的 `JSHeapUsedSize`／`JSHeapTotalSize` 在讀取前／讀取後／選取後／清除後的樣本值。
 - `maxSampledHeapUsedBytes` 只是 **四個時間點的最大樣本值**，**不是 JS heap 真正歷史峰值，更不是 Chrome 總 RSS**。不能宣稱已完成精確 peak RAM 量測；若需要真峰值，必須另做獨立 tracing／instrumentation 並標出多進程與共享記憶體偏差。
 - CI 產物需保存 raw 逐次資料與 fixture SHA；N=3 nearest rank p95 = 最大值，不能宣稱典型 95 百分位；不同 runner、Chrome 版本及負載不可直接做改善率推論。
 - 若沙盒瀏覽器政策阻擋 `file://`，標為 **ENV_BLOCKED**；不能當產品解析失敗。若 CI Chrome 初始化未到 DevTools endpoint，25 秒內 fail closed，保留 `startup` 診斷，絕不無限重啟。
@@ -45,3 +45,9 @@
 同樣 63.75MiB ZIP 的 Chrome 3 次重複可成功，但 `readyMs` 桌面約 2.66 秒，`LongTaskMax` 約 2.6 秒，屬已觀察到的長任務，需另外量化 CRC32／JSON.parse／DOM 的貢獻；不得把原因直接歸咎於某單一 API。沙盒使用原創 66,846,698 B JSON，bit-by-bit CRC32 約 2.96s，table/index-loop CRC32 約 0.16s，兩者 CRC 完全相同；這是**獨立同機原型差異**，需透過新版本隔離紅綠測試後才能宣稱產品改善。
 
 本研究 runner 隨後增加 `report.progress` / `R26_STAGE` 明確分辨 **頁面導航、匯入、首次選取、記憶體採樣、清除** 各階段，修正高水位 heap bytes 統計欄位原錯用 `medianMs` 的單位誤導：新欄改用 `medianBytes`／`p95NearestRankBytes`／`minBytes`／`maxBytes`。原始 `readyMs`／`toPaintMs` 維持原語意。所有數值只能以最終 GitHub exact-head／main 的實際回執為準。
+
+## 二次 CI 的真正定位與 R26 第三次安全測量路由
+
+`f8ea6d6d03c0f7976af2ae9f1c04e7bdeff49e68` exact-head 再跑的 `json-long` 在 **desktop 第1次、`HEAP_AFTER_SELECTION`** 卡住 `Runtime.getHeapUsage` 120秒。此時已完成 **9.29 MiB JSON 實際匯入成功、正確對話列表、選取後 DOM 240 則訊息的程式檢查**，但資源採樣器未傳回；沒有否定此產品路徑，也不能宣稱它完全通過後續清除與非法來源測試。保留原工作 FAIL；其他兩個新 Chrome 案例、既有 Node/reader/R24 CI 全 PASS。
+
+僅調整**研究測量器**：將四個 JS heap 取樣由可能引發長時間暫停的 `Runtime.getHeapUsage` 改用 `Performance.enable` 後的 `Performance.getMetrics` (`JSHeapUsedSize`／`JSHeapTotalSize`)，如欄位不支援／值無效則直接 FAIL；保留每輪四個取樣點、原 `maxSampledHeapUsedBytes` 類型及安全拒絕步驟。此變更不代表有了真實 peak；下一輪需檢查 `json-long` 完整通過才考慮 merge。

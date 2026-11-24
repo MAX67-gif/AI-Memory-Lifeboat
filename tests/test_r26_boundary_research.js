@@ -69,3 +69,11 @@ test('R26 Chrome failure must retain exact phase of resource sampling',()=>{
  const code=fs.readFileSync(path.join(root,'tools/profile_import_boundaries_r26.js'),'utf8');
  for(const s of ['HEAP_BEFORE_IMPORT','HEAP_AFTER_IMPORT','HEAP_AFTER_SELECTION','HEAP_AFTER_CLEAR','R26_STAGE','progress={kind:config.kind'])assert.ok(code.includes(s));
 });
+
+test('R26 resource sampler uses non-GC-forcing Chrome Performance metrics after real CDP hang',()=>{
+ const code=fs.readFileSync(path.join(root,'tools/profile_import_boundaries_r26.js'),'utf8');
+ assert.match(code,/page.send\('Performance.getMetrics'\)/);
+ assert.match(code,/'Performance.enable'/);
+ assert.doesNotMatch(code,/page.send\('Runtime.getHeapUsage'\)/);
+ assert.match(code,/R26_PERFORMANCE_HEAP_METRIC_UNAVAILABLE/);
+});
