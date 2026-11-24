@@ -429,9 +429,9 @@
     },
     {
       "path": "docs/R27_CRC_RESEARCH_AND_RELEASE.md",
-      "sha256": "02a58fcc090eff189d1267a5fae45ecfd6968ba213f7eaab49d654bb98f5d75a",
-      "git_blob_sha1": "5c6ece5989d68ab71e28160589093f66e5c0d3f7",
-      "bytes": 2983
+      "sha256": "89cdfe77bd692dbc090cb11979e315645cdfbd5209766d163c803572961adbc3",
+      "git_blob_sha1": "e9b89ed2a86b6c19d4d028a960edc929e7fe605f",
+      "bytes": 3236
     },
     {
       "path": "docs/R27_RELEASE_NOTES.md",

@@ -15,7 +15,7 @@
 ## 反證與回歸
 
 1. `tests/test_r27_crc_parity.js` 以 `123456789` 公知 CRC32、固定種子的 0..262144 bytes、普通 array／iterable、63.75 MiB 巨型合法 JSON 比對舊算法；檢查刻意竄改 ZIP central CRC 時仍 **ZIP_CRC_MISMATCH**。
-2. `npm run check`：Node、既有 R26 來源與 manifest/parity 全通過；真實 Chrome reader 44 項、R24 兩組、R26 三組（含失敗來源時的敏感授權撤銷）全要重驗。
+2. `npm run check`：Node／CRC 反證、既有原始碼與離線 CSP／Manifest 一致性全部通過；獨立驗證 Chrome reader 44 項、R24 兩組與 **R26 已確認成功的近 64 MiB ZIP（含非法來源撤銷）**。R26 另一個 9 MiB／240 則長文字 JSON 目前有可重現的 CDP stall，**本輪不宣稱它通過，也不把它混入 v0.11.3 發行通過條件**；詳 `docs/R26_JSON_LONG_UNRESOLVED.md` 與未合併 PR #27。
 3. `tools/bench_crc_r27.js` 用同一份 synthetic source、交替測舊/新，保留逐次值、版本、環境；沒有硬性速度閘門，避免 CI VM jitter 造成 false FAIL。
 4. 只有精確 PR-head 和合併後 main 成功、Release CI 三附件實際出現並 SHA256/ZIP CRC 驗證，才可宣稱正式發布。R26 研究中 `json-long` CDP `Runtime.getHeapUsage` 逾時必須另行追溯，不因 CRC 改善被抹去。
 
