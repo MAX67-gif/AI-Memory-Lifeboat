@@ -41,6 +41,8 @@ async function cdp(url){
     }),close:()=>ws.close()};
 }
 function evaluated(page,fn,...vals){return page.send('Runtime.evaluate',{expression:`(${fn})(...${JSON.stringify(vals)})`,awaitPromise:true,returnByValue:true}).then(x=>{if(x.exceptionDetails)throw Error('PAGE_EXCEPTION_'+String(x.exceptionDetails.text).slice(0,120));return x.result?.value;});}
+function byteStats(data){const s=stats(data);return {n:s.n,medianBytes:s.medianMs,
+  p95NearestRankBytes:s.p95NearestRankMs,minBytes:s.minMs,maxBytes:s.maxMs};}
 async function heapSample(page){
   const x=await page.send('Runtime.getHeapUsage');
   return {usedBytes:x.usedSize,totalBytes:x.totalSize};
@@ -85,6 +87,9 @@ async function browserRun(config,report,fixtures){
       await page.send('Emulation.setTouchEmulationEnabled',{enabled:v.mobile});
       const rows=[];
       for(let i=0;i<config.warmup+config.runs;i++){
+        const mark=step=>{report.progress={kind:config.kind,viewport:v.name,iteration:i+1,step};
+          console.log('R26_STAGE',config.kind,v.name,i+1,step);};
+        mark('NAVIGATE');
         loads.clear();const nav=await page.send('Page.navigate',{url:URL_TO_TEST});
         if(nav.errorText){
           if(/ERR_BLOCKED_BY_ADMINISTRATOR|ERR_ACCESS_DENIED/.test(nav.errorText))throw Error('ENV_BLOCKED_FILE_NAVIGATION');
@@ -108,11 +113,14 @@ async function browserRun(config,report,fixtures){
             }
           }).observe(status,{attributes:true,attributeFilter:['class']});
         });
+        mark('HEAP_BEFORE_IMPORT');
         const before=await heapSample(page);
         const doc=await page.send('DOM.getDocument');
         const input=await page.send('DOM.querySelector',{nodeId:doc.root.nodeId,selector:'#archiveFile'});
         if(!input.nodeId)throw Error('R26_FILE_INPUT_NOT_FOUND');
+        mark('SEND_FILE_TO_CHROME');
         await page.send('DOM.setFileInputFiles',{files:[fixtures.positive.path],nodeId:input.nodeId});
+        mark('WAITING_FOR_IMPORT_STATUS');
         const ready=await until(async()=>{const result=await evaluated(page,()=>{
           const r=window.__r26;return {state:r.state,done:r.paintMs!==null,elapsedMs:r.readyMs-r.startMs,
             paintedMs:r.paintMs-r.startMs,longTasks:r.longTasks,observerSupported:r.observerSupported};
@@ -126,7 +134,9 @@ async function browserRun(config,report,fixtures){
         },EXPECTED[config.kind].conversations);
         assert.equal(examined.status,true);assert.equal(examined.found,true);
         assert.equal(examined.count,Math.min(200,EXPECTED[config.kind].conversations));
+        mark('HEAP_AFTER_IMPORT');
         const afterImport=await heapSample(page);
+        mark('SELECT_FIRST_CONVERSATION');
         const selected=await evaluated(page,expected=>{
           const b=document.querySelector('#conversationList button');b.click();
           return {messages:document.querySelectorAll('#conversationDetail .message').length,
@@ -134,7 +144,9 @@ async function browserRun(config,report,fixtures){
             buttonEnabled:!document.querySelector('#downloadHtml').disabled};
         },EXPECTED[config.kind].messages);
         assert.equal(selected.messages,EXPECTED[config.kind].messages);assert.equal(selected.selected,true);assert.equal(selected.buttonEnabled,true);
+        mark('HEAP_AFTER_SELECTION');
         const afterSelection=await heapSample(page);
+        mark('VERIFY_RESET_AND_NEGATIVE');
         const negative=i===config.warmup;let negativeOk=null;
         if(negative){
           const pending=await evaluated(page,()=>{document.querySelector('#downloadHtml').click();return document.querySelector('#htmlExportConfirm').open;});
@@ -159,6 +171,7 @@ async function browserRun(config,report,fixtures){
             downloadDisabled:document.querySelector('#downloadHtml').disabled}));
           if(!clean.hidden||clean.oldButtons!==0||clean.oldMessages!==0||!clean.downloadDisabled)throw Error('R26_CLEAR_NOT_PRIVATE');
         }
+        mark('HEAP_AFTER_CLEAR');
         const afterClear=await heapSample(page);
         if(net.length||errors.length)throw Error('R26_EXTERNAL_REQUEST_OR_RUNTIME_ERROR');
         const metric={iteration:i+1,warmup:i<config.warmup,measured:i>=config.warmup,readyMs:ready.elapsedMs,
@@ -171,10 +184,12 @@ async function browserRun(config,report,fixtures){
           maxSampledHeapUsedBytes:Math.max(before.usedBytes,afterImport.usedBytes,afterSelection.usedBytes,afterClear.usedBytes),
           negativeValidated:!!negativeOk};
         rows.push(metric);
+        mark('ITERATION_PASS');
       }
       const measured=rows.filter(x=>x.measured);
       report.viewports.push({name:v.name,mobileEmulated:v.mobile,rows,
-        summary:Object.fromEntries(['readyMs','toPaintMs','maxSampledHeapUsedBytes'].map(k=>[k,stats(measured.map(r=>r[k]))])),
+        summary:{readyMs:stats(measured.map(r=>r.readyMs)),toPaintMs:stats(measured.map(r=>r.toPaintMs)),
+          maxSampledHeapUsedBytes:byteStats(measured.map(r=>r.maxSampledHeapUsedBytes))},
         negativeRefutationPassed:rows.some(x=>x.negativeValidated),
         longTaskAvailable:measured.every(x=>x.longtaskSupported)});
     }
@@ -214,4 +229,4 @@ async function main(){
   }
 }
 if(require.main===module)main().catch(e=>{console.error('R26 runner error:',e.message);process.exitCode=1;});
-module.exports={args,EXPECTED,STARTUP_BUDGET_MS};
+module.exports={args,EXPECTED,STARTUP_BUDGET_MS,byteStats};

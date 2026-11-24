@@ -37,3 +37,11 @@
 - **CANCEL：**要求雲端上傳、開放外部 CDN/API、擴大 128 MiB ZIP/64 MiB JSON/32 分片/16 MiB HTML、取消二次同意，均不在本輪範圍。
 
 正式 R25／v0.11.2 Release 原位且 immutable；本輪僅研究基建，不新開公開 tag。完成後應同步私人 AML 專屬 Project Brain，TLS/Taiwan-LLM 共享根物件不得更動。
+
+## 初次 GitHub exact-head 反證（公開 PR #27）
+
+`18906641c561d8ac7eb89b7b7227bbc299b22c66` 的初次 real Chrome CI：Node 300/300、原 Chrome 44/44、R24 baseline/stress SUCCESS；R26 32-shard (800 篇) 與 ZIP 63.75MiB 正／負例 SUCCESS，但 `json-long` 在資源採樣指令 `Runtime.getHeapUsage` 等待 120 秒後 **FAIL**，該工作尚無一筆完整 measured row。這不能直接被解釋為產品解析失敗，也不能稱全部 R26 已通過。
+
+同樣 63.75MiB ZIP 的 Chrome 3 次重複可成功，但 `readyMs` 桌面約 2.66 秒，`LongTaskMax` 約 2.6 秒，屬已觀察到的長任務，需另外量化 CRC32／JSON.parse／DOM 的貢獻；不得把原因直接歸咎於某單一 API。沙盒使用原創 66,846,698 B JSON，bit-by-bit CRC32 約 2.96s，table/index-loop CRC32 約 0.16s，兩者 CRC 完全相同；這是**獨立同機原型差異**，需透過新版本隔離紅綠測試後才能宣稱產品改善。
+
+本研究 runner 隨後增加 `report.progress` / `R26_STAGE` 明確分辨 **頁面導航、匯入、首次選取、記憶體採樣、清除** 各階段，修正高水位 heap bytes 統計欄位原錯用 `medianMs` 的單位誤導：新欄改用 `medianBytes`／`p95NearestRankBytes`／`minBytes`／`maxBytes`。原始 `readyMs`／`toPaintMs` 維持原語意。所有數值只能以最終 GitHub exact-head／main 的實際回執為準。

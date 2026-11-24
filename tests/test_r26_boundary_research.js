@@ -59,3 +59,13 @@ test('R26 instrumentation requires fresh loader, raw CDP file input and explicit
  const product=fs.readFileSync(path.join(root,'src/app.js'),'utf8');
  assert.doesNotMatch(product,/profile_import_boundaries_r26|fixtures_r26/);
 });
+
+test('R26 sampled heap summary reports bytes, never misleading millisecond labels',()=>{
+ const p=runner.byteStats([80,500,100,200,900]);
+ assert.deepEqual(p,{n:5,medianBytes:200,p95NearestRankBytes:900,minBytes:80,maxBytes:900});
+ assert.equal(Object.hasOwn(p,'medianMs'),false);
+});
+test('R26 Chrome failure must retain exact phase of resource sampling',()=>{
+ const code=fs.readFileSync(path.join(root,'tools/profile_import_boundaries_r26.js'),'utf8');
+ for(const s of ['HEAP_BEFORE_IMPORT','HEAP_AFTER_IMPORT','HEAP_AFTER_SELECTION','HEAP_AFTER_CLEAR','R26_STAGE','progress={kind:config.kind'])assert.ok(code.includes(s));
+});
