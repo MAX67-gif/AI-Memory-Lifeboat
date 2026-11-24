@@ -1,3 +1,10 @@
+## v0.11.2 — R25 direct conversation-page jump (2026-11-24; publication gated)
+
+- Add strict, keyboard/IME-aware direct page navigation for long 200-item conversation lists; preserve current filtered search scope.
+- Apply the original R18 visible-selection lease on any valid page change: clear offscreen private reader content and revoke pending sensitive export; invalid input cannot change selection.
+- Reset jump error/input state on source replacement, clear, search and risk-filter changes; remain local-only and keep R6/R12/R15/R20 caps and R23/R24 research tools.
+- Publish only as an immutable pinned v0.11.2 release after exact-head Node, real Chrome, merged-main CI and three genuine asset checks succeed. No actual-account or human-adoption proof.
+
 ## R24 research-only (2026-11-24; product remains v0.11.1)
 
 - Separate state-ready latency from two-frame waiting in real Chrome synthetic research while preserving all prior R23 timing fields and v1 schema.

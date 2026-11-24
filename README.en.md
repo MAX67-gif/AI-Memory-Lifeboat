@@ -1,3 +1,9 @@
+## R25 v0.11.2 candidate — bounded conversation page jump
+
+Long conversation lists (200 per page) now support strict, IME-aware direct page navigation. Changing to a page that hides the selected conversation scrubs prior private reader content and revokes sensitive HTML export. Invalid entries do not change the page or consent. This remains local-only and does not certify account completeness, real-device accessibility, or verified adoption. [Security and behavior contract](docs/R25_LIST_PAGE_JUMP_AND_PRIVACY.md) | [Release notes](docs/R25_RELEASE_NOTES.md). Preserve v0.11.1.
+
+---
+
 ## R23 synthetic performance evidence (product remains v0.11.1)
 
 An opt-in [real-Chrome profiling harness](docs/R23_PERFORMANCE_EVIDENCE.md) now records raw interaction latency and sampled heap for a fixed 1,402-message synthetic current-path export, including import, selection, find, jump, source replacement, list filter, and clear. GitHub CI retains evidence without changing the shipped offline HTML, runtime dependencies, privacy/consent rules, product version or release tag. CI timing is not proof of real-user performance or adoption.

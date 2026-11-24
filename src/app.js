@@ -1,9 +1,10 @@
-/* AI Memory Lifeboat v0.11.1 — user-triggered browser application only. MIT. */
+/* AI Memory Lifeboat v0.11.2 — user-triggered browser application only. MIT. */
 (function(){'use strict';
   const $=id=>document.getElementById(id);
   const e={file:$('archiveFile'),status:$('status'),clear:$('clearBtn'),results:$('results'),metrics:$('metrics'),
     warnings:$('warningList'),warningCount:$('warningCount'),list:$('conversationList'),detail:$('conversationDetail'),
-    search:$('searchBox'),resultCount:$('resultCount'),listPager:$('listPager'),listPageInfo:$('listPageInfo'),listPrev:$('listPrev'),listNext:$('listNext'),audit:$('downloadAudit'),html:$('downloadHtml'),
+    search:$('searchBox'),resultCount:$('resultCount'),listPager:$('listPager'),listPageInfo:$('listPageInfo'),listPrev:$('listPrev'),listNext:$('listNext'),
+    listJumpWrap:$('listJumpWrap'),listPageJump:$('listPageJump'),listGoPage:$('listGoPage'),listJumpStatus:$('listJumpStatus'),audit:$('downloadAudit'),html:$('downloadHtml'),
     olderFile:$('olderFile'),olderStatus:$('olderStatus'),comparePanel:$('comparePanel'),
     compareCounts:$('compareCounts'),compareList:$('compareList'),compareDownload:$('downloadComparison'),
     compareSearch:$('compareSearch'),compareUnknownBreakdown:$('compareUnknownBreakdown'),downloadReviewGuide:$('downloadReviewGuide'),
@@ -80,6 +81,8 @@
       element.textContent='';
     delete e.healthSummary.dataset.state;
     e.listPager.hidden=true;e.listPageInfo.textContent='';e.listPrev.disabled=true;e.listNext.disabled=true;
+    e.listJumpWrap.hidden=true;e.listPageJump.value='';e.listPageJump.disabled=true;
+    e.listGoPage.disabled=true;e.listJumpStatus.textContent='';e.listPageJump.removeAttribute('aria-invalid');
     e.comparePager.hidden=true;e.comparePrev.disabled=true;e.compareNext.disabled=true;
     e.riskFilter.value='ALL';e.compareFilter.value='ALL';e.compareSearch.value='';comparePage=0;
     e.comparePageJump.value='';e.comparePageJump.disabled=true;e.compareGoPage.disabled=true;e.compareJumpWrap.hidden=true;
@@ -251,6 +254,7 @@
     e.listPageInfo.textContent=`第 ${listPage+1} / ${totalPages} 頁`;
     e.listPager.hidden=totalPages===1;
     e.listPrev.disabled=listPage<=0;e.listNext.disabled=listPage>=totalPages-1;
+    e.listJumpWrap.hidden=totalPages<3;e.listPageJump.disabled=totalPages<3;e.listGoPage.disabled=totalPages<3;
     e.list.replaceChildren();
     if(!matched.length){const p=document.createElement('p');p.className='placeholder';p.textContent='沒有符合條件的目前分支內容。';e.list.append(p);return;}
     const idToIndex=new Map(current.conversations.map((c,i)=>[c,i]));
@@ -498,21 +502,21 @@
     if(!current)return;
     const receipt=window.AMLPilotR5.createReceipt({ease:e.pilotEase.value,clarity:e.pilotClarity.value,reuse:e.pilotReuse.value,
       firstTask:e.pilotTask.value,understandsScope:e.pilotScope.value},demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT');
-    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.11.1.json','application/json;charset=utf-8');
+    download(JSON.stringify(receipt,null,2),'aml-pilot-feedback-v0.11.2.json','application/json;charset=utf-8');
     e.pilotStatus.textContent='僅已下載到你的裝置，沒有自動傳送。請自行檢查內容，分享與否由你決定。';
   });
   e.downloadFirstResult.addEventListener('click',()=>{
     if(healthReport)download(window.AMLFirstResult.format(healthReport,demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'),
-      'aml-first-result-v0.11.1.txt','text/plain;charset=utf-8');
+      'aml-first-result-v0.11.2.txt','text/plain;charset=utf-8');
   });
   e.verifyAttachments.addEventListener('click',()=>{void verifyAttachments();});
-  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.11.1.json','application/json;charset=utf-8');});
+  e.downloadHealth.addEventListener('click',()=>{if(healthReport)download(JSON.stringify({...healthReport,source_mode:demoActive?'SYNTHETIC_DEMO':'PERSONAL_EXPORT'},null,2),'aml-health-v0.11.2.json','application/json;charset=utf-8');});
   const picker=document.querySelector('label[for="archiveFile"]');
   picker.addEventListener('keydown', ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.file.click();}});
   e.file.addEventListener('change',()=>{if(e.file.files?.[0])void importFile(e.file.files[0]);});
   e.olderFile.addEventListener('change',()=>{if(e.olderFile.files?.[0])void importOlder(e.olderFile.files[0]);});
-  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.11.1.json','application/json;charset=utf-8');});
-  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.11.1.txt','text/plain;charset=utf-8');});
+  e.compareDownload.addEventListener('click',()=>{if(compared)download(JSON.stringify(compared.summary,null,2),'aml-diff-summary-v0.11.2.json','application/json;charset=utf-8');});
+  e.downloadReviewGuide.addEventListener('click',()=>{if(compared)download('\uFEFF'+view.formatReviewGuide(compared.summary),'aml-review-guide-v0.11.2.txt','text/plain;charset=utf-8');});
   e.clear.addEventListener('click',reset);
   e.list.addEventListener('keydown',ev=>{
     // Arrow/Home/End move focus only within the visible page. Enter/Space select explicitly.
@@ -523,9 +527,29 @@
     ev.preventDefault();buttons[target].focus({preventScroll:true});
     buttons[target].scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});
   });
-  e.listPrev.addEventListener('click',()=>{if(!current||e.listPrev.disabled)return;listPage--;renderList();e.list.scrollTop=0;});
-  e.listNext.addEventListener('click',()=>{if(!current||e.listNext.disabled)return;listPage++;renderList();e.list.scrollTop=0;});
-  e.riskFilter.addEventListener('change',()=>{listPage=0;if(current)renderList();});
+  function clearListJumpInput(){
+    e.listPageJump.value='';e.listJumpStatus.textContent='';e.listPageJump.removeAttribute('aria-invalid');
+  }
+  function goToListPage(){
+    if(!current||e.listGoPage.disabled)return;
+    const matched=view.filterConversations(core.searchConversations(current.conversations,e.search.value),e.riskFilter.value);
+    const pages=view.page(matched,0,LIST_PAGE_SIZE).totalPages;
+    const target=view.jumpToPage(e.listPageJump.value,pages);
+    if(target===null){
+      e.listPageJump.setAttribute('aria-invalid','true');
+      e.listJumpStatus.textContent=`頁碼無效，請輸入 1 到 ${pages} 的整數。`;
+      return;
+    }
+    e.listPageJump.removeAttribute('aria-invalid');
+    listPage=target;renderList();e.list.scrollTop=0;
+    e.listJumpStatus.textContent=`已跳至第 ${target+1} / ${pages} 頁。`;
+  }
+  e.listGoPage.addEventListener('click',goToListPage);
+  e.listPageJump.addEventListener('input',()=>{e.listJumpStatus.textContent='';e.listPageJump.removeAttribute('aria-invalid');});
+  e.listPageJump.addEventListener('keydown',ev=>{if(committedEnter(ev)){ev.preventDefault();goToListPage();}});
+  e.listPrev.addEventListener('click',()=>{if(!current||e.listPrev.disabled)return;clearListJumpInput();listPage--;renderList();e.list.scrollTop=0;});
+  e.listNext.addEventListener('click',()=>{if(!current||e.listNext.disabled)return;clearListJumpInput();listPage++;renderList();e.list.scrollTop=0;});
+  e.riskFilter.addEventListener('change',()=>{clearListJumpInput();listPage=0;if(current)renderList();});
   e.compareFilter.addEventListener('change',()=>{comparePage=0;e.compareJumpStatus.textContent='';if(compared)renderComparison();});
   e.compareSearch.addEventListener('input',()=>{comparePage=0;e.compareJumpStatus.textContent='';if(compared)renderComparison();});
   function goToComparePage(){
@@ -540,8 +564,8 @@
   e.comparePageJump.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();goToComparePage();}});
   e.comparePrev.addEventListener('click',()=>{if(!compared||e.comparePrev.disabled)return;comparePage--;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
   e.compareNext.addEventListener('click',()=>{if(!compared||e.compareNext.disabled)return;comparePage++;e.compareJumpStatus.textContent='';renderComparison();e.compareList.scrollTop=0;});
-  e.search.addEventListener('input',()=>{listPage=0;if(current)renderList();});
-  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.11.1.json','application/json;charset=utf-8');});
+  e.search.addEventListener('input',()=>{clearListJumpInput();listPage=0;if(current)renderList();});
+  e.audit.addEventListener('click',()=>{if(current)download(JSON.stringify(current.audit,null,2),'aml-audit-v0.11.2.json','application/json;charset=utf-8');});
   e.html.addEventListener('click',requestSensitiveExport);
   e.cancelHtmlExport.addEventListener('click',revokeSensitiveExport);
   e.htmlExportConfirm.addEventListener('close',()=>{pendingSensitiveExport=null;});

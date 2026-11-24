@@ -43,6 +43,9 @@ const original = JSON.stringify([
   ...Array.from({ length: 200 }, (_, index) => conversation(`synthetic-filler-${index}`, `Synthetic filler ${index + 1}`, 1))
 ]);
 const replacement = JSON.stringify([conversation('synthetic-shared-id', replacementTitle, 1)]);
+const list421 = JSON.stringify(Array.from({length:421},(_,i)=>
+  conversation('synthetic-page-'+(i+1), 'Synthetic page item '+String(i+1).padStart(3,'0'), 1)));
+
 
 async function until(check, description, timeout = 8000) {
   const start = Date.now();
@@ -216,6 +219,72 @@ function browserChecks(page, downloads, errors, outbound, report, output) {
       const originalCreate = URL.createObjectURL.bind(URL);
       URL.createObjectURL = blob => { window.__amlSyntheticDownloads.push(blob); return originalCreate(blob); };
     });
+    await test('r25-direct-list-page-jump-revokes-private-selection', async () => {
+      await upload(list421);
+      assert.equal(await evaluate(() => document.querySelector('#listJumpWrap').hidden), false);
+      assert.equal(await evaluate(() => document.querySelectorAll('#conversationList button').length), 200);
+      await select('Synthetic page item 001');
+      assert.equal(await evaluate(() => document.querySelector('#downloadHtml').disabled), false);
+      await click('#downloadHtml');
+      assert.equal(await dialogOpen(), true);
+      await input('#listPageJump', '3');
+      await click('#listGoPage');
+      const moved = await evaluate(() => ({
+        page: document.querySelector('#listPageInfo').textContent,
+        count: document.querySelectorAll('#conversationList button').length,
+        selected: Boolean(document.querySelector('#conversationList [aria-current="true"]')),
+        detail: document.querySelector('#conversationDetail').textContent,
+        exportDisabled: document.querySelector('#downloadHtml').disabled,
+        dialogOpen: document.querySelector('#htmlExportConfirm').open
+      }));
+      assert.ok(moved.page.includes('3 / 3'));assert.equal(moved.count,21);
+      assert.equal(moved.selected,false);assert.ok(!moved.detail.includes('Synthetic page item 001'));
+      assert.equal(moved.exportDisabled,true);assert.equal(moved.dialogOpen,false);
+      // Invalid input cannot navigate or re-enable private export.
+      await input('#listPageJump', '4');await click('#listGoPage');
+      assert.equal(await evaluate(() => document.querySelector('#listPageJump').getAttribute('aria-invalid')),'true');
+      assert.ok((await evaluate(() => document.querySelector('#listPageInfo').textContent)).includes('3 / 3'));
+      assert.equal(await evaluate(() => document.querySelectorAll('#conversationList button').length),21);
+      await screenshot('r25-list-last-page');
+    });
+
+    await test('r25-ime-and-valid-enter-list-page-jump', async () => {
+      await upload(list421);
+      await input('#listPageJump','2');await focus('#listPageJump');
+      for(const [composing,keyCode] of [[true,13],[false,229]]){
+        const ev=await evaluate((composing,keyCode)=>{
+          const input=document.querySelector('#listPageJump');
+          const event=new KeyboardEvent('keydown',{key:'Enter',isComposing:composing,bubbles:true,cancelable:true});
+          Object.defineProperty(event,'keyCode',{value:keyCode});input.dispatchEvent(event);
+          return {canceled:event.defaultPrevented,page:document.querySelector('#listPageInfo').textContent};
+        },composing,keyCode);
+        assert.equal(ev.canceled,false);assert.ok(ev.page.includes('1 / 3'));
+      }
+      await enter();
+      assert.ok((await evaluate(() => document.querySelector('#listPageInfo').textContent)).includes('2 / 3'));
+      assert.equal(await evaluate(() => document.querySelectorAll('#conversationList button').length),200);
+      await select('Synthetic page item 201');
+      await input('#listPageJump','2');await click('#listGoPage');
+      assert.equal(await evaluate(() => document.querySelector('#conversationList [aria-current="true"]')!==null),true);
+      assert.equal(await evaluate(() => document.querySelector('#downloadHtml').disabled),false);
+    });
+
+    await test('r25-filter-replace-clear-reset-list-page-jump', async () => {
+      await upload(list421);
+      await input('#listPageJump','3');await click('#listGoPage');
+      await input('#searchBox','Synthetic page item 42');
+      assert.ok((await evaluate(() => document.querySelector('#listPageInfo').textContent)).includes('1 / 1'));
+      assert.equal(await evaluate(() => document.querySelector('#listJumpWrap').hidden),true);
+      assert.equal(await evaluate(() => document.querySelector('#listPageJump').value),'');
+      await upload(replacement);
+      assert.equal(await evaluate(() => document.querySelector('#listPageJump').value),'');
+      assert.equal(await evaluate(() => document.querySelector('#listJumpStatus').textContent),'');
+      assert.equal(await evaluate(() => document.querySelector('#listGoPage').disabled),true);
+      await click('#clearBtn');
+      assert.equal(await evaluate(() => document.querySelector('#results').hidden),true);
+      assert.equal(await evaluate(() => document.querySelector('#listJumpStatus').textContent),'');
+    });
+
     await test('message-windows', async () => {
       await startOriginal();
       await click('#readerNext');

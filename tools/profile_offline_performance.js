@@ -238,7 +238,7 @@ async function main(){
   const args=options(process.argv.slice(2));if(args.help){console.log('node tools/profile_offline_performance.js --chrome PATH --output-dir DIR [--runs 5] [--warmup 1]');return;}
   const out=path.resolve(args['output-dir']||path.join(os.tmpdir(),'aml-r23-performance'));
   await fs.mkdir(out,{recursive:true});
-  const report={schema:'aml.synthetic-performance.v1',mode:'research-only',productVersion:'0.11.1',
+  const report={schema:'aml.synthetic-performance.v1',mode:'research-only',productVersion:require('../package.json').version,
     instructions:'No release, optimization claim or human adoption from CI timings; compare only same fixture/browser/hardware.',
     environment:{node:process.version,platform:process.platform,arch:process.arch,
       logicalCores:os.cpus().length,cpuModel:os.cpus()[0]?.model,totalSystemMemoryBytes:os.totalmem()},
