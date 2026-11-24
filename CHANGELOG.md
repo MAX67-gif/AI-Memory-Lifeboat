@@ -1,3 +1,9 @@
+## R26 research-only (2026-11-24; product remains v0.11.2)
+
+- Add three deterministic synthetic offline import research profiles: ~9 MiB JSON long text, 32-shard ZIP with 800 conversations, and compressed near-64 MiB JSON ZIP. Add 33-shard / 64 MiB+1 invalid-source guards with privacy-state revocation checks.
+- Add real Chrome file:// CDP `DOM.setFileInputFiles` research runner (fresh document per trial), action-to-ready timing, Long Tasks where supported, sampled JS heap high-water and bounded startup diagnostics. Each profile runs desktop and mobile viewport emulation.
+- Capture raw research JSON and immutable fixture hashes in an independent three-case GitHub CI workflow. No shipped app source, offline HTML, v1 product data schema, release tag or privacy budget changes. See `docs/R26_BOUNDARY_RESEARCH_CONTRACT.md`.
+
 ## v0.11.2 — R25 direct conversation-page jump (2026-11-24; publication gated)
 
 - Add strict, keyboard/IME-aware direct page navigation for long 200-item conversation lists; preserve current filtered search scope.
