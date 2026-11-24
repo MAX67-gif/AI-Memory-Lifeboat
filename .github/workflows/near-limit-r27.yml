@@ -1,0 +1,32 @@
+name: R27 real Chrome near-limit ZIP CRC guard
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  near-limit-chrome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source, offline CSP, SHA and Node negative guards
+        run: npm run check
+      - name: Real Chrome near-64 MiB import and negative consent revoke
+        shell: bash
+        run: |
+          chrome=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || printf 'google-chrome')
+          node tools/profile_import_boundaries_r26.js --chrome "$chrome" --kind zip-near-limit --runs 3 --warmup 1 --output-dir "$RUNNER_TEMP/aml-r27-near-limit"
+      - name: Upload raw PASS/FAIL evidence, including negative gate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aml-r27-near-limit-evidence
+          path: ${{ runner.temp }}/aml-r27-near-limit/
+          if-no-files-found: warn
