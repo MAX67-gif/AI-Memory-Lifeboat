@@ -63,3 +63,7 @@ R20 新增的對話內搜尋字串、命中訊息索引及當段頁碼，只存�
 ## R22｜合成瀏覽器測試與組字輸入
 
 組字事件及清單可見焦點只影響本機互動，不記錄使用者鍵盤內容。新增 CDP/Chrome 程式只屬開發工具，不被 index.html 或離線 HTML 引用。GitHub CI 只建立並上傳原創合成資料的測試結果與畫面，不能匯入真人備份；應用程式仍禁止 connect-src、不加入儲存或遙測。
+
+
+## R28 long-text reading guard
+The browser may defer painting offscreen messages; the original retained text is still in in-memory DOM until you clear the page or replace its source. This is not encryption, data deletion, or a remote backup. Explicit content-bearing HTML export confirmation and local-only processing are unchanged.

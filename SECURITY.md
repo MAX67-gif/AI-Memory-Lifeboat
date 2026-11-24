@@ -63,3 +63,7 @@ R16 將四種無法確定狀態正確計入比較摘要，提供每頁80筆的�
 ## R22｜鍵盤與回歸驗收
 
 選字中的 Enter 不得提前改變搜尋、訊息位置或焦點；清單鍵盤操作須把焦點列移入可見範圍而不自動選取。Chrome 測試只使用合成來源，以獨立暫存 profile 開啟 file:// 產物，檢查出站請求、JavaScript 錯誤、換來源／跨頁後私密同意撤銷與確認後實際內容。CI 只有 contents:read；發行 job 以獨立 main/version gate 使用寫入權限。這不是真人輔助科技認證或外部安全審計。
+
+
+## R28 layout-only performance change
+Offscreen message layout may be deferred by CSS. Original retained text, local-only parsing, 700-node windowing, private HTML consent and source-replacement/clear revocation remain unchanged. Do not use DOM visibility/viewport position as a security control; clearing or changing sources must remove private text nodes and revoke pending exports regardless of CSS state.

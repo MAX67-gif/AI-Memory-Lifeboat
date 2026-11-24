@@ -1,3 +1,11 @@
+## v0.11.4 — R28 (2026-11-25; release gated on real GitHub proof)
+
+- Fix a reproduced long-text rendering bottleneck using one scoped, progressive-enhancement CSS rule on message cards: offscreen layout is deferred, **no content removed or truncated**.
+- Preserve current-path/700-window semantics, all prior ZIP/JSON/HTML limits, UNKNOWN, private export confirmation, DOM scrubbing and exact existing parsed/export data.
+- Add fixed synthetic 20/80/120/240/701-message × 8k–64k-character Chrome regression, last-hit/jump focus, CDP responsiveness, consent-revocation checks and bounded baseline observation. See `docs/R28_LONGTEXT_RENDER_GUARD.md`.
+- Headless container uses an instrumented about:blank harness because local `file://` navigation is administrator-blocked; official real file:// CSP success must be independently verified on GitHub before declaring release.
+- Human mobile, IME and screen-reader signoff remains deferred; synthetic checks are not proof of full backup or broad real-world performance.
+
 ## v0.11.3 — R27 (2026-11-24; pending GitHub Release verification)
 
 - RED: R26 real Chrome file:// repeatedly observed a roughly 2.6-second long task importing an original 63.75 MiB synthetic JSON within ZIP; old CRC32 hot loop was independently measured at roughly 2.8 seconds in sandbox.

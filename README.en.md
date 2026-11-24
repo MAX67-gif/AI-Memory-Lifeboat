@@ -1,3 +1,9 @@
+## R28 v0.11.4 — Long-text reader performance guard (publication-gated)
+
+The browser can stall when laying out hundreds of long, unbroken messages offscreen. R28 adds a scoped CSS progressive enhancement to defer **offscreen layout only**; original message text and all DOM nodes remain intact. Current-path rules, 700-message windows, native find/jump/focus, sensitive HTML confirmation and original size limits are preserved. Unsupported browsers fall back to their existing layout. Print rendering explicitly restores visible content. See [R28 evidence and safety contract](docs/R28_LONGTEXT_RENDER_GUARD.md). Synthetic Chrome testing does not certify human or physical-device behavior; verify the actual v0.11.4 Release before treating this as shipped.
+
+---
+
 ## R27 v0.11.3 — CRC32 hot-path parity and performance (subject to GitHub Release gates)
 
 A large synthetic ZIP exposed a repeatable long task. The new private 256-entry IEEE CRC32 lookup table preserves checksum values and fail-closed corruption behavior while reducing bitwise work. No change to offline-only CSP, private-export consent, ChatGPT current-path scope, parser limits, or prior immutable releases. See [R27 research and release contract](docs/R27_CRC_RESEARCH_AND_RELEASE.md). Check the actual [v0.11.3 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.11.3) before treating this as a published product.
