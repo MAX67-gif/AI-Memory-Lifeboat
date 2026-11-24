@@ -1,0 +1,33 @@
+name: R28 long-text Chrome file-only safety and rendering regression
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  long-text-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify offline exact build, public SHA manifest and Node security tests
+        run: npm run check
+      - name: Run R28 synthetic-only real Chrome file:// matrix and bounded baseline observation
+        shell: bash
+        run: |
+          chrome=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || printf 'google-chrome')
+          node tools/verify_longtext_r28.js --chrome "$chrome" --output-dir "$RUNNER_TEMP/aml-r28-longtext" --include-baseline
+      - name: Preserve full R28 Chrome evidence including any failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r28-longtext-chrome-evidence
+          path: ${{ runner.temp }}/aml-r28-longtext/
+          if-no-files-found: warn

@@ -136,3 +136,7 @@
 #listPageJump[aria-invalid="true"]{border-color:#b34545;outline-offset:2px}
 #listJumpStatus{flex-basis:100%;text-align:right}
 @media(max-width:700px){.list-pager{justify-content:center}#listJumpStatus{text-align:center}}
+
+/* R28: skip expensive layout for offscreen long-text message cards. DOM/text unchanged. */
+.conversation-detail .message{content-visibility:auto;contain-intrinsic-size:auto 160px}
+@media print{.conversation-detail .message{content-visibility:visible}}

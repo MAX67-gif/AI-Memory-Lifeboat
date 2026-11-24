@@ -1,3 +1,11 @@
+## R28 v0.11.4｜長文字離線閱讀修復（以 Release 與 GitHub CI 為準）
+
+使用大量連續長文字的對話，舊版 Chrome 可能花費很長時間排版**還沒捲到的訊息**。R28 對對話訊息卡加入原生瀏覽器離屏延後排版，文字與 DOM 全部保留；仍維持每段最多 700 則，搜尋、序號跳轉、鍵盤焦點與含原文 HTML 二次確認不變。若瀏覽器不支援該 CSS 功能，使用原本排版方式，不影響資料正確性。列印時改回完整內容排版。
+
+[長文字反證與保護契約](docs/R28_LONGTEXT_RENDER_GUARD.md) · **不代表實機手機與所有匯出檔均已驗證**。正式版本只有在 GitHub v0.11.4 Release 真正發布、三附件 SHA/CRC 驗證完成後才算上線。
+
+---
+
 ## R27 v0.11.3｜大型 ZIP CRC32 相容性與效能修復（以 GitHub Release 實際狀態為準）
 
 R26 的固定合成 63.75 MiB ZIP 在 Chrome 重現約 2.6 秒長任務；深入分離測得原 CRC32 逐位元計算是明確耗時來源。本次改成查表式 CRC32，**校驗結果、錯誤拒絕、備份安全上限與私密 HTML 二次確認不變**。新增字節逐項對照與大型合成 ZIP 回歸，沒有新增雲端、遙測或使用者原文搜集。詳細研究、踩雷與安全契約：[R27 CRC32 修復說明](docs/R27_CRC_RESEARCH_AND_RELEASE.md)。正式下載以 [GitHub v0.11.3 Release](https://github.com/MAX67-gif/AI-Memory-Lifeboat/releases/tag/v0.11.3) 實際發布成功為準；舊 v0.11.2 保留。
